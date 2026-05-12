@@ -2,22 +2,58 @@ export module m3.vector.vec1;
 
 import m3.detail;
 import m3.vector.base;
+import m3.vector.vec;
 
 export namespace m3 {
     template<Arithmetic T, Qualifier Q>
-    struct Vec<1, T, Q> : VectorBase<1, T, Q>{
+    struct Vec<1, T, Q> : VectorBase<1, T, Q> {
 
         using base_type = VectorBase<1, T, Q>;
         using base_type::storage;
 
+        Vec() = default;
+        explicit constexpr Vec(const T& v) : VectorBase<1, T, Q>(v) {}
+
         constexpr T& x();
+        [[nodiscard]]
         constexpr const T& x() const;
 
         constexpr T& r();
+        [[nodiscard]]
         constexpr const T& r() const;
 
         constexpr T& s();
+        [[nodiscard]]
         constexpr const T& s() const;
-
     };
+
+    template<Arithmetic T, Qualifier Q>
+    constexpr T & Vec<1, T, Q>::x() {
+        return this->storage[0];
+    }
+
+    template<Arithmetic T, Qualifier Q>
+    constexpr const T & Vec<1, T, Q>::x() const {
+        return this->storage[0];
+    }
+
+    template<Arithmetic T, Qualifier Q>
+    constexpr T & Vec<1, T, Q>::r() {
+        return this->storage[0];
+    }
+
+    template<Arithmetic T, Qualifier Q>
+    constexpr const T & Vec<1, T, Q>::r() const {
+        return this->storage[0];
+    }
+
+    template<Arithmetic T, Qualifier Q>
+    constexpr T & Vec<1, T, Q>::s() {
+        return this->storage[0];
+    }
+
+    template<Arithmetic T, Qualifier Q>
+    constexpr const T & Vec<1, T, Q>::s() const {
+        return this->storage[0];
+    }
 } // namespace m3

@@ -4,6 +4,6 @@ export namespace m3 {
     enum class Qualifier {
         aligned_high,
         aligned_medium,
-        aligned_lowp
+        aligned_low
     };
 }

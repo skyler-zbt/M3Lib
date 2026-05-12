@@ -6,7 +6,7 @@ add_rules("mode.debug", "mode.release")
 set_toolchains("gcc")
 add_links("stdc++exp")
 
-set_languages("c++23")
+set_languages("c++26")
 set_policy("build.c++.modules", true)
 set_policy("build.c++.modules.std", true)
 set_policy("build.c++.modules.reuse", true)
