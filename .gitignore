@@ -7,3 +7,5 @@ build/
 
 # IDE Cache
 .idea/
+.vscode/
+.vs/

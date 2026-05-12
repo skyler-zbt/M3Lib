@@ -49,7 +49,6 @@ Whenever practical, M3Lib follows GLSL specifications and behaviors to reduce di
 - `constexpr`-friendly design
 - Pure Modules architecture
 - Cross-platform support
-- Modern build system based on xmake
 
 ---
 
@@ -65,3 +64,10 @@ Whenever practical, M3Lib follows GLSL specifications and behaviors to reduce di
 This project is licensed under the Apache License 2.0.
 
 See [LICENSE](./LICENSE) for details.
+
+---
+
+## Related Links
+
+- [glm](https://github.com/icaven/glm) —— a header only C++ mathematics library for graphics software based on the GLSL specifications.
+- [xmake](https://github.com/xmake-io/xmake) —— a cross-platform build utility based on the Lua scripting language.

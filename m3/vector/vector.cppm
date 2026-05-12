@@ -1,3 +1,5 @@
-export module m3.vector.specialized;
+export module m3.vector;
 
-export import m3.vector.specialized.vec1;
+export namespace m3 {
+
+}

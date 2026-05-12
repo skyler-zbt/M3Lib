@@ -4,7 +4,7 @@
 
 M3Lib的目标是成为“现代化、模块化的 GLM”，为图形学、游戏引擎与实时渲染领域提供更符合现代 C++ 理念的数学基础设施。
 
-------
+---
 
 ## 项目状态
 
@@ -47,7 +47,6 @@ M3Lib 希望成为：
 - 对 `constexpr` 友好的设计
 - 纯模块架构
 - 跨平台支持
-- 基于 xmake 的现代化构建系统
 
 ---
 
@@ -56,10 +55,17 @@ M3Lib 希望成为：
 - 支持 C++26 的编译器
 - 完整的 C++ Modules 支持
 
-------
+---
 
 ## 许可证
 
 本项目基于 Apache License 2.0 开源。
 
 详见 [LICENSE](./LICENSE)。
+
+---
+
+## 相关链接
+
+- [glm](https://github.com/icaven/glm) —— 一个符合GLSL规范的C++仅头文件数学库
+- [xmake](https://github.com/xmake-io/xmake) —— 一个基于 Lua 的轻量级跨平台构建工具
