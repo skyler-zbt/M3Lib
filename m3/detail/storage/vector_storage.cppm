@@ -4,7 +4,7 @@ import std;
 import m3.detail.qualifier;
 import m3.detail.alignment_traits;
 
-export namespace m3 {
+export namespace m3::detail {
     // storage 
     template<int L, typename T, Qualifier Q>
     struct alignas(AlignmentTraits<Q>::value) VectorStorage

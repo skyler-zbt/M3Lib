@@ -5,7 +5,7 @@ import m3.vector.base;
 import m3.vector.vec;
 
 export namespace m3 {
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     struct Vec<1, T, Q> : VectorBase<1, T, Q> {
 
         using base_type = VectorBase<1, T, Q>;
@@ -27,32 +27,32 @@ export namespace m3 {
         constexpr const T& s() const;
     };
 
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr T & Vec<1, T, Q>::x() {
         return this->storage[0];
     }
 
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr const T & Vec<1, T, Q>::x() const {
         return this->storage[0];
     }
 
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr T & Vec<1, T, Q>::r() {
         return this->storage[0];
     }
 
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr const T & Vec<1, T, Q>::r() const {
         return this->storage[0];
     }
 
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr T & Vec<1, T, Q>::s() {
         return this->storage[0];
     }
 
-    template<Arithmetic T, Qualifier Q>
+    template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr const T & Vec<1, T, Q>::s() const {
         return this->storage[0];
     }

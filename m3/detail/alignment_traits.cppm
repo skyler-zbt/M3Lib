@@ -4,7 +4,7 @@ import std;
 
 import m3.detail.qualifier;
 
-export namespace m3 {
+export namespace m3::detail {
     template<Qualifier Q>
     struct AlignmentTraits;
 

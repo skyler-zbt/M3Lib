@@ -10,29 +10,29 @@ import m3.detail.operations.apply;
 
 export namespace m3 {
 
-    template<int L, Arithmetic T, Qualifier Q>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
     constexpr Vec<L, T, Q> operator+(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
-        return detail::apply_binary<ops::add>(a, b);
+        return detail::apply_binary<detail::add>(a, b);
     }
 
-    template<int L, Arithmetic T, Qualifier Q>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
     constexpr Vec<L, T, Q> operator-(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
-        return detail::apply_binary<ops::sub>(a, b);
+        return detail::apply_binary<detail::sub>(a, b);
     }
 
-    template<int L, Arithmetic T, Qualifier Q>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
     constexpr Vec<L, T, Q> operator*(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
-        return detail::apply_binary<ops::mul>(a, b);
+        return detail::apply_binary<detail::mul>(a, b);
     }
 
-    template<int L, Arithmetic T, Qualifier Q>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
     constexpr Vec<L, T, Q> operator/(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
-        return detail::apply_binary<ops::div>(a, b);
+        return detail::apply_binary<detail::div>(a, b);
     }
 
-    template<int L, Arithmetic T, Qualifier Q>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
     constexpr Vec<L, T, Q> operator-(const Vec<L, T, Q>& a) {
-        return detail::apply_unary<ops::neg>(a);
+        return detail::apply_unary<detail::neg>(a);
     }
 
 }

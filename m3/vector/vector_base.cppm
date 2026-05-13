@@ -7,10 +7,10 @@ import m3.detail;
 export namespace m3{
 
     // Shared base: storage + fundamental operations for all Vec specializations
-    template <int L, Arithmetic T, Qualifier Q>
-    requires ValidDimension<L>
+    template <int L, detail::Arithmetic T, detail::Qualifier Q>
+    requires detail::ValidDimension<L>
     struct VectorBase {
-        VectorStorage<L, T, Q> storage;
+        detail::VectorStorage<L, T, Q> storage;
 
         VectorBase() = default;
 
@@ -21,12 +21,12 @@ export namespace m3{
     };
 
     // VectorBase out-of-line definitions
-    template<int L, Arithmetic T, Qualifier Q> requires ValidDimension<L>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q> requires detail::ValidDimension<L>
     constexpr T* VectorBase<L, T, Q>::value_ptr() noexcept {
         return storage.data.data();
     }
 
-    template<int L, Arithmetic T, Qualifier Q> requires ValidDimension<L>
+    template<int L, detail::Arithmetic T, detail::Qualifier Q> requires detail::ValidDimension<L>
     constexpr const T* VectorBase<L, T, Q>::value_ptr() const noexcept {
         return storage.data.data();
     }
