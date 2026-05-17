@@ -6,10 +6,10 @@ import m3.vector.vec;
 
 export namespace m3 {
     template<detail::Arithmetic T, detail::Qualifier Q>
-    struct Vec<1, T, Q> : VectorBase<1, T, Q> {
+    class Vec<1, T, Q> : VectorBase<1, T, Q> {
 
-        using base_type = VectorBase<1, T, Q>;
-        using base_type::storage;
+        using base_type = VectorBase<1,T,Q>::VectorBase;
+        using base_type::base_type;
 
         Vec() = default;
         explicit constexpr Vec(const T& v) : VectorBase<1, T, Q>(v) {}
@@ -29,31 +29,31 @@ export namespace m3 {
 
     template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr T & Vec<1, T, Q>::x() {
-        return this->storage[0];
+        return this->storage_[0];
     }
 
     template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr const T & Vec<1, T, Q>::x() const {
-        return this->storage[0];
+        return this->storage_[0];
     }
 
     template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr T & Vec<1, T, Q>::r() {
-        return this->storage[0];
+        return this->storage_[0];
     }
 
     template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr const T & Vec<1, T, Q>::r() const {
-        return this->storage[0];
+        return this->storage_[0];
     }
 
     template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr T & Vec<1, T, Q>::s() {
-        return this->storage[0];
+        return this->storage_[0];
     }
 
     template<detail::Arithmetic T, detail::Qualifier Q>
     constexpr const T & Vec<1, T, Q>::s() const {
-        return this->storage[0];
+        return this->storage_[0];
     }
 } // namespace m3
