@@ -1,7 +1,9 @@
 # Build system cache
+# xmake
 .xmake/
 build/
-compile_commands.json
+# mcpp
+target/
 
 # MacOS Cache
 .DS_Store

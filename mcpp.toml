@@ -1,0 +1,16 @@
+[package]
+name        = "M3Lib"
+version     = "0.1.0"
+description = "A modern C++ graphics math library"
+license     = "Apache-2.0"
+authors     = "Skyler"
+repo        = "https://github.com/skyler-zbt/M3Lib"
+
+[targets.M3Lib]
+kind = "lib"
+
+[lib]
+path = "m3/m3.cppm"
+
+[toolchain]
+default = "gcc@16.1.0"
