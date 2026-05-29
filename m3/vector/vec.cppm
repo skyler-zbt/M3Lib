@@ -1,3 +1,6 @@
+// Vec — the primary vector type with GLSL-style swizzle accessors.
+// Specializations for dimensions 1–4 provide .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q.
+// Vec<5+, T, Q> is supported via the primary template (no swizzle accessors).
 export module m3.vector.vec;
 
 import std;
@@ -18,15 +21,14 @@ export namespace m3 {
         Vec() = default;
     };
 
-    // Vec<1,T,Q> — scalar alias
+    // Vec<1,T,Q> — scalar alias with .x/.r/.s
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<1, T, Q> : public VectorBase<1, T, Q> {
-        using base_type = VectorBase<1, T, Q>::VectorBase;
-
     public:
         Vec() = default;
-        explicit constexpr Vec(const T& v) : VectorBase<1, T, Q>(v) {}
+        explicit constexpr Vec(const T& v) noexcept : VectorBase<1, T, Q>(v) {}
 
+        // Spatial / colour / texture coordinate accessors (share underlying storage)
         constexpr T& x()               { return (*this)[0]; }
         [[nodiscard]] constexpr const T& x() const { return (*this)[0]; }
         constexpr T& r()               { return (*this)[0]; }
@@ -38,11 +40,9 @@ export namespace m3 {
     // Vec<2,T,Q>
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<2, T, Q> : public VectorBase<2, T, Q> {
-        using base_type = VectorBase<2, T, Q>::VectorBase;
-
     public:
         Vec() = default;
-        explicit constexpr Vec(const T& v) : VectorBase<2, T, Q>(v) {}
+        explicit constexpr Vec(const T& v) noexcept : VectorBase<2, T, Q>(v) {}
 
         constexpr T& x()               { return (*this)[0]; }
         [[nodiscard]] constexpr const T& x() const { return (*this)[0]; }
@@ -63,11 +63,9 @@ export namespace m3 {
     // Vec<3,T,Q>
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<3, T, Q> : public VectorBase<3, T, Q> {
-        using base_type = VectorBase<3, T, Q>::VectorBase;
-
     public:
         Vec() = default;
-        explicit constexpr Vec(const T& v) : VectorBase<3, T, Q>(v) {}
+        explicit constexpr Vec(const T& v) noexcept : VectorBase<3, T, Q>(v) {}
 
         constexpr T& x()               { return (*this)[0]; }
         [[nodiscard]] constexpr const T& x() const { return (*this)[0]; }
@@ -94,11 +92,9 @@ export namespace m3 {
     // Vec<4,T,Q>
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<4, T, Q> : public VectorBase<4, T, Q> {
-        using base_type = VectorBase<4, T, Q>::VectorBase;
-
     public:
         Vec() = default;
-        explicit constexpr Vec(const T& v) : VectorBase<4, T, Q>(v) {}
+        explicit constexpr Vec(const T& v) noexcept : VectorBase<4, T, Q>(v) {}
 
         constexpr T& x()               { return (*this)[0]; }
         [[nodiscard]] constexpr const T& x() const { return (*this)[0]; }

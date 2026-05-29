@@ -1,3 +1,5 @@
+// Element-wise arithmetic functors.
+// Each is a stateless callable used by apply_binary / apply_unary
 export module m3.detail.operations.ops;
 
 export namespace m3::detail {

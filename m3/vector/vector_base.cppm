@@ -1,3 +1,6 @@
+// VectorBase — CRTP-free base class for vector types.
+// Provides aligned storage, element access (operator[], value_ptr),
+// and scalar broadcast construction.
 export module m3.vector.base;
 
 import std;
@@ -12,11 +15,15 @@ export namespace m3 {
     public:
         VectorBase() = default;
         VectorBase(const VectorBase&) = default;
+
+        // Broadcast construction — fills all L elements with scalar
         constexpr explicit VectorBase(T scalar) noexcept;
 
+        // Raw pointer to underlying data (for interop with C APIs / SIMD)
         [[nodiscard]] constexpr T*       value_ptr()       noexcept;
         [[nodiscard]] constexpr const T* value_ptr() const noexcept;
 
+        // Unchecked element access (matches GLSL / std::array behavior)
         constexpr T&       operator[](std::size_t i);
         constexpr const T& operator[](std::size_t i) const;
     protected:

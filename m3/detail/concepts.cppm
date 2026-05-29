@@ -1,3 +1,7 @@
+// Core concepts used across M3Lib for type constraints.
+//   Arithmetic      — restricts to built-in arithmetic types (int, float, double, …)
+//   ValidDimension  — restricts vector/matrix dimensions to [1, 4]
+//   BinaryOp / UnaryOp — constrains functors used by apply_binary / apply_unary
 export module m3.detail.concepts;
 
 import std;

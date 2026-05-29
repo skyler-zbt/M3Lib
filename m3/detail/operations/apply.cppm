@@ -1,3 +1,5 @@
+// apply_binary / apply_unary — element-wise vector operation helpers.
+// Dispatch is unrolled for L ∈ {1,2,3,4} and falls back to a generic loop for L > 4.
 export module m3.detail.operations.apply;
 
 import m3.detail.concepts;
@@ -7,7 +9,6 @@ import m3.vector.vec;
 export namespace m3::detail {
 
     // Applies a binary functor element-wise to two vectors.
-    // Dimensions L ∈ {1,2,3,4} are unrolled; L > 4 uses a generic loop.
     template<typename Op, int L, Arithmetic T, Qualifier Q>
     requires BinaryOp<Op, T>
     [[nodiscard]] constexpr Vec<L, T, Q> apply_binary(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {

@@ -1,3 +1,8 @@
+// Aligned storage for vector types.
+// Template parameters:
+//   L — number of elements (dimension)
+//   T — arithmetic element type
+//   Q — alignment qualifier (controls alignas via AlignmentTraits)
 export module m3.detail.storage.vector_storage;
 
 import std;

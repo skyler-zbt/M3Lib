@@ -1,3 +1,6 @@
+// Vector arithmetic and comparison operators.
+// Component-wise operators delegate to detail::apply_binary / apply_unary.
+// Scalar operators are unrolled for L ∈ {1,2,3,4}, generic loop for L > 4.
 export module m3.vector;
 
 export import m3.vector.base;
