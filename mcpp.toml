@@ -1,3 +1,10 @@
+# M3Lib: Modern · Module · Math
+# mcpp build config — https://github.com/mcpp-community/mcpp/blob/main/docs/05-mcpp-toml.md
+#
+#    mcpp build              build library
+#    mcpp build -p test_vec  build tests
+#    mcpp run <target>       run a binary target
+
 [package]
 name        = "M3Lib"
 version     = "0.1.0"
@@ -9,8 +16,22 @@ repo        = "https://github.com/skyler-zbt/M3Lib"
 [targets.M3Lib]
 kind = "lib"
 
+# Test binary — manual assertions, no external deps.
+#    mcpp build -p test_vec && ./target/*/bin/test_vec
+[targets.test_vec]
+kind = "bin"
+main = "tests/test_vec.cpp"
+
+# mcpp looks for src/<package-tail>.cppm by default;
+# M3Lib puts its root module under m3/.
 [lib]
 path = "m3/m3.cppm"
+
+[build]
+# Sources live under m3/, not the default src/.
+sources = ["m3/**/*.cppm"]
+# mcpp defaults to C++23 — sufficient until std::simd requires C++26.
+cxxflags = []
 
 [toolchain]
 default = "gcc@16.1.0"

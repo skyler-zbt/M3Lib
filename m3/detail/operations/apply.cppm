@@ -6,8 +6,11 @@ import m3.vector.vec;
 
 export namespace m3::detail {
 
-    template< int L, Arithmetic T, Qualifier Q, BinaryOp<T> Op>
-    constexpr Vec<L, T, Q> apply_binary(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
+    // Applies a binary functor element-wise to two vectors.
+    // Dimensions L ∈ {1,2,3,4} are unrolled; L > 4 uses a generic loop.
+    template<typename Op, int L, Arithmetic T, Qualifier Q>
+    requires BinaryOp<Op, T>
+    [[nodiscard]] constexpr Vec<L, T, Q> apply_binary(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
         Vec<L, T, Q> result;
         if constexpr (L == 1) {
             result[0] = Op{}(a[0], b[0]);
@@ -35,8 +38,9 @@ export namespace m3::detail {
         return result;
     }
 
-    template<int L, Arithmetic T, Qualifier Q, UnaryOp<T>  Op>
-    constexpr Vec<L, T, Q> apply_unary(const Vec<L, T, Q>& a) {
+    template<typename Op, int L, Arithmetic T, Qualifier Q>
+    requires UnaryOp<Op, T>
+    [[nodiscard]] constexpr Vec<L, T, Q> apply_unary(const Vec<L, T, Q>& a) {
         Vec<L, T, Q> result;
         if constexpr (L == 1) {
             result[0] = Op{}(a[0]);
@@ -64,4 +68,4 @@ export namespace m3::detail {
         return result;
     }
 
-}
+} // namespace m3::detail
