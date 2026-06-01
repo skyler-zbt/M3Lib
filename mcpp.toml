@@ -1,14 +1,9 @@
 # M3Lib: Modern · Module · Math
 # mcpp build config — https://github.com/mcpp-community/mcpp/blob/main/docs/05-mcpp-toml.md
 #
-#    mcpp build              build library
-#    mcpp build -p <target>  build a specific target
-#    mcpp run <target>       run a binary target
-#
-# NOTE: mcpp v0.0.30 does not propagate project cxxflags (-fcontracts)
-# to the std module compilation step.  Contracts-enabled projects currently
-# require xmake as the primary build system.
-# See: https://github.com/mcpp-community/mcpp
+# NOTE: mcpp v0.0.41 does not support C++26 — GCC 16 implies __cpp_contracts
+# in -std=c++26 dialect, but mcpp builds std module as C++23.
+# Build with xmake + system GCC 16.1.1 for contracts / C++26 support.
 
 [package]
 name        = "M3Lib"
