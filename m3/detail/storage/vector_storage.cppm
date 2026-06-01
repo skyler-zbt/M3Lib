@@ -1,7 +1,8 @@
 // Aligned storage for vector types.
 // Template parameters:
-//   L — number of elements (dimension)
-//   T — arithmetic element type
+//   L — number of elements (dimension), constrained to [1, 4] by ValidDimension
+//   T — element type (typename T; the Arithmetic concept is enforced by
+//       VectorBase / Vec, so VectorStorage itself stays minimal)
 //   Q — alignment qualifier (controls alignas via AlignmentTraits)
 export module m3.detail.storage.vector_storage;
 
@@ -16,4 +17,4 @@ export namespace m3::detail {
         std::array<T, L> data{};
         VectorStorage() = default;
     };
-} // namespace m3
+} // namespace m3::detail

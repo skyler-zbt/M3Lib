@@ -1,6 +1,12 @@
 // apply_binary / apply_unary — element-wise vector operation helpers.
 // Dispatch is unrolled for L ∈ {1,2,3,4} and falls back to a generic loop for L > 4.
+//
+// Architectural note: this module imports m3.vector.vec (detail depends on vector),
+// which inverts the intended layering.  This will be refactored in Phase 2 to
+// use a generic VectorLike concept so that the same dispatch works for matrices.
 export module m3.detail.operations.apply;
+
+import std;
 
 import m3.detail.concepts;
 import m3.detail.qualifier;
@@ -11,7 +17,7 @@ export namespace m3::detail {
     // Applies a binary functor element-wise to two vectors.
     template<typename Op, int L, Arithmetic T, Qualifier Q>
     requires BinaryOp<Op, T>
-    [[nodiscard]] constexpr Vec<L, T, Q> apply_binary(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
+    [[nodiscard("element-wise operation: discarding the result is likely a bug")]] constexpr Vec<L, T, Q> apply_binary(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
         Vec<L, T, Q> result;
         if constexpr (L == 1) {
             result[0] = Op{}(a[0], b[0]);
@@ -41,7 +47,7 @@ export namespace m3::detail {
 
     template<typename Op, int L, Arithmetic T, Qualifier Q>
     requires UnaryOp<Op, T>
-    [[nodiscard]] constexpr Vec<L, T, Q> apply_unary(const Vec<L, T, Q>& a) {
+    [[nodiscard("element-wise operation: discarding the result is likely a bug")]] constexpr Vec<L, T, Q> apply_unary(const Vec<L, T, Q>& a) {
         Vec<L, T, Q> result;
         if constexpr (L == 1) {
             result[0] = Op{}(a[0]);

@@ -1,0 +1,123 @@
+// M3Lib — Contract violation tests (compiled with observe semantic).
+//    xmake build test_contracts && xmake run test_contracts
+//    mcpp build -p test_contracts && ./target/*/bin/test_contracts
+//
+// These tests intentionally trigger pre(i < L) violations on operator[].
+// The observe semantic logs violations to stderr without terminating,
+// so each test body should execute to completion.
+
+import std;
+import m3;
+
+// === test infrastructure ===
+
+using TestResult = std::expected<void, std::string>;
+
+namespace {
+
+inline TestResult check(
+    bool expr,
+    std::source_location loc = std::source_location::current())
+{
+    if (!expr) {
+        return std::unexpected(
+            std::string{loc.file_name()} + ":" + std::to_string(loc.line()) + ": check failed");
+    }
+    return {};
+}
+
+template<typename T>
+inline TestResult check_float_eq(
+    T a, T b, T eps,
+    std::source_location loc = std::source_location::current())
+{
+    if (std::fabs(static_cast<double>(a) - static_cast<double>(b))
+        > static_cast<double>(eps)) {
+        return std::unexpected(
+            std::string{loc.file_name()} + ":" + std::to_string(loc.line())
+            + ": |" + std::to_string(a) + " - " + std::to_string(b)
+            + "| > " + std::to_string(eps));
+    }
+    return {};
+}
+
+class TestRunner {
+public:
+    using TestFunc = std::function<TestResult()>;
+    void add(std::string_view name, TestFunc func) {
+        tests_.push_back({std::string{name}, std::move(func)});
+    }
+    int run() {
+        int passed = 0, failed = 0;
+        for (auto& [name, func] : tests_) {
+            std::printf("  %-50s", name.c_str());
+            auto result = func();
+            if (result) { std::printf("PASSED\n"); ++passed; }
+            else        { std::printf("FAILED\n");
+                          std::cerr << "    " << result.error() << '\n'; ++failed; }
+        }
+        std::printf("\n==========================\n%d passed, %d failed\n", passed, failed);
+        return failed > 0 ? 1 : 0;
+    }
+private:
+    struct Entry { std::string name; TestFunc func; };
+    std::vector<Entry> tests_;
+};
+
+} // anonymous namespace
+
+// === test cases ===
+
+int main()
+{
+    TestRunner runner;
+
+    // Valid boundary indices — no violation
+    runner.add("operator[] lower bound (index 0)", [] -> TestResult {
+        m3::Vec<4, int> v{0};
+        v[0] = 42;
+        if (auto r = check(v[0] == 42); !r) return r;
+        return {};
+    });
+
+    runner.add("operator[] upper bound (index L-1)", [] -> TestResult {
+        m3::Vec<4, int> v{0};
+        v[3] = 99;
+        if (auto r = check(v[3] == 99); !r) return r;
+        return {};
+    });
+
+    // Out-of-bounds — pre(i < L) violation, observe mode survives
+    runner.add("OOB write index L survives observe", [] -> TestResult {
+        m3::Vec<3, int> v{0};
+        v[3] = 1;   // pre(3 < 3) = false → violation logged
+        return {};  // reaching here proves observe mode works
+    });
+
+    runner.add("OOB write index L+2 survives observe", [] -> TestResult {
+        m3::Vec<2, int> v{0};
+        v[4] = 1;   // pre(4 < 2) = false → violation logged
+        return {};
+    });
+
+    runner.add("OOB const read index L+7 survives observe", [] -> TestResult {
+        const m3::Vec<2, int> v{0};
+        [[maybe_unused]] int x = v[9];  // pre(9 < 2) = false → violation logged
+        return {};
+    });
+
+    // Vector remains usable after contract violation
+    runner.add("vec still usable after contract violation", [] -> TestResult {
+        m3::Vec<3, float> v{};
+        v[0] = 1.0f; v[1] = 2.0f; v[2] = 3.0f;
+        v[4] = 0.0f;  // violation logged — but v[0..2] untouched
+        if (auto r = check_float_eq(v[0], 1.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(v[1], 2.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(v[2], 3.0f, 1e-6f); !r) return r;
+        auto sum = v + v;
+        if (auto r = check_float_eq(sum[0], 2.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    return runner.run();
+}

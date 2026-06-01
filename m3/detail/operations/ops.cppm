@@ -1,5 +1,9 @@
 // Element-wise arithmetic functors.
-// Each is a stateless callable used by apply_binary / apply_unary
+// Each is a stateless callable used by apply_binary / apply_unary.
+// Functors (rather than lambdas) are used because they can be passed as
+// non-type template parameters — lambdas are not allowed in that context
+// before C++20, and even in C++20+ each lambda has a unique type,
+// complicating template argument deduction.
 export module m3.detail.operations.ops;
 
 export namespace m3::detail {

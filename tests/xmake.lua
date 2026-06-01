@@ -1,6 +1,11 @@
--- M3Lib test target
---    xmake build tests && xmake run test_vec
+-- M3Lib test targets
+--    xmake build tests         (all tests)
+--    xmake run test_vec        (Vec type tests)
+--    xmake run test_math       (math function tests)
+--    xmake run test_cxx26      (C++26 feature tests)
+--    xmake run test_contracts  (contract violation tests)
 
+-- Vec type: construction, accessors, operators, comparison, formatter
 target("test_vec")
     set_kind("binary")
     add_deps("M3")
@@ -8,3 +13,39 @@ target("test_vec")
     set_languages("c++26")
     set_policy("build.c++.modules", true)
     set_policy("build.c++.modules.std", true)
+    add_cxflags("-fcontracts")
+    add_links("stdc++exp", "stdc++")
+
+-- Math functions: dot, cross, normalize, length, distance,
+-- reflect, refract, mix, clamp, lerp
+target("test_math")
+    set_kind("binary")
+    add_deps("M3")
+    add_files("test_math.cpp")
+    set_languages("c++26")
+    set_policy("build.c++.modules", true)
+    set_policy("build.c++.modules.std", true)
+    add_cxflags("-fcontracts")
+    add_links("stdc++exp", "stdc++")
+
+-- C++26 features: structured bindings, tuple protocol, contracts valid access
+target("test_cxx26")
+    set_kind("binary")
+    add_deps("M3")
+    add_files("test_cxx26.cpp")
+    set_languages("c++26")
+    set_policy("build.c++.modules", true)
+    set_policy("build.c++.modules.std", true)
+    add_cxflags("-fcontracts")
+    add_links("stdc++exp", "stdc++")
+
+-- Contract violations: pre(i < L) with observe semantic (violations log, don't terminate)
+target("test_contracts")
+    set_kind("binary")
+    add_deps("M3")
+    add_files("test_contracts.cpp")
+    set_languages("c++26")
+    set_policy("build.c++.modules", true)
+    set_policy("build.c++.modules.std", true)
+    add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=observe")
+    add_links("stdc++exp", "stdc++")

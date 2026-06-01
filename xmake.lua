@@ -9,8 +9,13 @@ add_rules("mode.debug", "mode.release")
 
 set_toolchains("gcc")
 
--- std::simd and other C++26 experimental features live in libstdc++exp
+-- Prefer system binutils (Fedora as/ld 2.46) over xlings binutils 2.42.
+-- add_cxflags("-B/usr/bin") tells GCC to look for as/ld in /usr/bin.
+add_cxflags("-B/usr/bin")
+
+-- std::simd, contracts P2900R14, and other C++26 experimental features
 add_links("stdc++exp")
+add_cxflags("-fcontracts")
 
 set_languages("c++26")
 

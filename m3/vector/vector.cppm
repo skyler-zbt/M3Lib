@@ -3,6 +3,8 @@
 // Scalar operators are unrolled for L ∈ {1,2,3,4}, generic loop for L > 4.
 export module m3.vector;
 
+import std;
+
 export import m3.vector.base;
 export import m3.vector.vec;
 

@@ -2,8 +2,13 @@
 # mcpp build config — https://github.com/mcpp-community/mcpp/blob/main/docs/05-mcpp-toml.md
 #
 #    mcpp build              build library
-#    mcpp build -p test_vec  build tests
+#    mcpp build -p <target>  build a specific target
 #    mcpp run <target>       run a binary target
+#
+# NOTE: mcpp v0.0.30 does not propagate project cxxflags (-fcontracts)
+# to the std module compilation step.  Contracts-enabled projects currently
+# require xmake as the primary build system.
+# See: https://github.com/mcpp-community/mcpp
 
 [package]
 name        = "M3Lib"
@@ -16,22 +21,29 @@ repo        = "https://github.com/skyler-zbt/M3Lib"
 [targets.M3Lib]
 kind = "lib"
 
-# Test binary — manual assertions, no external deps.
-#    mcpp build -p test_vec && ./target/*/bin/test_vec
 [targets.test_vec]
 kind = "bin"
 main = "tests/test_vec.cpp"
 
-# mcpp looks for src/<package-tail>.cppm by default;
-# M3Lib puts its root module under m3/.
+[targets.test_math]
+kind = "bin"
+main = "tests/test_math.cpp"
+
+[targets.test_cxx26]
+kind = "bin"
+main = "tests/test_cxx26.cpp"
+
+[targets.test_contracts]
+kind = "bin"
+main = "tests/test_contracts.cpp"
+cxxflags = ["-fcontract-evaluation-semantic=observe"]
+
 [lib]
 path = "m3/m3.cppm"
 
 [build]
-# Sources live under m3/, not the default src/.
 sources = ["m3/**/*.cppm"]
-# mcpp defaults to C++23 — sufficient until std::simd requires C++26.
-cxxflags = []
+cxxflags = ["-std=c++26", "-fcontracts"]
 
 [toolchain]
 default = "gcc@16.1.0"
