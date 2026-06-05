@@ -15,22 +15,23 @@ import test_common;
 
 // === test cases ===
 
-int main()
-{
+int main() {
     TestRunner runner;
 
     // Valid boundary indices — no violation
     runner.add("operator[] lower bound (index 0)", [] -> TestResult {
         m3::Vec<4, int> v{0};
         v[0] = 42;
-        if (auto r = check(v[0] == 42); !r) return r;
+        if (auto r = check(v[0] == 42); !r)
+            return r;
         return {};
     });
 
     runner.add("operator[] upper bound (index L-1)", [] -> TestResult {
         m3::Vec<4, int> v{0};
         v[3] = 99;
-        if (auto r = check(v[3] == 99); !r) return r;
+        if (auto r = check(v[3] == 99); !r)
+            return r;
         return {};
     });
 
@@ -43,7 +44,7 @@ int main()
 
     runner.add("OOB write index L+2 survives observe", [] -> TestResult {
         m3::Vec<2, int> v{0};
-        v[4] = 1;   // pre(4 < 2) = false → violation logged
+        v[4] = 1;  // pre(4 < 2) = false → violation logged
         return {};
     });
 
@@ -56,13 +57,19 @@ int main()
     // Vector remains usable after contract violation
     runner.add("vec still usable after contract violation", [] -> TestResult {
         m3::Vec<3, float> v{};
-        v[0] = 1.0f; v[1] = 2.0f; v[2] = 3.0f;
+        v[0] = 1.0f;
+        v[1] = 2.0f;
+        v[2] = 3.0f;
         v[4] = 0.0f;  // violation logged — but v[0..2] untouched
-        if (auto r = check_float_eq(v[0], 1.0f, 1e-6f); !r) return r;
-        if (auto r = check_float_eq(v[1], 2.0f, 1e-6f); !r) return r;
-        if (auto r = check_float_eq(v[2], 3.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(v[0], 1.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[1], 2.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[2], 3.0f, 1e-6f); !r)
+            return r;
         auto sum = v + v;
-        if (auto r = check_float_eq(sum[0], 2.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(sum[0], 2.0f, 1e-6f); !r)
+            return r;
         return {};
     });
 

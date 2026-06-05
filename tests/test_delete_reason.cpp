@@ -8,22 +8,24 @@
 
 #include <array>
 
-template<int L, typename T>
+template <int L, typename T>
 struct VecBase {
     std::array<T, L> data_{};
     VecBase() = default;
     VecBase(const VecBase&) = default;
 
-    template<int M>
-    requires (M != L)
-    VecBase(const VecBase<M, T>&) = delete(
-        "cannot construct from a vector of different dimension; "
-        "use explicit element-wise conversion instead");
+    template <int M>
+    requires(M != L)
+    VecBase(const VecBase<M, T>&) =
+        delete ("cannot construct from a vector of different dimension; "
+                "use explicit element-wise conversion instead");
 
-    constexpr T& operator[](std::size_t i) { return data_[i]; }
+    constexpr T& operator[](std::size_t i) {
+        return data_[i];
+    }
 };
 
-template<int L, typename T>
+template <int L, typename T>
 struct Vec : VecBase<L, T> {
     Vec() = default;
     using VecBase<L, T>::VecBase;

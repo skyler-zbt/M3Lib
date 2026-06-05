@@ -14,11 +14,36 @@ export module m3.detail.operations.ops;
 
 export namespace m3::detail {
 
-    struct Add { template<typename T> constexpr T operator()(T a, T b) const noexcept { return a + b; } };
-    struct Sub { template<typename T> constexpr T operator()(T a, T b) const noexcept { return a - b; } };
-    struct Mul { template<typename T> constexpr T operator()(T a, T b) const noexcept { return a * b; } };
-    struct Div { template<typename T> constexpr T operator()(T a, T b) const noexcept { return a / b; } };
+struct Add {
+    template <typename T>
+    constexpr T operator()(T a, T b) const noexcept {
+        return a + b;
+    }
+};
+struct Sub {
+    template <typename T>
+    constexpr T operator()(T a, T b) const noexcept {
+        return a - b;
+    }
+};
+struct Mul {
+    template <typename T>
+    constexpr T operator()(T a, T b) const noexcept {
+        return a * b;
+    }
+};
+struct Div {
+    template <typename T>
+    constexpr T operator()(T a, T b) const noexcept {
+        return a / b;
+    }
+};
 
-    struct Neg { template<typename T> constexpr T operator()(T a) const noexcept { return -a; } };
+struct Neg {
+    template <typename T>
+    constexpr T operator()(T a) const noexcept {
+        return -a;
+    }
+};
 
-}
+}  // namespace m3::detail

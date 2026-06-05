@@ -16,37 +16,39 @@ export module m3.detail.concepts;
 import std;
 
 export namespace m3::detail {
-    template <typename T>
-    concept Arithmetic = std::is_arithmetic_v<T>;
+template <typename T>
+concept Arithmetic = std::is_arithmetic_v<T>;
 
-    template <typename T>
-    concept FloatingPoint = std::floating_point<T>;
+template <typename T>
+concept FloatingPoint = std::floating_point<T>;
 
-    template <int L>
-    concept ValidDimension = (L >= 1 && L <= 4);
+template <int L>
+concept ValidDimension = (L >= 1 && L <= 4);
 
-    // VectorLike: any type with dimension, value_type, qualifier_type,
-    // operator[], and default-constructibility.
-    // Enables apply_binary / apply_unary to work generically with Vec, Mat, Quat, etc.
-    //
-    // VectorLike：任何具有 dimension、value_type、qualifier_type、
-    // operator[] 和默认可构造性的类型。
-    // 使 apply_binary / apply_unary 能泛型作用于 Vec、Mat、Quat 等类型。
-    template<typename V>
-    concept VectorLike = requires {
-        typename V::value_type;
-        typename V::qualifier_type;
-        { V::dimension } -> std::convertible_to<int>;
-        requires std::default_initializable<V>;
-        requires requires(V& v, const V& cv, std::size_t i) {
-            { v[i] } -> std::same_as<typename V::value_type&>;
-            { cv[i] } -> std::same_as<const typename V::value_type&>;
-        };
+// VectorLike: any type with dimension, value_type, qualifier_type,
+// operator[], and default-constructibility.
+// Enables apply_binary / apply_unary to work generically with Vec, Mat, Quat, etc.
+//
+// VectorLike：任何具有 dimension、value_type、qualifier_type、
+// operator[] 和默认可构造性的类型。
+// 使 apply_binary / apply_unary 能泛型作用于 Vec、Mat、Quat 等类型。
+template <typename V>
+concept VectorLike = requires {
+    typename V::value_type;
+    typename V::qualifier_type;
+    { V::dimension } -> std::convertible_to<int>;
+    requires std::default_initializable<V>;
+    requires requires(V& v, const V& cv, std::size_t i) {
+        { v[i] } -> std::same_as<typename V::value_type&>;
+        { cv[i] } -> std::same_as<const typename V::value_type&>;
     };
+};
 
-    template<typename Op, typename T>
-    concept BinaryOp = std::regular_invocable<Op, T, T> && std::convertible_to<std::invoke_result_t<Op, T, T>, T>;
+template <typename Op, typename T>
+concept BinaryOp =
+    std::regular_invocable<Op, T, T> && std::convertible_to<std::invoke_result_t<Op, T, T>, T>;
 
-    template<typename Op, typename T>
-    concept UnaryOp = std::regular_invocable<Op, T> && std::convertible_to<std::invoke_result_t<Op, T>, T>;
-}
+template <typename Op, typename T>
+concept UnaryOp =
+    std::regular_invocable<Op, T> && std::convertible_to<std::invoke_result_t<Op, T>, T>;
+}  // namespace m3::detail

@@ -12,28 +12,21 @@ import std;
 export {
     using TestResult = std::expected<void, std::string>;
 
-    inline TestResult check(
-        bool expr,
-        std::source_location loc = std::source_location::current())
-    {
+    inline TestResult check(bool expr, std::source_location loc = std::source_location::current()) {
         if (!expr) {
-            return std::unexpected(
-                std::string{loc.file_name()} + ":" + std::to_string(loc.line()) + ": check failed");
+            return std::unexpected(std::string{loc.file_name()} + ":" + std::to_string(loc.line()) +
+                                   ": check failed");
         }
         return {};
     }
 
-    template<typename T>
-    inline TestResult check_float_eq(
-        T a, T b, T eps,
-        std::source_location loc = std::source_location::current())
-    {
-        if (std::fabs(static_cast<double>(a) - static_cast<double>(b))
-            > static_cast<double>(eps)) {
-            return std::unexpected(
-                std::string{loc.file_name()} + ":" + std::to_string(loc.line())
-                + ": |" + std::to_string(a) + " - " + std::to_string(b)
-                + "| > " + std::to_string(eps));
+    template <typename T>
+    inline TestResult check_float_eq(T a, T b, T eps,
+                                     std::source_location loc = std::source_location::current()) {
+        if (std::fabs(static_cast<double>(a) - static_cast<double>(b)) > static_cast<double>(eps)) {
+            return std::unexpected(std::string{loc.file_name()} + ":" + std::to_string(loc.line()) +
+                                   ": |" + std::to_string(a) + " - " + std::to_string(b) + "| > " +
+                                   std::to_string(eps));
         }
         return {};
     }
@@ -49,15 +42,23 @@ export {
             for (auto& [name, func] : tests_) {
                 std::printf("  %-50s", name.c_str());
                 auto result = func();
-                if (result) { std::printf("PASSED\n"); ++passed; }
-                else        { std::printf("FAILED\n");
-                              std::cerr << "    " << result.error() << '\n'; ++failed; }
+                if (result) {
+                    std::printf("PASSED\n");
+                    ++passed;
+                } else {
+                    std::printf("FAILED\n");
+                    std::cerr << "    " << result.error() << '\n';
+                    ++failed;
+                }
             }
             std::printf("\n==========================\n%d passed, %d failed\n", passed, failed);
             return failed > 0 ? 1 : 0;
         }
     private:
-        struct Entry { std::string name; TestFunc func; };
+        struct Entry {
+            std::string name;
+            TestFunc func;
+        };
         std::vector<Entry> tests_;
     };
 }
