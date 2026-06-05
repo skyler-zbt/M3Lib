@@ -39,7 +39,7 @@ jobs:
           xmake run test_math
 
   feature-tests:
-    name: Feature & Contract Tests
+    name: Feature Tests
     runs-on: self-hosted
     timeout-minutes: 10
 
@@ -58,9 +58,22 @@ jobs:
           xmake build test_cxx26
           xmake run test_cxx26
 
+  contract-tests:
+    name: Contract Tests
+    runs-on: self-hosted
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Build & Run test_contracts (observe mode)
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake clean
+          rm -rf build/.gens build/.objs build/linux/x64/debug/*.gcm
+          xmake f -c -m debug -y
           xmake build test_contracts
           xmake run test_contracts 2>contract_violations.log
           VIOLATIONS=$(grep -c "contract violation" contract_violations.log || true)
