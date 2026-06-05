@@ -37,6 +37,13 @@ clamp(T x, T minVal, T maxVal) noexcept pre(minVal <= maxVal) {
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a clamp result is likely a bug")]] constexpr Vec<L, T, Q>
 clamp(const Vec<L, T, Q>& x, T minVal, T maxVal) noexcept pre(minVal <= maxVal) {
+    // Defense-in-depth: catch invalid range even when contracts are
+    // not active.
+    //
+    // 纵深防御：即使在 contracts 未激活时也能捕获无效范围。
+    if (minVal > maxVal) [[unlikely]] {
+        std::abort();
+    }
     Vec<L, T, Q> result;
     if constexpr (L == 1) {
         result[0] = clamp(x[0], minVal, maxVal);

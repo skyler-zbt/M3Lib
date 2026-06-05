@@ -58,6 +58,22 @@ jobs:
           xmake build test_cxx26
           xmake run test_cxx26
 
+  boundary-tests:
+    name: Boundary Tests (enforce)
+    runs-on: self-hosted
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build & Run test_boundary
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake f -c -m debug -y
+          xmake build test_boundary
+          xmake run test_boundary
+
   contract-tests:
     name: Contract Tests
     runs-on: self-hosted

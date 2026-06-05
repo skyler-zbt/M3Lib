@@ -37,6 +37,15 @@ struct Mul {
 struct Div {
     template <typename T>
     constexpr T operator()(T a, T b) const noexcept pre(b != T{0}) {
+        // Defense-in-depth: catch division by zero even when contracts
+        // are not active (e.g., on template instantiations where contract
+        // propagation is limited by compiler support).
+        //
+        // 纵深防御：即使在 contracts 未激活时（例如模板实例化中
+        // 编译器对契约传播的支持有限）也能捕获除零。
+        if (b == T{0}) [[unlikely]] {
+            std::abort();
+        }
         return a / b;
     }
 };

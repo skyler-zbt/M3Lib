@@ -486,6 +486,85 @@ int main() {
         return {};
     });
 
+    // ---- Compound assignment operators ----
+    // Verify that +=, -=, *=, /= produce correct results and mutate
+    // the left-hand operand in place.
+    //
+    // ---- 复合赋值运算符 ----
+    // 验证 +=、-=、*=、/= 产生正确结果并原地修改左操作数。
+
+    runner.add("vector +=" , [] -> TestResult {
+        m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
+        m3::Vec<3, float> b{4.0f, 5.0f, 6.0f};
+        a += b;
+        if (auto r = check_float_eq(a[0], 5.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 7.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[2], 9.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector -=" , [] -> TestResult {
+        m3::Vec<3, float> a{10.0f, 8.0f, 6.0f};
+        m3::Vec<3, float> b{1.0f, 2.0f, 3.0f};
+        a -= b;
+        if (auto r = check_float_eq(a[0], 9.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 6.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[2], 3.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector *=" , [] -> TestResult {
+        m3::Vec<2, float> a{2.0f, 3.0f};
+        m3::Vec<2, float> b{4.0f, 5.0f};
+        a *= b;
+        if (auto r = check_float_eq(a[0], 8.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 15.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector /=" , [] -> TestResult {
+        m3::Vec<2, float> a{8.0f, 12.0f};
+        m3::Vec<2, float> b{2.0f, 3.0f};
+        a /= b;
+        if (auto r = check_float_eq(a[0], 4.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 4.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector *= scalar" , [] -> TestResult {
+        m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
+        a *= 2.0f;
+        if (auto r = check_float_eq(a[0], 2.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 4.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[2], 6.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector /= scalar" , [] -> TestResult {
+        m3::Vec<2, float> a{10.0f, 20.0f};
+        a /= 2.0f;
+        if (auto r = check_float_eq(a[0], 5.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 10.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector += scalar" , [] -> TestResult {
+        m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
+        a += 10.0f;
+        if (auto r = check_float_eq(a[0], 11.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 12.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[2], 13.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
+    runner.add("vector -= scalar" , [] -> TestResult {
+        m3::Vec<2, float> a{10.0f, 20.0f};
+        a -= 3.0f;
+        if (auto r = check_float_eq(a[0], 7.0f, 1e-6f); !r) return r;
+        if (auto r = check_float_eq(a[1], 17.0f, 1e-6f); !r) return r;
+        return {};
+    });
+
     // ---- Comparison ----
 
     runner.add("equal vectors", [] -> TestResult {

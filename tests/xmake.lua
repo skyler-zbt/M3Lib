@@ -41,3 +41,10 @@ target("test_contracts")
     add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=observe")
     add_links("stdc++exp")
 target_end()
+
+-- Boundary tests: OOB access in enforce mode (must abort).
+-- Verifies the defense-in-depth bounds check in VectorBase::operator[].
+--
+-- 边界测试：enforce 模式下越界访问（必须 abort）。
+-- 验证 VectorBase::operator[] 的纵深防御边界检查。
+configure_m3_test_target("test_boundary")
