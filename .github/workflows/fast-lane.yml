@@ -1,8 +1,8 @@
-# M3Lib Fast Lane — runs on every push
-# Build + core tests + ASan/UBSan on self-hosted runner
+# M3Lib Fast Lane — triggered on every push
+# Build + tests + ASan/UBSan on self-hosted runner
 #
 # M3Lib 快车道 — 每次 push 触发
-# 在自托管 runner 上执行编译 + 核心测试 + 内存/UB 检查
+# 在自托管 runner 上执行编译 + 测试 + 内存/未定义行为检查
 
 name: Fast Lane
 
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
+  core-tests:
     name: Build & Core Tests
     runs-on: self-hosted
     timeout-minutes: 10
@@ -26,23 +26,20 @@ jobs:
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
           xmake f -c -m debug -y
 
-      - name: Build core tests
+      - name: Build & Run test_vec
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake build test_vec test_math
-
-      - name: Run test_vec
-        run: |
-          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake build test_vec
           xmake run test_vec
 
-      - name: Run test_math
+      - name: Build & Run test_math
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake build test_math
           xmake run test_math
 
   feature-tests:
-    name: Feature Tests
+    name: Feature & Contract Tests
     runs-on: self-hosted
     timeout-minutes: 10
 
@@ -55,26 +52,28 @@ jobs:
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
           xmake f -c -m debug -y
 
-      - name: Build feature tests
+      - name: Build & Run test_cxx26
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake build test_cxx26 test_delete_reason
-
-      - name: Run test_cxx26
-        run: |
-          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake build test_cxx26
           xmake run test_cxx26
 
-      - name: Run test_delete_reason
+      - name: Build & Run test_contracts (observe mode)
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake run test_delete_reason
+          xmake build test_contracts
+          xmake run test_contracts 2>contract_violations.log
+          VIOLATIONS=$(grep -c "contract violation" contract_violations.log || true)
+          echo "Contract violations detected: $VIOLATIONS"
+          if [ "$VIOLATIONS" -lt 3 ]; then
+            echo "WARNING: fewer than 3 contract violations, contracts may be inactive"
+          fi
 
   asan-ubsan:
-    name: ASan + UBSan (informational)
+    name: ASan + UBSan
     runs-on: self-hosted
     timeout-minutes: 15
-    continue-on-error: true  # Non-gating initially; promote after 2 stable weeks
+    continue-on-error: true  # informational, not gating yet
 
     steps:
       - name: Checkout
@@ -95,19 +94,16 @@ jobs:
             --ldflags="-fsanitize=address,undefined" \
             -y
 
-      - name: Build test_vec + test_math
-        run: |
-          export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake build test_vec test_math
-
-      - name: Run with ASan+UBSan (test_vec)
+      - name: Build & Run test_vec with ASan+UBSan
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
           export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
+          xmake build test_vec
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_vec
 
-      - name: Run with ASan+UBSan (test_math)
+      - name: Build & Run test_math with ASan+UBSan
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
           export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
+          xmake build test_math
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_math
