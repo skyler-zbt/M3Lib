@@ -1,0 +1,113 @@
+# M3Lib Fast Lane — runs on every push
+# Build + core tests + ASan/UBSan on self-hosted runner
+#
+# M3Lib 快车道 — 每次 push 触发
+# 在自托管 runner 上执行编译 + 核心测试 + 内存/UB 检查
+
+name: Fast Lane
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Core Tests
+    runs-on: self-hosted
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure xmake (debug)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake f -c -m debug -y
+
+      - name: Build core tests
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake build test_vec test_math
+
+      - name: Run test_vec
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake run test_vec
+
+      - name: Run test_math
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake run test_math
+
+  feature-tests:
+    name: Feature Tests
+    runs-on: self-hosted
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure xmake (debug)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake f -c -m debug -y
+
+      - name: Build feature tests
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake build test_cxx26 test_delete_reason
+
+      - name: Run test_cxx26
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake run test_cxx26
+
+      - name: Run test_delete_reason
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake run test_delete_reason
+
+  asan-ubsan:
+    name: ASan + UBSan (informational)
+    runs-on: self-hosted
+    timeout-minutes: 15
+    continue-on-error: true  # Non-gating initially; promote after 2 stable weeks
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Clean module cache
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake clean
+          rm -rf build/.gens build/.objs build/linux/x64/debug/*.gcm
+
+      - name: Configure with sanitizers
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
+          xmake f -c -m debug \
+            --cxflags="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+            --ldflags="-fsanitize=address,undefined" \
+            -y
+
+      - name: Build test_vec + test_math
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake build test_vec test_math
+
+      - name: Run with ASan+UBSan (test_vec)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
+          ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_vec
+
+      - name: Run with ASan+UBSan (test_math)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
+          ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_math
