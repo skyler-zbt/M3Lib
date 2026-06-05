@@ -40,4 +40,14 @@ target("test_contracts")
     set_policy("build.c++.modules.std", true)
     add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=observe")
     add_links("stdc++exp")
+    -- Suppress libstdc++ assertion competing with contract observe mode.
+    -- GCC 16 enables _GLIBCXX_ASSERTIONS by default in non-optimized builds,
+    -- causing std::array::operator[] to abort before contract survival is proven.
+    -- TODO(contract-arch): revisit when GCC supports <contract> violation handler.
+    --
+    -- 抑制与合约 observe 模式竞争的标准库断言。
+    -- GCC 16 默认在非优化构建中启用 _GLIBCXX_ASSERTIONS，
+    -- 导致 std::array::operator[] 在合约存活验证完成前 abort。
+    -- 待议(合约架构): 等 GCC 支持 <contract> violation handler 后重新评估。
+    add_defines("_GLIBCXX_NO_ASSERTIONS")
 target_end()
