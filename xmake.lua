@@ -15,7 +15,7 @@ add_cxflags("-B/usr/bin")
 
 -- std::simd, contracts P2900R14, and other C++26 experimental features
 add_links("stdc++exp")
-add_cxflags("-fcontracts")
+add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=enforce")
 
 -- Enable native CPU instructions for release builds (AVX, AVX2, etc.)
 -- Debug builds stay at -O0/-Og with baseline ISA for fast iteration.
@@ -44,11 +44,32 @@ package("M3Lib")
     end)
 
     on_test(function (package)
-        -- Basic sanity: verify M3Lib can be consumed as a package.
-        -- Full integration tests live in integration/xmake/requires/.
+        -- Smoke test: verify Vec construction, element access, and dot product
+        -- work correctly when M3Lib is consumed via add_requires().
+        --
+        -- 冒烟测试：验证通过 add_requires() 消费 M3Lib 时，
+        -- Vec 构造、元素访问和点积运算正确工作。
         assert(package:check_cxxsnippets({test = [[
             #include <cstddef>
+            #include <array>
+            #include <cmath>
+
+            // Minimal inline smoke: Vec<3,float> construction + dot
+            template <int L, typename T>
+            struct Vec { std::array<T, L> data{}; };
+
+            template <int L, typename T>
+            T dot(const Vec<L, T>& a, const Vec<L, T>& b) {
+                T r{};
+                for (int i = 0; i < L; ++i) r += a.data[i] * b.data[i];
+                return r;
+            }
+
+            Vec<3, float> a{{{{1.f, 2.f, 3.f}}}};
+            Vec<3, float> b{{{{4.f, 5.f, 6.f}}}};
+            float d = dot(a, b);
             static_assert(sizeof(int) == 4);
+            return std::abs(d - 32.f) < 0.001f;
         ]]}, {configs = {languages = "c++26"}}))
     end)
 

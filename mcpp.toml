@@ -35,7 +35,7 @@ path = "m3/m3.cppm"
 
 [build]
 sources = ["m3/**/*.cppm"]
-cxxflags = ["-fcontracts", "-march=native"]
+cxxflags = ["-fcontracts", "-fcontract-evaluation-semantic=enforce", "-march=native"]
 
 [toolchain]
 default = "gcc@16.1.0"

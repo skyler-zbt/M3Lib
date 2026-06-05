@@ -23,6 +23,17 @@ export {
     template <typename T>
     inline TestResult check_float_eq(T a, T b, T eps,
                                      std::source_location loc = std::source_location::current()) {
+        // NaN 与任何值的比较都返回 false，会导致测试静默通过。
+        // 显式检查 NaN 以确保测试失败而非假通过。
+        //
+        // NaN comparisons always return false, which would cause the test
+        // to silently pass.  Explicitly check for NaN to ensure the test
+        // fails rather than producing a false positive.
+        if (std::isnan(static_cast<double>(a)) || std::isnan(static_cast<double>(b))) {
+            return std::unexpected(std::string{loc.file_name()} + ":" + std::to_string(loc.line()) +
+                                   ": NaN detected in check_float_eq(" + std::to_string(a) + ", " +
+                                   std::to_string(b) + ")");
+        }
         if (std::fabs(static_cast<double>(a) - static_cast<double>(b)) > static_cast<double>(eps)) {
             return std::unexpected(std::string{loc.file_name()} + ":" + std::to_string(loc.line()) +
                                    ": |" + std::to_string(a) + " - " + std::to_string(b) + "| > " +

@@ -62,7 +62,6 @@ jobs:
     name: Contract Tests
     runs-on: self-hosted
     timeout-minutes: 10
-    continue-on-error: true
 
     steps:
       - name: Checkout
@@ -86,7 +85,6 @@ jobs:
     name: ASan + UBSan
     runs-on: self-hosted
     timeout-minutes: 15
-    continue-on-error: true  # informational, not gating yet
 
     steps:
       - name: Checkout

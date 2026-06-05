@@ -12,6 +12,8 @@
 // 每个 lambda 都有唯一类型，会使模板实参推导复杂化。
 export module m3.detail.operations.ops;
 
+import std;
+
 export namespace m3::detail {
 
 struct Add {
@@ -34,7 +36,7 @@ struct Mul {
 };
 struct Div {
     template <typename T>
-    constexpr T operator()(T a, T b) const noexcept {
+    constexpr T operator()(T a, T b) const noexcept pre(b != T{0}) {
         return a / b;
     }
 };
@@ -42,6 +44,17 @@ struct Div {
 struct Neg {
     template <typename T>
     constexpr T operator()(T a) const noexcept {
+        // Negating the minimum value of a signed integer type is undefined
+        // behaviour (signed overflow).  Unsigned and floating-point types
+        // are well-defined under negation, so the check is type-conditional.
+        //
+        // 对有符号整数类型的最小值取负是未定义行为（有符号溢出）。
+        // 无符号和浮点类型的取负是良定义的，因此检查按类型条件化。
+        if constexpr (std::is_integral_v<T> && std::is_signed_v<T>) {
+            if (a == std::numeric_limits<T>::lowest()) [[unlikely]] {
+                std::abort();
+            }
+        }
         return -a;
     }
 };

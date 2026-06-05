@@ -36,7 +36,7 @@ clamp(T x, T minVal, T maxVal) noexcept pre(minVal <= maxVal) {
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a clamp result is likely a bug")]] constexpr Vec<L, T, Q>
-clamp(const Vec<L, T, Q>& x, T minVal, T maxVal) noexcept {
+clamp(const Vec<L, T, Q>& x, T minVal, T maxVal) noexcept pre(minVal <= maxVal) {
     Vec<L, T, Q> result;
     if constexpr (L == 1) {
         result[0] = clamp(x[0], minVal, maxVal);

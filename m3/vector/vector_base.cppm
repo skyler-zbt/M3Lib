@@ -76,12 +76,33 @@ constexpr const T* VectorBase<L, T, Q>::value_ptr() const noexcept {
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
+    // Defense-in-depth bounds check.
+    // The contract pre(i < L) is the primary safety net, but this guard
+    // catches out-of-bounds access even when contracts are in ignore mode
+    // or not enabled.  std::abort() provides a portable termination
+    // mechanism; the [[unlikely]] attribute ensures the hot path is a
+    // single well-predicted compare-and-branch.
+    //
+    // 纵深防御边界检查。
+    // 契约 pre(i < L) 是主要安全网，但此守卫即使在 contracts
+    // 处于 ignore 模式或未启用时也能捕获越界访问。
+    // std::abort() 提供可移植的终止机制；
+    // [[unlikely]] 属性确保热路径仅为一次极易预测的比较与分支。
+    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+        std::abort();
+    }
     return storage_.data[i];
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept {
+    // Same defense-in-depth bounds check as the mutable overload (see above).
+    //
+    // 与可变重载相同的纵深防御边界检查（参见上文）。
+    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+        std::abort();
+    }
     return storage_.data[i];
 }
 
