@@ -52,8 +52,8 @@ M3Lib 希望成为：
 
 ## 环境要求
 
-- 支持 C++20/C++23 的编译器（未来特性需要 C++26）
-- 完整的 C++ Modules 支持（GCC 14+、Clang 17+ 或 MSVC 19.34+）
+- 支持 C++26 的编译器（contracts P2900R14 和 modules 为必需）
+- 完整的 C++ Modules 支持（GCC 16+）
 
 ## 构建
 
@@ -70,7 +70,7 @@ xmake run test_vec
 
 ### mcpp
 
-[mcpp](https://github.com/mcpp-community/mcpp) — 现代 C++23 模块化构建工具，内置工具链管理。
+[mcpp](https://github.com/mcpp-community/mcpp) — 现代模块化构建工具，内置工具链管理。
 
 ```bash
 mcpp build              # 编译库
@@ -88,7 +88,7 @@ xmake build tests && xmake run test_vec
 mcpp build -p test_vec && ./target/*/bin/test_vec
 ```
 
-54 个测试用例，覆盖构造、访问器、运算符及边界情况。
+126 个测试用例，覆盖构造、访问器、运算符、复合赋值及边界情况。
 
 ---
 
@@ -104,4 +104,4 @@ mcpp build -p test_vec && ./target/*/bin/test_vec
 
 - [glm](https://github.com/icaven/glm) —— 一个符合GLSL规范的C++仅头文件数学库
 - [xmake](https://github.com/xmake-io/xmake) —— 一个基于 Lua 的轻量级跨平台构建工具
-- [mcpp](https://github.com/mcpp-community/mcpp) —— 现代 C++23 模块化构建工具，内置工具链管理
+- [mcpp](https://github.com/mcpp-community/mcpp) —— 现代模块化构建工具，内置工具链管理
