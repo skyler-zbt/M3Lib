@@ -94,8 +94,22 @@ jobs:
           VIOLATIONS=$(grep -c "contract violation" contract_violations.log || true)
           echo "Contract violations detected: $VIOLATIONS"
           if [ "$VIOLATIONS" -lt 3 ]; then
-            echo "WARNING: fewer than 3 contract violations, contracts may be inactive"
+            echo "ERROR: fewer than 3 contract violations, contracts may be inactive"
+            exit 1
           fi
+
+      - name: Compile-fail test (=delete with reason)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          # test_delete_reason.cpp must FAIL to compile with the expected
+          # message from =delete("reason") (P2573R2).
+          #
+          # test_delete_reason.cpp 必须编译失败，并输出
+          # =delete("reason") (P2573R2) 的预期消息。
+          ! gcc -std=c++26 -c tests/test_delete_reason.cpp 2>&1 \
+            | grep -q "cannot construct.*different dimension" \
+            && echo "PASS: =delete(reason) works" \
+            || { echo "FAIL: =delete(reason) compile error missing"; exit 1; }
 
   asan-ubsan:
     name: ASan + UBSan
