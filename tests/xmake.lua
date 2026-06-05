@@ -5,39 +5,30 @@
 --    xmake run test_cxx26      (C++26 feature tests)
 --    xmake run test_contracts  (contract violation tests)
 
+-- Shared configuration for all M3Lib test targets.
+-- Applies C++26 standard, module policies, contracts flag, and experimental std link.
+local function configure_m3_test_target(target_name)
+    target(target_name)
+        set_kind("binary")
+        add_deps("M3")
+        add_files(target_name .. ".cpp")
+        set_languages("c++26")
+        set_policy("build.c++.modules", true)
+        set_policy("build.c++.modules.std", true)
+        add_cxflags("-fcontracts")
+        add_links("stdc++exp")
+    target_end()
+end
+
 -- Vec type: construction, accessors, operators, comparison, formatter
-target("test_vec")
-    set_kind("binary")
-    add_deps("M3")
-    add_files("test_vec.cpp")
-    set_languages("c++26")
-    set_policy("build.c++.modules", true)
-    set_policy("build.c++.modules.std", true)
-    add_cxflags("-fcontracts")
-    add_links("stdc++exp", "stdc++")
+configure_m3_test_target("test_vec")
 
 -- Math functions: dot, cross, normalize, length, distance,
 -- reflect, refract, mix, clamp, lerp
-target("test_math")
-    set_kind("binary")
-    add_deps("M3")
-    add_files("test_math.cpp")
-    set_languages("c++26")
-    set_policy("build.c++.modules", true)
-    set_policy("build.c++.modules.std", true)
-    add_cxflags("-fcontracts")
-    add_links("stdc++exp", "stdc++")
+configure_m3_test_target("test_math")
 
 -- C++26 features: structured bindings, tuple protocol, contracts valid access
-target("test_cxx26")
-    set_kind("binary")
-    add_deps("M3")
-    add_files("test_cxx26.cpp")
-    set_languages("c++26")
-    set_policy("build.c++.modules", true)
-    set_policy("build.c++.modules.std", true)
-    add_cxflags("-fcontracts")
-    add_links("stdc++exp", "stdc++")
+configure_m3_test_target("test_cxx26")
 
 -- Contract violations: pre(i < L) with observe semantic (violations log, don't terminate)
 target("test_contracts")
@@ -48,4 +39,5 @@ target("test_contracts")
     set_policy("build.c++.modules", true)
     set_policy("build.c++.modules.std", true)
     add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=observe")
-    add_links("stdc++exp", "stdc++")
+    add_links("stdc++exp")
+target_end()

@@ -1,6 +1,10 @@
 // Vec — the primary vector type with GLSL-style swizzle accessors.
 // Specializations for dimensions 1–4 provide .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q.
 // Vec<5+, T, Q> is supported via the primary template (no swizzle accessors).
+//
+// Vec —— 主向量类型，提供 GLSL 风格的 swizzle 访问器。
+// 维度 1–4 的特化提供 .x/.y/.z/.w、.r/.g/.b/.a、.s/.t/.p/.q 访问器。
+// Vec<5+, T, Q> 通过主模板支持（无 swizzle 访问器）。
 export module m3.vector.vec;
 
 import std;
@@ -11,37 +15,57 @@ import m3.vector.base;
 export namespace m3 {
 
     // Primary template — parameterized on dimension L, element type T, and alignment Q
-    template <int L, detail::Arithmetic T, detail::Qualifier Q = detail::Qualifier::aligned_high>
+    //
+    // 主模板——以维度 L、元素类型 T 和对齐 Q 为参数
+    template <int L, detail::Arithmetic T, detail::Qualifier Q = detail::Qualifier::aligned_none>
     requires detail::ValidDimension<L>
     class Vec : public VectorBase<L, T, Q> {
         using base_type = VectorBase<L, T, Q>::VectorBase;
         using base_type::base_type;
 
     public:
+        static constexpr int dimension = L;
+        using value_type = T;
+        using qualifier_type = detail::Qualifier;
+
         Vec() = default;
 
         // Construct from a C array of L elements.  The caller must ensure
         // arr points to at least L valid, initialized values.
+        //
+        // 从 L 个元素的 C 数组构造。调用者必须确保 arr 指向至少 L 个有效初始化的值。
         explicit constexpr Vec(const T* arr) noexcept : VectorBase<L, T, Q>() {
             for (int i = 0; i < L; ++i) (*this)[i] = arr[i];
         }
     };
 
     // Vec<1,T,Q> — wraps a single scalar with x/r/s accessors
+    //
+    // Vec<1,T,Q> —— 包装单个标量，提供 x/r/s 访问器
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<1, T, Q> : public VectorBase<1, T, Q> {
     public:
+        static constexpr int dimension = 1;
+        using value_type = T;
+        using qualifier_type = detail::Qualifier;
+
         Vec() = default;
 
         // Broadcast: fills the single element with v
+        //
+        // 广播：用 v 填充单个元素
         explicit constexpr Vec(const T& v) noexcept : VectorBase<1, T, Q>(v) {}
 
         // Pointer: reads one element from arr
+        //
+        // 指针：从 arr 读取一个元素
         explicit constexpr Vec(const T* arr) noexcept : VectorBase<1, T, Q>() {
             (*this)[0] = arr[0];
         }
 
         // Spatial, colour, and texture-coordinate aliases for element 0
+        //
+        // 元素 0 的空间、颜色和纹理坐标别名
         constexpr T& x()               { return (*this)[0]; }
         [[nodiscard]] constexpr const T& x() const { return (*this)[0]; }
         constexpr T& r()               { return (*this)[0]; }
@@ -51,12 +75,20 @@ export namespace m3 {
     };
 
     // Vec<2,T,Q> — two-component vector with x/y, r/g, s/t accessors
+    //
+    // Vec<2,T,Q> —— 双分量向量，提供 x/y、r/g、s/t 访问器
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<2, T, Q> : public VectorBase<2, T, Q> {
     public:
+        static constexpr int dimension = 2;
+        using value_type = T;
+        using qualifier_type = detail::Qualifier;
+
         Vec() = default;
 
         // Broadcast: fills all 2 elements with v
+        //
+        // 广播：用 v 填充全部 2 个元素
         explicit constexpr Vec(const T& v) noexcept : VectorBase<2, T, Q>(v) {}
 
         // Component-wise: Vec<2, float>{1.5f, 2.0f}
@@ -65,6 +97,8 @@ export namespace m3 {
         }
 
         // Pointer: reads 2 elements from arr
+        //
+        // 指针：从 arr 读取 2 个元素
         explicit constexpr Vec(const T* arr) noexcept : VectorBase<2, T, Q>() {
             (*this)[0] = arr[0]; (*this)[1] = arr[1];
         }
@@ -86,12 +120,20 @@ export namespace m3 {
     };
 
     // Vec<3,T,Q> — three-component vector with x/y/z, r/g/b, s/t/p accessors
+    //
+    // Vec<3,T,Q> —— 三分量向量，提供 x/y/z、r/g/b、s/t/p 访问器
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<3, T, Q> : public VectorBase<3, T, Q> {
     public:
+        static constexpr int dimension = 3;
+        using value_type = T;
+        using qualifier_type = detail::Qualifier;
+
         Vec() = default;
 
         // Broadcast: fills all 3 elements with v
+        //
+        // 广播：用 v 填充全部 3 个元素
         explicit constexpr Vec(const T& v) noexcept : VectorBase<3, T, Q>(v) {}
 
         // Component-wise: Vec<3, float>{1.0f, 0.0f, 0.5f}
@@ -100,6 +142,8 @@ export namespace m3 {
         }
 
         // Pointer: reads 3 elements from arr
+        //
+        // 指针：从 arr 读取 3 个元素
         explicit constexpr Vec(const T* arr) noexcept : VectorBase<3, T, Q>() {
             (*this)[0] = arr[0]; (*this)[1] = arr[1]; (*this)[2] = arr[2];
         }
@@ -127,12 +171,20 @@ export namespace m3 {
     };
 
     // Vec<4,T,Q> — four-component vector with x/y/z/w, r/g/b/a, s/t/p/q accessors
+    //
+    // Vec<4,T,Q> —— 四分量向量，提供 x/y/z/w、r/g/b/a、s/t/p/q 访问器
     template<detail::Arithmetic T, detail::Qualifier Q>
     class Vec<4, T, Q> : public VectorBase<4, T, Q> {
     public:
+        static constexpr int dimension = 4;
+        using value_type = T;
+        using qualifier_type = detail::Qualifier;
+
         Vec() = default;
 
         // Broadcast: fills all 4 elements with v
+        //
+        // 广播：用 v 填充全部 4 个元素
         explicit constexpr Vec(const T& v) noexcept : VectorBase<4, T, Q>(v) {}
 
         // Component-wise: Vec<4, float>{1.0f, 0.0f, 0.0f, 1.0f}
@@ -141,6 +193,8 @@ export namespace m3 {
         }
 
         // Pointer: reads 4 elements from arr
+        //
+        // 指针：从 arr 读取 4 个元素
         explicit constexpr Vec(const T* arr) noexcept : VectorBase<4, T, Q>() {
             (*this)[0] = arr[0]; (*this)[1] = arr[1];
             (*this)[2] = arr[2]; (*this)[3] = arr[3];
@@ -180,6 +234,11 @@ export namespace m3 {
 // Provide tuple-like access for decomposing Vec into its components:
 //   constexpr auto [x, y, z] = Vec<3, float>{1, 2, 3};
 //   auto [r, g, b, a] = some_color;
+//
+// ---- C++26 constexpr 结构化绑定 (P2686R4) ----
+// 提供类元组访问，用于将 Vec 解构为分量：
+//   constexpr auto [x, y, z] = Vec<3, float>{1, 2, 3};
+//   auto [r, g, b, a] = some_color;
 
 namespace std {
 
@@ -196,6 +255,8 @@ namespace std {
 } // namespace std
 
 // ---- std::formatter for Vec (debug / display) ----
+//
+// ---- std::formatter for Vec（调试 / 显示）----
 
 namespace std {
 
@@ -203,6 +264,8 @@ namespace std {
     struct formatter<m3::Vec<L, T, Q>> {
         constexpr auto parse(format_parse_context& ctx) {
             // Accept only default format specifier for now.
+            //
+            // 目前仅接受默认格式说明符。
             auto it = ctx.begin();
             if (it != ctx.end() && *it != '}') {
                 throw format_error("Vec formatter only supports {} (default)");

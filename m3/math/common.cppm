@@ -1,5 +1,8 @@
 // GLSL common functions: mix, clamp, lerp.
 // Scalar and per-element vector overloads for each.
+//
+// GLSL 通用函数：mix、clamp、lerp。
+// 每个函数均提供标量和逐元素向量重载。
 export module m3.math:common;
 
 import std;

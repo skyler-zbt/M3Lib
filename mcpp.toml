@@ -1,13 +1,10 @@
 # M3Lib: Modern · Module · Math
 # mcpp build config — https://github.com/mcpp-community/mcpp/blob/main/docs/05-mcpp-toml.md
-#
-# NOTE: mcpp v0.0.41 does not support C++26 — GCC 16 implies __cpp_contracts
-# in -std=c++26 dialect, but mcpp builds std module as C++23.
-# Build with xmake + system GCC 16.1.1 for contracts / C++26 support.
 
 [package]
 name        = "M3Lib"
 version     = "0.1.0"
+standard    = "c++26"
 description = "A modern C++ graphics math library"
 license     = "Apache-2.0"
 authors     = "Skyler"
@@ -38,7 +35,7 @@ path = "m3/m3.cppm"
 
 [build]
 sources = ["m3/**/*.cppm"]
-cxxflags = ["-std=c++26", "-fcontracts"]
+cxxflags = ["-fcontracts", "-march=native"]
 
 [toolchain]
 default = "gcc@16.1.0"

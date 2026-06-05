@@ -1,6 +1,14 @@
 // Vector arithmetic and comparison operators.
 // Component-wise operators delegate to detail::apply_binary / apply_unary.
-// Scalar operators are unrolled for L ∈ {1,2,3,4}, generic loop for L > 4.
+// Scalar operators delegate to detail::apply_scalar_binary_left / _right,
+// eliminating the ~140 lines of manual unrolling that previously existed.
+// Compound assignment operators delegate to the corresponding binary operators.
+//
+// 向量算术和比较运算符。
+// 逐分量运算符委托给 detail::apply_binary / apply_unary。
+// 标量运算符委托给 detail::apply_scalar_binary_left / _right，
+// 消除了原先存在的约 140 行手动展开代码。
+// 复合赋值运算符委托给对应的二元运算符。
 export module m3.vector;
 
 import std;
@@ -14,7 +22,7 @@ import m3.detail.operations.apply;
 
 export namespace m3 {
 
-    // component-wise binary operators (delegate to detail::apply_binary)
+    // ---- component-wise binary operators (delegate to detail::apply_binary) ----
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator+(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
@@ -41,162 +49,86 @@ export namespace m3 {
         return detail::apply_unary<detail::neg>(a);
     }
 
-    // scalar operators — unrolled for L ∈ {1,2,3,4}, generic loop otherwise
+    // ---- scalar binary operators (delegate to apply_scalar_binary_*) ----
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator*(const Vec<L, T, Q>& a, T scalar) {
-        Vec<L, T, Q> result;
-        if constexpr (L == 1) {
-            result[0] = a[0] * scalar;
-        }
-        else if constexpr (L == 2) {
-            result[0] = a[0] * scalar;
-            result[1] = a[1] * scalar;
-        }
-        else if constexpr (L == 3) {
-            result[0] = a[0] * scalar;
-            result[1] = a[1] * scalar;
-            result[2] = a[2] * scalar;
-        }
-        else if constexpr (L == 4) {
-            result[0] = a[0] * scalar;
-            result[1] = a[1] * scalar;
-            result[2] = a[2] * scalar;
-            result[3] = a[3] * scalar;
-        }
-        else {
-            for (int i = 0; i < L; ++i) {
-                result[i] = a[i] * scalar;
-            }
-        }
-        return result;
+        return detail::apply_scalar_binary_right<detail::mul>(a, scalar);
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator*(T scalar, const Vec<L, T, Q>& a) {
-        return a * scalar;
+        return detail::apply_scalar_binary_left<detail::mul>(scalar, a);
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator/(const Vec<L, T, Q>& a, T scalar) {
-        Vec<L, T, Q> result;
-        if constexpr (L == 1) {
-            result[0] = a[0] / scalar;
-        }
-        else if constexpr (L == 2) {
-            result[0] = a[0] / scalar;
-            result[1] = a[1] / scalar;
-        }
-        else if constexpr (L == 3) {
-            result[0] = a[0] / scalar;
-            result[1] = a[1] / scalar;
-            result[2] = a[2] / scalar;
-        }
-        else if constexpr (L == 4) {
-            result[0] = a[0] / scalar;
-            result[1] = a[1] / scalar;
-            result[2] = a[2] / scalar;
-            result[3] = a[3] / scalar;
-        }
-        else {
-            for (int i = 0; i < L; ++i) {
-                result[i] = a[i] / scalar;
-            }
-        }
-        return result;
+        return detail::apply_scalar_binary_right<detail::div>(a, scalar);
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator+(const Vec<L, T, Q>& a, T scalar) {
-        Vec<L, T, Q> result;
-        if constexpr (L == 1) {
-            result[0] = a[0] + scalar;
-        }
-        else if constexpr (L == 2) {
-            result[0] = a[0] + scalar;
-            result[1] = a[1] + scalar;
-        }
-        else if constexpr (L == 3) {
-            result[0] = a[0] + scalar;
-            result[1] = a[1] + scalar;
-            result[2] = a[2] + scalar;
-        }
-        else if constexpr (L == 4) {
-            result[0] = a[0] + scalar;
-            result[1] = a[1] + scalar;
-            result[2] = a[2] + scalar;
-            result[3] = a[3] + scalar;
-        }
-        else {
-            for (int i = 0; i < L; ++i) {
-                result[i] = a[i] + scalar;
-            }
-        }
-        return result;
+        return detail::apply_scalar_binary_right<detail::add>(a, scalar);
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator+(T scalar, const Vec<L, T, Q>& a) {
-        return a + scalar;
+        return detail::apply_scalar_binary_left<detail::add>(scalar, a);
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator-(const Vec<L, T, Q>& a, T scalar) {
-        Vec<L, T, Q> result;
-        if constexpr (L == 1) {
-            result[0] = a[0] - scalar;
-        }
-        else if constexpr (L == 2) {
-            result[0] = a[0] - scalar;
-            result[1] = a[1] - scalar;
-        }
-        else if constexpr (L == 3) {
-            result[0] = a[0] - scalar;
-            result[1] = a[1] - scalar;
-            result[2] = a[2] - scalar;
-        }
-        else if constexpr (L == 4) {
-            result[0] = a[0] - scalar;
-            result[1] = a[1] - scalar;
-            result[2] = a[2] - scalar;
-            result[3] = a[3] - scalar;
-        }
-        else {
-            for (int i = 0; i < L; ++i) {
-                result[i] = a[i] - scalar;
-            }
-        }
-        return result;
+        return detail::apply_scalar_binary_right<detail::sub>(a, scalar);
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr Vec<L, T, Q> operator-(T scalar, const Vec<L, T, Q>& a) {
-        Vec<L, T, Q> result;
-        if constexpr (L == 1) {
-            result[0] = scalar - a[0];
-        }
-        else if constexpr (L == 2) {
-            result[0] = scalar - a[0];
-            result[1] = scalar - a[1];
-        }
-        else if constexpr (L == 3) {
-            result[0] = scalar - a[0];
-            result[1] = scalar - a[1];
-            result[2] = scalar - a[2];
-        }
-        else if constexpr (L == 4) {
-            result[0] = scalar - a[0];
-            result[1] = scalar - a[1];
-            result[2] = scalar - a[2];
-            result[3] = scalar - a[3];
-        }
-        else {
-            for (int i = 0; i < L; ++i) {
-                result[i] = scalar - a[i];
-            }
-        }
-        return result;
+        return detail::apply_scalar_binary_left<detail::sub>(scalar, a);
     }
+
+    // ---- compound assignment operators (delegate to binary operators) ----
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator+=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
+        return a = a + b;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator-=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
+        return a = a - b;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator*=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
+        return a = a * b;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator/=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
+        return a = a / b;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator*=(Vec<L, T, Q>& a, T scalar) {
+        return a = a * scalar;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator/=(Vec<L, T, Q>& a, T scalar) {
+        return a = a / scalar;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator+=(Vec<L, T, Q>& a, T scalar) {
+        return a = a + scalar;
+    }
+
+    template<int L, detail::Arithmetic T, detail::Qualifier Q>
+    constexpr Vec<L, T, Q>& operator-=(Vec<L, T, Q>& a, T scalar) {
+        return a = a - scalar;
+    }
+
+    // ---- comparison operators ----
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard]] constexpr bool operator==(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) {
