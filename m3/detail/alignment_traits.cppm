@@ -41,9 +41,9 @@ struct AlignmentTraits<Qualifier::aligned_medium, T> {
     static constexpr std::size_t value = 16;
 };
 
-// 32-byte — AVX-512 256-bit friendly
+// 32-byte — AVX / AVX2 256-bit friendly
 //
-// 32 字节对齐——兼容 AVX-512 256 位
+// 32 字节对齐——兼容 AVX / AVX2 256 位
 template <typename T>
 struct AlignmentTraits<Qualifier::aligned_high, T> {
     static constexpr std::size_t value = 32;

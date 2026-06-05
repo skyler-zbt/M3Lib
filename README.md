@@ -54,8 +54,8 @@ Whenever practical, M3Lib follows GLSL specifications and behaviors to reduce di
 
 ## Requirements
 
-- A compiler with C++20/C++23 support (C++26 for future features)
-- Full C++ Modules support (GCC 14+, Clang 17+, or MSVC 19.34+)
+- A compiler with C++26 support (GCC 16+, contracts P2900R14 and modules required)
+- Full C++ Modules support
 
 ## Build
 
@@ -72,7 +72,7 @@ xmake run test_vec
 
 ### mcpp
 
-[mcpp](https://github.com/mcpp-community/mcpp) — a modern C++23 modular build tool.
+[mcpp](https://github.com/mcpp-community/mcpp) — a modern modular build tool.
 
 ```bash
 mcpp build            # build library
@@ -90,7 +90,7 @@ xmake build tests && xmake run test_vec
 mcpp build -p test_vec && ./target/*/bin/test_vec
 ```
 
-54 test cases covering construction, accessors, operators, and edge cases.
+126 test cases covering construction, accessors, operators, boundary conditions,
 
 ---
 
@@ -106,4 +106,4 @@ See [LICENSE](./LICENSE) for details.
 
 - [glm](https://github.com/icaven/glm) — a header only C++ mathematics library for graphics software based on the GLSL specifications.
 - [xmake](https://github.com/xmake-io/xmake) — a cross-platform build utility based on the Lua scripting language.
-- [mcpp](https://github.com/mcpp-community/mcpp) — a modern C++23 modular build tool with built-in toolchain management.
+- [mcpp](https://github.com/mcpp-community/mcpp) — a modern modular build tool with built-in toolchain management.

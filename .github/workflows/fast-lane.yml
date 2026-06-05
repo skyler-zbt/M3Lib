@@ -71,7 +71,9 @@ jobs:
           xmake f -c -m debug \
             --cxflags="-fsanitize=address,undefined -fno-omit-frame-pointer" \
             --ldflags="-fsanitize=address,undefined" -y
-          xmake build test_vec && xmake run test_vec
+          xmake build test_vec && xmake build test_math && xmake build test_cxx26 && xmake build test_boundary && xmake build test_contracts
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_vec
-          xmake build test_math && xmake run test_math
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_math
+          ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_cxx26
+          ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_boundary
+          ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_contracts
