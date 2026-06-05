@@ -10,7 +10,6 @@ export module m3.math:vector;
 import std;
 
 import m3.detail;
-import m3.detail.operations.ops;
 import m3.vector;
 
 export namespace m3 {
@@ -18,11 +17,23 @@ export namespace m3 {
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     [[nodiscard("pure function: discarding a dot product is likely a bug")]] constexpr T dot(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) noexcept
     {
-        T result{};
-        for (int i = 0; i < L; ++i) {
-            result += a[i] * b[i];
+        if constexpr (L == 1) {
+            return a[0] * b[0];
         }
-        return result;
+        else if constexpr (L == 2) {
+            return a[0] * b[0] + a[1] * b[1];
+        }
+        else if constexpr (L == 3) {
+            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        }
+        else if constexpr (L == 4) {
+            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+        }
+        else {
+            T result{};
+            for (int i = 0; i < L; ++i) result += a[i] * b[i];
+            return result;
+        }
     }
 
     template<detail::Arithmetic T, detail::Qualifier Q>

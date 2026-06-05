@@ -10,7 +10,7 @@ import std;
 
 import m3.detail;
 
-export namespace m3 {
+export namespace m3::detail {
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidDimension<L>
@@ -25,7 +25,7 @@ export namespace m3 {
         template<int M>
         requires (M != L)
         VectorBase(const VectorBase<M, T, Q>&) = delete(
-            "cannot construct VectorBase from a vector of different dimension; "
+            "cannot construct Vec from a vector of different dimension; "
             "use explicit element-wise conversion instead");
 
         // Broadcast construction — fills all L elements with scalar
@@ -48,9 +48,9 @@ export namespace m3 {
         // 通过契约（P2900R14）进行带边界检查的元素访问。
         // 在 observe/enforce 模式下，越界索引触发契约违规。
         // 在 ignore 模式下，行为与 std::array::operator[] 相同。
-        constexpr T&       operator[](std::size_t i)
+        constexpr T&       operator[](std::size_t i) noexcept
             pre(i < static_cast<std::size_t>(L));
-        constexpr const T& operator[](std::size_t i) const
+        constexpr const T& operator[](std::size_t i) const noexcept
             pre(i < static_cast<std::size_t>(L));
     protected:
         detail::VectorStorage<L, T, Q> storage_;
@@ -76,16 +76,16 @@ export namespace m3 {
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidDimension<L>
-    constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i)
+    constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept
     {
         return storage_.data[i];
     }
 
     template<int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidDimension<L>
-    constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const
+    constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
     {
         return storage_.data[i];
     }
 
-} // namespace m3
+} // namespace m3::detail
