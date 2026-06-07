@@ -113,7 +113,27 @@ xmake run test_contracts
 xmake run test_cxx26
 ```
 
+```bash
+# Run all tests / 运行全部测试
+xmake build tests
+
+# Run a specific test / 运行单个测试
+xmake run test_vec
+xmake run test_math
+xmake run test_boundary
+xmake run test_cxx26
+xmake run test_contracts
+```
+
 Test files live in `tests/`. The shared test infrastructure (`test_common` module) provides `check()`, `check_float_eq()`, and `TestRunner`.
+
+**Note:** `test_boundary` uses enforce mode with fork-based signal checking.
+`test_contracts` uses observe mode. One test in `test_contracts` is currently
+skipped due to a GCC 16.1.0 internal compiler error.
+
+**注意：** `test_boundary` 使用 enforce 模式并通过 fork 进行信号检查。
+`test_contracts` 使用 observe 模式。test_contracts 中 1 个测试因
+GCC 16.1.0 ICE 跳过。
 
 ## Issue Labels / Issue 标签
 

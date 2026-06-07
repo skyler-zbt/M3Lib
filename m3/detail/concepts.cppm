@@ -49,19 +49,26 @@ concept VectorLike = requires {
 };
 
 // element_ref_t<V> — abstracts the reference type returned by v[i].
-// For Vec<L,T>: this is T& (a scalar reference).
+// Akin conceptually to std::iterator_traits::iter_reference_t but for
+// vector-like types.
+// For Vec<L,T>: this is T (a scalar, not a reference — remove_reference_t strips the &).
+// For const Vec<L,T>: this is const T& (const scalar reference).
 // For Mat<M,N,T>: this would be Vec<N,T>& (a column reference).
+// remove_reference_t is used so the trait also works when V is const.
 // This trait decouples apply_binary / apply_unary from the assumption that
 // operator[] always returns a scalar reference, enabling Matrix to reuse
 // the same generic dispatch infrastructure.
 //
 // element_ref_t<V> —— 抽象 v[i] 返回的引用类型。
+// 概念上类似于 std::iterator_traits::iter_reference_t，但用于向量式类型。
 // 对 Vec<L,T>：结果为 T&（标量引用）。
+// 对 const Vec<L,T>：结果为 const T&（const 标量引用）。
 // 对 Mat<M,N,T>：结果为 Vec<N,T>&（列引用）。
+// 使用 remove_reference_t 使 trait 在 V 为 const 时也能工作。
 // 此 trait 将 apply_binary / apply_unary 与 "operator[] 始终返回标量引用"
 // 的假设解耦，使 Matrix 能复用相同的泛型分派基础设施。
 template <typename V>
-using element_ref_t = decltype(std::declval<V&>()[std::size_t{}]);
+using element_ref_t = std::remove_reference_t<decltype(std::declval<V&>()[std::size_t{}])>;
 
 template <typename Op, typename T>
 concept BinaryOp =

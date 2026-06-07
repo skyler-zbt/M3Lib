@@ -29,7 +29,8 @@ add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=enforce")
 -- AVX-512 指令），产生的二进制文件不可移植，可能在较旧或不同的 CPU
 -- 上崩溃。仅用于本地开发或目标机器与构建机器完全一致时。
 -- 启用方式：xmake f -m release --march=native
-option("march", {default = "generic", description = "Target CPU microarchitecture (e.g. native, x86-64-v3, znver4)"})
+option("march", {default = "generic", values = {"generic", "native", "x86-64-v3", "x86-64-v4", "znver3", "znver4"},
+    description = "Target CPU microarchitecture (e.g. native, x86-64-v3, znver4)"})
 if is_mode("release") and get_config("march") ~= "generic" then
     add_cxflags("-march=" .. get_config("march"), "-mtune=" .. get_config("march"))
 end

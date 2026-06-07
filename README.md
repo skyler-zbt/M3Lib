@@ -21,7 +21,7 @@ M3Lib aims to become a "modern, modular GLM" designed for graphics programming, 
 - Contracts-based bounds checking (C++26 P2900R14)
 - C++26 `=delete("reason")` diagnostics
 - `constexpr` structured bindings (C++26 P2686R4)
-- 126 test cases
+- 128 test cases (1 skipped due to GCC 16.1.0 ICE in test_contracts)
 
 **Planned (see [Roadmap](./ROADMAP.md)):**
 - Matrix types (v0.2.0)
@@ -106,6 +106,7 @@ mcpp build -p test_vec && ./target/*/bin/test_vec
 
 126 test cases covering construction, accessors, operators, compound assignment,
 boundary conditions, contracts, structured bindings, and `=delete("reason")` diagnostics.
+(128 cases total; 1 skipped in test_contracts due to GCC 16.1.0 ICE.)
 
 ---
 

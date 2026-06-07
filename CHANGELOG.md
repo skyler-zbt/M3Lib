@@ -16,7 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed / 修复
 - `operator[]` hot-path: replaced runtime `if (i >= L) std::abort()` with `if consteval` + `[[assume]]` to unlock auto-vectorisation (16–20× performance gap on element-wise loops)
-- Four source-comment inaccuracies: Vec<5+> support claim, unreachable generic-loop fallback, "all operators delegate" (operator== doesn't), per-specialisation swizzle set description
+- Four source-comment inaccuracies / 四处注释不准确：
+  1. `vec.cppm`: false Vec<5+> support claim — removed, replaced with per-specialisation accessor table
+  2. `apply.cppm`: unreachable generic-loop fallback — corrected to note the else-branch exists but is dead for Vec
+  3. `operators.cppm`: "all operators delegate" — corrected to "most; operator==/!= use direct unrolling"
+  4. `vec.cppm` header: implied all swizzle sets for all dims — replaced with per-dimension breakdown
 
 ### Added / 新增
 - `element_ref_t<V>` trait in `m3.detail.concepts` — decouples `apply_binary`/`apply_unary` from Vec-specific `operator[]` semantics, enabling future Matrix reuse
@@ -41,4 +45,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `std::formatter` for `Vec`
 - Dual build system: xmake (primary) + mcpp (community)
 - GitHub Actions CI (lint, enforce, test matrix)
-- 126 test cases
+- 126 test cases / 126 个测试用例 (128 total; 1 skipped due to GCC 16.1.0 ICE)

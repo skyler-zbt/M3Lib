@@ -112,11 +112,18 @@ constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept {
-    // Same if-consteval + [[assume]] pattern as the mutable overload.
-    // See the mutable version for detailed rationale.
+    // Const overload of the if-consteval + [[assume]] pattern.
+    // At compile time, out-of-bounds access is diagnosed as a hard
+    // error via std::abort() (not a constant expression).
+    // At runtime, [[assume(i < L)]] replaces the old if-abort guard,
+    // eliminating compare-and-branch from the hot path.
+    // The contract pre(i < L) is the primary safety net.
     //
-    // 与可变重载相同的 if-consteval + [[assume]] 模式。
-    // 详见可变版本的完整解释。
+    // if-consteval + [[assume]] 模式的 const 重载。
+    // 编译期越界通过 std::abort()（非常量表达式）诊断。
+    // 运行期 [[assume(i < L)]] 替代旧 if-abort 守卫，
+    // 消除热路径中的比较与分支。
+    // 契约 pre(i < L) 是主要安全网。
     if consteval {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();

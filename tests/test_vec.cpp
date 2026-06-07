@@ -869,31 +869,38 @@ int main() {
 
     // ---- element_ref_t trait verification (v0.1.1) ----
     // Verify that element_ref_t resolves correctly for Vec types.
-    // For Vec<L,T>, this should be T& (scalar reference).
+    // Uses remove_reference_t so the result is T (value type), not T&.
     // This trait enables future Matrix reuse of apply_binary / apply_unary.
     //
     // ---- element_ref_t trait 验证 (v0.1.1) ----
     // 验证 element_ref_t 对 Vec 类型的正确解析。
-    // 对 Vec<L,T>，结果应为 T&（标量引用）。
+    // 使用 remove_reference_t，结果为 T（值类型）而非 T&。
     // 此 trait 使未来 Matrix 能复用 apply_binary / apply_unary。
 
-    runner.add("element_ref_t resolves to T& for Vec", [] -> TestResult {
+    runner.add("element_ref_t resolves to float for Vec<float>", [] -> TestResult {
         using V = m3::Vec<3, float>;
-        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, float&>); !r)
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, float>); !r)
             return r;
         return {};
     });
 
-    runner.add("element_ref_t resolves to int& for Vec<int>", [] -> TestResult {
+    runner.add("element_ref_t resolves to int for Vec<int>", [] -> TestResult {
         using V = m3::Vec<4, int>;
-        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, int&>); !r)
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, int>); !r)
             return r;
         return {};
     });
 
-    runner.add("element_ref_t resolves to double& for Vec<double>", [] -> TestResult {
+    runner.add("element_ref_t resolves to double for Vec<double>", [] -> TestResult {
         using V = m3::Vec<2, double>;
-        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, double&>); !r)
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, double>); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("element_ref_t works for const Vec", [] -> TestResult {
+        using V = const m3::Vec<3, float>;
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, const float>); !r)
             return r;
         return {};
     });
