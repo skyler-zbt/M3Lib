@@ -1,30 +1,37 @@
-# Changelog
+# Changelog / 变更日志
 
 All notable changes to M3Lib will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+本文档记录 M3Lib 所有重要变更。
+
+格式基于 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)，
+本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+
 ## [Unreleased]
 
 ## [0.1.1] — 2026-06-07
 
-### Fixed
+### Fixed / 修复
 - `operator[]` hot-path: replaced runtime `if (i >= L) std::abort()` with `if consteval` + `[[assume]]` to unlock auto-vectorisation (16–20× performance gap on element-wise loops)
 - Four source-comment inaccuracies: Vec<5+> support claim, unreachable generic-loop fallback, "all operators delegate" (operator== doesn't), per-specialisation swizzle set description
 
-### Added
+### Added / 新增
 - `element_ref_t<V>` trait in `m3.detail.concepts` — decouples `apply_binary`/`apply_unary` from Vec-specific `operator[]` semantics, enabling future Matrix reuse
 - `--march` xmake option — `-march=native`/`-mtune=native` now opt-in (`xmake f -m release --march=native`), defaulting to portable `generic`
 - Project governance: `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `NOTICE`, GitHub Issue templates
 
-### Changed
+### Changed / 变更
 - README: honest platform/feature status — "Linux x64 (GCC 16+)" instead of "Cross-platform", mcpp marked "community-maintained", Matrix/quaternion moved to Planned, current features listed explicitly
 - `xmake.lua`: `-march=native` disabled by default for distribution safety
 
+---
+
 ## [0.1.0] — 2026-05-10 (first functional tag)
 
-### Added
+### Added / 新增
 - Vector types `Vec<1..4, T>` with GLSL-style single-component swizzle accessors
 - Core GLSL math functions: normalize, dot, cross, length, distance, abs, sign, floor, ceil, fract, mod, clamp, mix, step, smoothstep, min, max, sin, cos, tan, asin, acos, atan, atan2, radians, degrees, pow, exp, log, exp2, log2, sqrt, inversesqrt, reflect, refract
 - Contracts-based bounds checking (C++26 P2900R14)
