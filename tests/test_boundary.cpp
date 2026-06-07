@@ -1,13 +1,26 @@
 // M3Lib — Boundary tests: out-of-bounds access verification.
-// Built in enforce mode: every OOB access must trigger std::abort().
+// Built in enforce mode: every OOB access violates the contract
+// pre(i < L) on VectorBase::operator[], which triggers the default
+// contract-violation handler (std::abort()).
 // Each test forks a child process; the parent asserts the child was
-// terminated by a signal (SIGABRT), confirming the defense-in-depth
-// bounds check in VectorBase::operator[] is active.
+// terminated by SIGABRT, confirming the contract layer is active.
+//
+// This is a P0 regression suite for the v0.1.1 [[assume]] change:
+// the old runtime if-std::abort() guard was replaced by [[assume]]
+// in the hot path, and the contract pre-condition is now the sole
+// safety mechanism at runtime.  These tests verify that safety net
+// has not been weakened.
 //
 // M3Lib — 边界测试：越界访问验证。
-// 在 enforce 模式下构建：每次 OOB 访问必须触发 std::abort()。
-// 每个测试 fork 子进程；父进程断言子进程被信号终止（SIGABRT），
-// 确认 VectorBase::operator[] 的纵深防御边界检查已生效。
+// 在 enforce 模式下构建：每次 OOB 访问违反 VectorBase::operator[]
+// 的契约 pre(i < L)，触发默认契约违规处理函数（std::abort()）。
+// 每个测试 fork 子进程；父进程断言子进程被 SIGABRT 终止，
+// 确认契约层已生效。
+//
+// 这是 v0.1.1 [[assume]] 改造的 P0 回归测试套件：
+// 旧的运行时 if-std::abort() 守卫被热路径中的 [[assume]] 替代，
+// 契约 pre 条件现在是运行时唯一的安全机制。这些测试验证
+// 安全网没有被削弱。
 
 import std;
 

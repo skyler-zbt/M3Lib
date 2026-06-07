@@ -1,0 +1,69 @@
+name: Feature Request
+description: >
+  Suggest a new feature or enhancement for M3Lib.
+
+  为 M3Lib 建议新功能或改进。
+title: "[Feature] <简短描述>"
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! Please read the [Roadmap](./ROADMAP.md) first to check if this is already planned.
+
+        感谢你的建议！请先查看[路线图](./ROADMAP.md)确认是否已在计划中。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement / 问题陈述
+      description: >
+        What problem would this feature solve? What use case does it enable?
+
+        此功能解决什么问题？开启什么使用场景？
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution / 建议方案
+      description: >
+        Describe the feature you'd like to see. Include API sketches or pseudocode if applicable.
+
+        描述你希望看到的功能。如适用，请包含 API 草图或伪代码。
+      render: cpp
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered / 考虑过的替代方案
+      description: >
+        Have you considered any workarounds or alternative approaches?
+
+        你是否考虑过其他变通或替代方案？
+
+  - type: dropdown
+    id: glsl_align
+    attributes:
+      label: GLSL alignment / GLSL 对齐
+      description: >
+        Does this feature align with an existing GLSL specification?
+
+        此功能是否与现有 GLSL 规范对齐？
+      options:
+        - "Yes — matches GLSL built-in behaviour / 是 —— 匹配 GLSL 内置行为"
+        - "Yes — extends from GLSL with C++-specific additions / 是 —— 基于 GLSL 的 C++ 扩展"
+        - "No — this is C++/ecosystem-specific / 否 —— C++/生态专属"
+        - "Not sure / 不确定"
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context / 附加上下文
+      description: >
+        Any other context, links, or references.
+
+        其他上下文、链接或参考资料。

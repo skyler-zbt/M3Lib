@@ -17,10 +17,22 @@ add_cxflags("-B/usr/bin")
 add_links("stdc++exp")
 add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=enforce")
 
--- Enable native CPU instructions for release builds (AVX, AVX2, etc.)
--- Debug builds stay at -O0/-Og with baseline ISA for fast iteration.
-if is_mode("release") then
-    add_cxflags("-march=native", "-mtune=native")
+-- Opt-in native CPU instruction tuning.
+-- -march=native generates instructions specific to the build host's CPU
+-- (e.g. AVX-512 on a Skylake-X machine), producing non-portable binaries
+-- that may crash on older or different CPUs.  Use only for local development
+-- or when the target machine matches the build machine exactly.
+-- Enable with:  xmake f -m release --march=native
+--
+-- 可选的原生 CPU 指令调优。
+-- -march=native 生成针对构建主机 CPU 的指令（如在 Skylake-X 上生成
+-- AVX-512 指令），产生的二进制文件不可移植，可能在较旧或不同的 CPU
+-- 上崩溃。仅用于本地开发或目标机器与构建机器完全一致时。
+-- 启用方式：xmake f -m release --march=native
+option("march", {default = "generic", values = {"generic", "native", "x86-64-v3", "x86-64-v4", "znver3", "znver4"},
+    description = "Target CPU microarchitecture (e.g. native, x86-64-v3, znver4)"})
+if is_mode("release") and get_config("march") ~= "generic" then
+    add_cxflags("-march=" .. get_config("march"), "-mtune=" .. get_config("march"))
 end
 
 set_languages("c++26")

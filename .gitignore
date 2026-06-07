@@ -13,6 +13,7 @@ target/
 .vscode/
 .vs/
 compile_commands.json
+contract_violations.log
 *.gcov
 *.gcda
 *.gcno

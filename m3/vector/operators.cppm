@@ -1,12 +1,15 @@
 // Vector component-wise, scalar, compound-assignment, and comparison operators.
-// All operators delegate to the generic dispatch helpers in m3.detail (apply_binary,
-// apply_unary, apply_scalar_binary_left, apply_scalar_binary_right), keeping this
-// file a thin call-site layer with no manual unrolling.
+// Most operators delegate to the generic dispatch helpers in m3.detail
+// (apply_binary, apply_unary, apply_scalar_binary_left,
+// apply_scalar_binary_right).  operator== / operator!= are implemented
+// directly with short-circuiting if-constexpr unrolling for better
+// branch-prediction on comparison.
 //
 // 向量逐分量、标量、复合赋值和比较运算符。
-// 所有运算符委托给 m3.detail 中的泛型分发辅助函数（apply_binary、apply_unary、
-// apply_scalar_binary_left、apply_scalar_binary_right），
-// 使本文件保持为薄调用层，无手动展开代码。
+// 多数运算符委托给 m3.detail 中的泛型分发辅助函数（apply_binary、
+// apply_unary、apply_scalar_binary_left、apply_scalar_binary_right）。
+// operator== / operator!= 直接以短路 if-constexpr 展开实现，
+// 为比较操作提供更好的分支预测。
 export module m3.vector:operators;
 
 import m3.detail;

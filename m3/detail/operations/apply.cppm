@@ -1,27 +1,31 @@
-// apply_binary / apply_unary — generic element-wise vector operation helpers.
-// Dispatch is unrolled for dimension ∈ {1,2,3,4} and falls back to a generic loop
-// for higher dimensions.  These functions are parameterised on a VectorLike type
-// (not a concrete Vec) so that the same dispatch works for vectors, matrices,
-// quaternions, and any future types that expose dimension / value_type / operator[].
+// apply_binary / apply_unary — generic element-wise operation helpers.
+// Dispatch is unrolled for dimension ∈ {1,2,3,4}.  The generic-loop
+// else-branch exists for future types with higher dimensions (e.g. matrices
+// with >4 columns), but is currently unreachable for Vec since
+// ValidDimension restricts to [1, 4].
+// These functions are parameterised on a VectorLike type (not a concrete
+// Vec) so that the same dispatch works for vectors, matrices, quaternions,
+// and any future types that expose dimension / value_type / operator[].
 //
 // apply_scalar_binary_left / apply_scalar_binary_right — scalar × vector hybrids.
-// Reduce the ~140 lines of duplicated scalar-operator unrolling (in vector.cppm)
-// down to two helper functions plus single-line call sites.
+// Reduce duplicated scalar-operator unrolling down to two helper functions
+// plus single-line call sites.
 //
-// Architectural note: this module no longer imports m3.vector.vec.
-// The dependency inversion has been resolved by introducing the VectorLike concept.
+// Architectural note: this module does not import m3.vector.vec.
+// The dependency inversion is realised through the VectorLike concept.
 //
-// apply_binary / apply_unary —— 通用的逐元素向量操作辅助函数。
-// 对维度 ∈ {1,2,3,4} 展开分派，对更高维度回退到通用循环。
+// apply_binary / apply_unary —— 泛型逐元素操作辅助函数。
+// 对维度 ∈ {1,2,3,4} 展开分派。通用循环 else 分支为未来更高维度的类型
+//（如 >4 列的矩阵）预留，但因 ValidDimension 限制为 [1, 4]，目前对 Vec
+// 不可达。
 // 这些函数以 VectorLike 类型（而非具体 Vec）为参数，使同一分派逻辑能
 // 作用于向量、矩阵、四元数，以及任何暴露 dimension / value_type / operator[] 的未来类型。
 //
 // apply_scalar_binary_left / apply_scalar_binary_right —— 标量×向量混合操作。
-// 将 vector.cppm 中约 140 行重复的标量-运算符展开代码
-// 缩减为两个辅助函数加单行调用点。
+// 将重复的标量-运算符展开代码缩减为两个辅助函数加单行调用点。
 //
-// 架构说明：此模块不再导入 m3.vector.vec。
-// 通过引入 VectorLike 概念解决了依赖倒置问题。
+// 架构说明：此模块不导入 m3.vector.vec。
+// 通过 VectorLike 概念实现依赖倒置。
 export module m3.detail.operations.apply;
 
 import std;
