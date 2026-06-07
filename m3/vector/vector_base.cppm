@@ -108,21 +108,23 @@ constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
     }
     [[assume(i < static_cast<std::size_t>(L))]];
 
-    // Volatile sink: forces the compiler to re-evaluate i and keep
-    // the runtime guard below.  Without this barrier, GCC may
-    // eliminate the guard as dead code after [[assume]], causing
-    // UBSan to flag unreachable-program-point on OOB access
-    // (observed on self-hosted CI runner with xlings GCC 16.1.0).
+    // Volatile sink: prevents the compiler from eliminating the
+    // runtime guard as dead code after [[assume]].  Guarded by
+    // !std::is_constant_evaluated() because volatile writes are
+    // not permitted in constexpr functions.
+    // At compile time the if-consteval block above handles OOB.
     //
-    // volatile 屏障：强制编译器重新读取 i 并保留下方运行时守卫。
-    // 无双屏障时，GCC 可能在 [[assume]] 后将守卫消除为死代码，
-    // 导致 UBSan 在 OOB 时报告 unreachable-program-point
-    //（在 xlings GCC 16.1.0 的自托管 CI runner 上观察到）。
-    volatile std::size_t sink = i;
-    (void)sink;
+    // volatile 屏障：阻止编译器将运行时守卫作为死代码消除。
+    // 由 !std::is_constant_evaluated() 保护，因为 volatile 写
+    // 在 constexpr 函数中不允许。
+    // 编译期 OOB 由上方的 if-consteval 块处理。
+    if (!std::is_constant_evaluated()) {
+        volatile std::size_t sink = i;
+        (void)sink;
 
-    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-        std::abort();
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
     }
     return storage_.data[i];
 }
@@ -151,13 +153,17 @@ constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
     [[assume(i < static_cast<std::size_t>(L))]];
 
     // Volatile sink (see mutable overload for rationale).
+    // Guarded by !std::is_constant_evaluated().
     //
     // volatile 屏障（原理见可变重载）。
-    volatile std::size_t sink = i;
-    (void)sink;
+    // 由 !std::is_constant_evaluated() 保护。
+    if (!std::is_constant_evaluated()) {
+        volatile std::size_t sink = i;
+        (void)sink;
 
-    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-        std::abort();
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
     }
     return storage_.data[i];
 }
