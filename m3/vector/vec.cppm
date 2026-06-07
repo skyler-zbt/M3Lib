@@ -1,10 +1,20 @@
-// Vec — the primary vector type with GLSL-style swizzle accessors.
-// Specializations for dimensions 1–4 provide .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q.
-// Vec<5+, T, Q> is supported via the primary template (no swizzle accessors).
+// Vec — the primary vector type with GLSL-style single-component swizzle accessors.
+// Dimensions are restricted to [1, 4] by ValidDimension.
+// Per-specialisation accessor sets:
+//   Vec<1>: .x/.r/.s
+//   Vec<2>: .x/.y, .r/.g, .s/.t
+//   Vec<3>: .x/.y/.z, .r/.g/.b, .s/.t/.p
+//   Vec<4>: .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q
+// Multi-character swizzle (.xy, .xyz, .rgb, etc.) is planned for v0.2.0.
 //
-// Vec —— 主向量类型，提供 GLSL 风格的 swizzle 访问器。
-// 维度 1–4 的特化提供 .x/.y/.z/.w、.r/.g/.b/.a、.s/.t/.p/.q 访问器。
-// Vec<5+, T, Q> 通过主模板支持（无 swizzle 访问器）。
+// Vec —— 主向量类型，提供 GLSL 风格的单分量 swizzle 访问器。
+// 维度由 ValidDimension 限制为 [1, 4]。
+// 各特化的访问器集合：
+//   Vec<1>: .x/.r/.s
+//   Vec<2>: .x/.y, .r/.g, .s/.t
+//   Vec<3>: .x/.y/.z, .r/.g/.b, .s/.t/.p
+//   Vec<4>: .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q
+// 多字符 swizzle（.xy、.xyz、.rgb 等）计划在 v0.2.0 实现。
 export module m3.vector.vec;
 
 import std;

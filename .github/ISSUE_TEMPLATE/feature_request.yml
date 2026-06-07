@@ -1,0 +1,49 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for M3Lib.
+title: "[Feature] <short description>"
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! Please read the [Roadmap](./ROADMAP.md) first to check if this is already planned.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem would this feature solve? What use case does it enable?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the feature you'd like to see. Include API sketches or pseudocode if applicable.
+      render: cpp
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered any workarounds or alternative approaches?
+
+  - type: dropdown
+    id: glsl_align
+    attributes:
+      label: GLSL alignment
+      description: Does this feature align with an existing GLSL specification?
+      options:
+        - "Yes — matches GLSL built-in behaviour"
+        - "Yes — extends from GLSL with C++-specific additions"
+        - "No — this is C++/ecosystem-specific"
+        - "Not sure"
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any other context, links, or references.

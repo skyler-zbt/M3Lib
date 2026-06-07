@@ -41,13 +41,17 @@ public:
     [[nodiscard("raw pointer to underlying data; intended for C API / SIMD interop")]]
     constexpr const T* value_ptr() const noexcept;
 
-    // Element access with bounds checking via contracts (P2900R14)
-    // In observe/enforce mode, out-of-bounds index triggers a contract violation.
-    // In ignore mode, behaviour is identical to std::array::operator[].
+    // Element access with bounds checking via contracts (P2900R14).
+    // At compile time (if consteval), an out-of-bounds index is caught via
+    // std::abort() which is not a constant expression → hard compile error.
+    // At runtime, [[assume(i < L)]] tells the compiler the index is always
+    // valid, unlocking auto-vectorisation in hot loops.
     //
     // 通过契约（P2900R14）进行带边界检查的元素访问。
-    // 在 observe/enforce 模式下，越界索引触发契约违规。
-    // 在 ignore 模式下，行为与 std::array::operator[] 相同。
+    // 编译期（if consteval）越界索引通过 std::abort() 捕获——非 constexpr
+    // 调用产生硬编译错误。
+    // 运行期 [[assume(i < L)]] 告诉编译器索引始终有效，解锁热循环中的
+    // 自动向量化。
     constexpr T& operator[](std::size_t i) noexcept pre(i < static_cast<std::size_t>(L));
     constexpr const T& operator[](std::size_t i) const noexcept
         pre(i < static_cast<std::size_t>(L));
@@ -76,33 +80,49 @@ constexpr const T* VectorBase<L, T, Q>::value_ptr() const noexcept {
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
-    // Defense-in-depth bounds check.
-    // The contract pre(i < L) is the primary safety net, but this guard
-    // catches out-of-bounds access even when contracts are in ignore mode
-    // or not enabled.  std::abort() provides a portable termination
-    // mechanism; the [[unlikely]] attribute ensures the hot path is a
-    // single well-predicted compare-and-branch.
+    // Compile-time defense-in-depth.
+    // The contract pre(i < L) is the primary safety net.  This
+    // if-consteval guard provides a secondary gate for constant-
+    // evaluation contexts where contracts may not be enabled:
+    // std::abort() is not a constant expression, so a compile-time
+    // out-of-bounds access is diagnosed as a hard error.
     //
-    // 纵深防御边界检查。
-    // 契约 pre(i < L) 是主要安全网，但此守卫即使在 contracts
-    // 处于 ignore 模式或未启用时也能捕获越界访问。
-    // std::abort() 提供可移植的终止机制；
-    // [[unlikely]] 属性确保热路径仅为一次极易预测的比较与分支。
-    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-        std::abort();
+    // At runtime, [[assume(i < L)]] replaces the previous
+    // if-abort guard.  This tells the compiler that the index is
+    // always in bounds, eliminating the compare-and-branch from
+    // the hot path and unlocking auto-vectorisation.
+    //
+    // 编译期纵深防御。
+    // 契约 pre(i < L) 是主要安全网。此 if-consteval 守卫为
+    // 常量求值上下文提供二级保护：std::abort() 不是常量表达式，
+    // 编译期越界访问会被诊断为硬错误。
+    //
+    // 运行期 [[assume(i < L)]] 替代原先的 if-abort 守卫，
+    // 告诉编译器索引始终在边界内，消除热路径中的比较与分支，
+    // 解锁自动向量化。
+    if consteval {
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
     }
+    [[assume(i < static_cast<std::size_t>(L))]];
     return storage_.data[i];
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept {
-    // Same defense-in-depth bounds check as the mutable overload (see above).
+    // Same if-consteval + [[assume]] pattern as the mutable overload.
+    // See the mutable version for detailed rationale.
     //
-    // 与可变重载相同的纵深防御边界检查（参见上文）。
-    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-        std::abort();
+    // 与可变重载相同的 if-consteval + [[assume]] 模式。
+    // 详见可变版本的完整解释。
+    if consteval {
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
     }
+    [[assume(i < static_cast<std::size_t>(L))]];
     return storage_.data[i];
 }
 

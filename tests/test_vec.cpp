@@ -796,5 +796,107 @@ int main() {
         return {};
     });
 
+    // ---- Regression: operator[] with [[assume]] (v0.1.1) ----
+    // Verify that the if-consteval + [[assume]] transformation preserves
+    // correct element access for all valid indices across all dimensions.
+    // The [[assume]] hint tells the compiler the index is always in bounds,
+    // unlocking auto-vectorisation without changing observable behaviour.
+    //
+    // ---- 回归测试：带 [[assume]] 的 operator[] (v0.1.1) ----
+    // 验证 if-consteval + [[assume]] 改造在所有维度的合法索引上
+    // 保持正确的元素访问。[[assume]] 提示告诉编译器索引始终在边界内，
+    // 解锁自动向量化而不改变可观察行为。
+
+    runner.add("operator[] valid indices vec1", [] -> TestResult {
+        m3::Vec<1, float> v{3.14f};
+        if (auto r = check_float_eq(v[0], 3.14f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("operator[] valid indices vec2", [] -> TestResult {
+        m3::Vec<2, int> v{10, 20};
+        if (auto r = check(v[0] == 10); !r)
+            return r;
+        if (auto r = check(v[1] == 20); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("operator[] valid indices vec3", [] -> TestResult {
+        m3::Vec<3, double> v{1.1, 2.2, 3.3};
+        if (auto r = check_float_eq(v[0], 1.1, 1e-12); !r)
+            return r;
+        if (auto r = check_float_eq(v[1], 2.2, 1e-12); !r)
+            return r;
+        if (auto r = check_float_eq(v[2], 3.3, 1e-12); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("operator[] valid indices vec4", [] -> TestResult {
+        m3::Vec<4, float> v{0.0f, 1.0f, 2.0f, 3.0f};
+        if (auto r = check_float_eq(v[0], 0.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[1], 1.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[2], 2.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[3], 3.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("operator[] const valid indices vec3", [] -> TestResult {
+        const m3::Vec<3, float> v{7.0f, 8.0f, 9.0f};
+        if (auto r = check_float_eq(v[0], 7.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[1], 8.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(v[2], 9.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("operator[] mutable write-through", [] -> TestResult {
+        m3::Vec<4, int> v{};
+        for (int i = 0; i < 4; ++i)
+            v[static_cast<std::size_t>(i)] = i * 10;
+        if (auto r = check(v[0] == 0 && v[1] == 10 && v[2] == 20 && v[3] == 30); !r)
+            return r;
+        return {};
+    });
+
+    // ---- element_ref_t trait verification (v0.1.1) ----
+    // Verify that element_ref_t resolves correctly for Vec types.
+    // For Vec<L,T>, this should be T& (scalar reference).
+    // This trait enables future Matrix reuse of apply_binary / apply_unary.
+    //
+    // ---- element_ref_t trait 验证 (v0.1.1) ----
+    // 验证 element_ref_t 对 Vec 类型的正确解析。
+    // 对 Vec<L,T>，结果应为 T&（标量引用）。
+    // 此 trait 使未来 Matrix 能复用 apply_binary / apply_unary。
+
+    runner.add("element_ref_t resolves to T& for Vec", [] -> TestResult {
+        using V = m3::Vec<3, float>;
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, float&>); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("element_ref_t resolves to int& for Vec<int>", [] -> TestResult {
+        using V = m3::Vec<4, int>;
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, int&>); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("element_ref_t resolves to double& for Vec<double>", [] -> TestResult {
+        using V = m3::Vec<2, double>;
+        if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, double&>); !r)
+            return r;
+        return {};
+    });
+
     return runner.run();
 }
