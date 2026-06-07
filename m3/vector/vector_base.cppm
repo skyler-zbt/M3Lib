@@ -87,25 +87,35 @@ constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
     // std::abort() is not a constant expression, so a compile-time
     // out-of-bounds access is diagnosed as a hard error.
     //
-    // At runtime, [[assume(i < L)]] replaces the previous
-    // if-abort guard.  This tells the compiler that the index is
-    // always in bounds, eliminating the compare-and-branch from
-    // the hot path and unlocking auto-vectorisation.
+    // At runtime:
+    // 1. [[assume(i < L)]] tells the compiler the index is always
+    //    in bounds.  In optimised builds this allows elimination of
+    //    the runtime guard below as dead code, unlocking auto-
+    //    vectorisation.
+    // 2. The runtime if-abort guard is kept for debug / CI builds
+    //    where contracts may not terminate correctly (e.g. UBSan
+    //    interference) and optimisations are off.
     //
     // 编译期纵深防御。
     // 契约 pre(i < L) 是主要安全网。此 if-consteval 守卫为
     // 常量求值上下文提供二级保护：std::abort() 不是常量表达式，
     // 编译期越界访问会被诊断为硬错误。
     //
-    // 运行期 [[assume(i < L)]] 替代原先的 if-abort 守卫，
-    // 告诉编译器索引始终在边界内，消除热路径中的比较与分支，
-    // 解锁自动向量化。
+    // 运行期：
+    // 1. [[assume(i < L)]] 告诉编译器索引始终在边界内。
+    //    优化构建中编译器可将下方运行时守卫作为死代码消除，
+    //    解锁自动向量化。
+    // 2. 运行时 if-abort 守卫保留用于 debug/CI 构建，以应对
+    //    契约未正确终止（如 UBSan 干扰）且优化未启用的场景。
     if consteval {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }
     }
     [[assume(i < static_cast<std::size_t>(L))]];
+    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+        std::abort();
+    }
     return storage_.data[i];
 }
 
@@ -115,14 +125,15 @@ constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
     // Const overload of the if-consteval + [[assume]] pattern.
     // At compile time, out-of-bounds access is diagnosed as a hard
     // error via std::abort() (not a constant expression).
-    // At runtime, [[assume(i < L)]] replaces the old if-abort guard,
-    // eliminating compare-and-branch from the hot path.
+    // At runtime, [[assume(i < L)]] enables the compiler to eliminate
+    // the runtime guard below in optimised builds, while the guard
+    // is retained for debug/CI where contracts or UBSan may interfere.
     // The contract pre(i < L) is the primary safety net.
     //
     // if-consteval + [[assume]] 模式的 const 重载。
     // 编译期越界通过 std::abort()（非常量表达式）诊断。
-    // 运行期 [[assume(i < L)]] 替代旧 if-abort 守卫，
-    // 消除热路径中的比较与分支。
+    // 运行期 [[assume(i < L)]] 使编译器在优化构建中消除下方
+    // 运行时守卫，而 debug/CI 中保留守卫应对契约或 UBSan 干扰。
     // 契约 pre(i < L) 是主要安全网。
     if consteval {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
@@ -130,6 +141,9 @@ constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
         }
     }
     [[assume(i < static_cast<std::size_t>(L))]];
+    if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+        std::abort();
+    }
     return storage_.data[i];
 }
 
