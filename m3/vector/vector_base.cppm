@@ -81,26 +81,53 @@ template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
     // Compile-time defense-in-depth.
-    // The contract pre(i < L) is the primary safety net.  This
-    // if-consteval guard provides a secondary gate for constant-
-    // evaluation contexts where contracts may not be enabled:
     // std::abort() is not a constant expression, so a compile-time
     // out-of-bounds access is diagnosed as a hard error.
     //
-    // At runtime, [[assume(i < L)]] replaces the previous
-    // if-abort guard.  This tells the compiler that the index is
-    // always in bounds, eliminating the compare-and-branch from
-    // the hot path and unlocking auto-vectorisation.
+    // At runtime:
+    // 1. [[assume(i < L)]] tells the compiler the index is always
+    //    in bounds, unlocking auto-vectorisation in hot loops.
+    // 2. The volatile sink prevents the compiler from eliminating
+    //    the runtime guard as dead code after [[assume]], keeping
+    //    the OOB → abort path alive in debug and CI builds.
+    //    In release builds the compare-and-branch is still
+    //    optimised away because [[assume]] dominates.
     //
-    // 编译期纵深防御。
-    // 契约 pre(i < L) 是主要安全网。此 if-consteval 守卫为
-    // 常量求值上下文提供二级保护：std::abort() 不是常量表达式，
-    // 编译期越界访问会被诊断为硬错误。
+    // 编译期：std::abort() 不是常量表达式，越界触发硬编译错误。
     //
-    // 运行期 [[assume(i < L)]] 替代原先的 if-abort 守卫，
-    // 告诉编译器索引始终在边界内，消除热路径中的比较与分支，
-    // 解锁自动向量化。
+    // 运行期：
+    // 1. [[assume(i < L)]] 告诉编译器索引始终在边界内，
+    //    解锁热循环的自动向量化。
+    // 2. volatile 屏障阻止编译器在 [[assume]] 后将运行时守卫
+    //    当作死代码消除，保证 debug/CI 中 OOB → abort 路径存活。
+    //    release 构建中 [[assume]] 仍主导，比较分支被优化消除。
     if consteval {
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
+    }
+
+    // Runtime defense-in-depth.
+    // Placed BEFORE [[assume]] so that OOB access always hits this
+    // guard and terminates via std::abort() (SIGABRT).  The CI
+    // runner's GCC 16.1.0 compiles [[assume]] into a runtime
+    // __builtin_unreachable() check that UBSan intercepts before
+    // any subsequent code can execute.  Putting the guard first
+    // ensures the OOB → abort path is always taken.
+    //
+    // In release builds the compare-and-branch is still well-
+    // predicted (almost always false) and [[assume]] after it
+    // enables auto-vectorisation of the hot path.
+    //
+    // 运行时纵深防御。
+    // 放在 [[assume]] 之前，确保 OOB 先撞守卫 → std::abort()。
+    // CI runner 的 GCC 16.1.0 将 [[assume]] 编译为运行时
+    // __builtin_unreachable() 检查，UBSan 在后续代码执行前就
+    // 拦截了。守卫在前保证 OOB → abort 路径始终生效。
+    //
+    // release 构建中比较分支仍高度可预测（几乎总是 false），
+    // 其后的 [[assume]] 解锁热路径自动向量化。
+    if (!std::is_constant_evaluated()) {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }
@@ -115,16 +142,20 @@ constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
     // Const overload of the if-consteval + [[assume]] pattern.
     // At compile time, out-of-bounds access is diagnosed as a hard
     // error via std::abort() (not a constant expression).
-    // At runtime, [[assume(i < L)]] replaces the old if-abort guard,
-    // eliminating compare-and-branch from the hot path.
-    // The contract pre(i < L) is the primary safety net.
+    // At runtime, the guard catches OOB before [[assume]] so that
+    // std::abort() is always reached on bounds violation regardless
+    // of compiler [[assume]] implementation.
+    // [[assume(i < L)]] after the guard still unlocks
+    // auto-vectorisation in the hot path (well-predicted branch).
     //
-    // if-consteval + [[assume]] 模式的 const 重载。
-    // 编译期越界通过 std::abort()（非常量表达式）诊断。
-    // 运行期 [[assume(i < L)]] 替代旧 if-abort 守卫，
-    // 消除热路径中的比较与分支。
-    // 契约 pre(i < L) 是主要安全网。
+    // 运行期守卫在 [[assume]] 之前，确保 OOB 先撞 std::abort()。
+    // [[assume(i < L)]] 在守卫之后仍能解锁热路径自动向量化。
     if consteval {
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
+    }
+    if (!std::is_constant_evaluated()) {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }

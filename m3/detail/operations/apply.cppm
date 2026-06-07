@@ -16,7 +16,7 @@
 //
 // apply_binary / apply_unary —— 泛型逐元素操作辅助函数。
 // 对维度 ∈ {1,2,3,4} 展开分派。通用循环 else 分支为未来更高维度的类型
-//（如 >4 列的矩阵）预留，但因 ValidDimension 限制为 [1, 4]，目前对 Vec
+// （如 >4 列的矩阵）预留，但因 ValidDimension 限制为 [1, 4]，目前对 Vec
 // 不可达。
 // 这些函数以 VectorLike 类型（而非具体 Vec）为参数，使同一分派逻辑能
 // 作用于向量、矩阵、四元数，以及任何暴露 dimension / value_type / operator[] 的未来类型。

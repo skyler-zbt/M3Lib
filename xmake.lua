@@ -13,22 +13,18 @@ set_toolchains("gcc")
 -- add_cxflags("-B/usr/bin") tells GCC to look for as/ld in /usr/bin.
 add_cxflags("-B/usr/bin")
 
--- Contracts P2900R14 — evaluation semantic is configurable via xmake option.
--- Default is "enforce" (contract violations terminate the process).
--- CI overrides this with --contracts-mode=observe for the contract-tests job.
+-- Contracts P2900R14 — evaluation semantic defaults to "enforce".
+-- CI contract-tests job overrides this with --cxflags="-fcontract-evaluation-semantic=observe".
+-- GCC uses the last -fcontract-evaluation-semantic flag it sees, so the CLI
+-- override takes precedence over the default below.
 --
--- Contracts P2900R14 —— 求值语义通过 xmake option 可配置。
--- 默认为 "enforce"（契约违规终止进程）。
--- CI 通过 --contracts-mode=observe 覆盖以运行 contract-tests job。
-option("contracts-mode", {default = "enforce", values = {"enforce", "observe", "ignore"},
-    description = "Contract evaluation semantic (P2900R14): enforce, observe, or ignore"})
+-- Contracts P2900R14 —— 求值语义默认为 "enforce"。
+-- CI contract-tests job 通过 --cxflags="-fcontract-evaluation-semantic=observe" 覆盖。
+-- GCC 使用最后出现的 -fcontract-evaluation-semantic 标志，因此 CLI 覆盖优先于默认值。
 
 -- std::simd, contracts P2900R14, and other C++26 experimental features
 add_links("stdc++exp")
-add_cxflags("-fcontracts")
-if has_config("contracts-mode") then
-    add_cxflags("-fcontract-evaluation-semantic=" .. get_config("contracts-mode"))
-end
+add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=enforce")
 
 -- Opt-in native CPU instruction tuning.
 -- -march=native generates instructions specific to the build host's CPU
