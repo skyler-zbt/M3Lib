@@ -106,26 +106,33 @@ constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
             std::abort();
         }
     }
-    [[assume(i < static_cast<std::size_t>(L))]];
 
-    // Volatile sink: prevents the compiler from eliminating the
-    // runtime guard as dead code after [[assume]].  Guarded by
-    // !std::is_constant_evaluated() because volatile writes are
-    // not permitted in constexpr functions.
-    // At compile time the if-consteval block above handles OOB.
+    // Runtime defense-in-depth.
+    // Placed BEFORE [[assume]] so that OOB access always hits this
+    // guard and terminates via std::abort() (SIGABRT).  The CI
+    // runner's GCC 16.1.0 compiles [[assume]] into a runtime
+    // __builtin_unreachable() check that UBSan intercepts before
+    // any subsequent code can execute.  Putting the guard first
+    // ensures the OOB → abort path is always taken.
     //
-    // volatile 屏障：阻止编译器将运行时守卫作为死代码消除。
-    // 由 !std::is_constant_evaluated() 保护，因为 volatile 写
-    // 在 constexpr 函数中不允许。
-    // 编译期 OOB 由上方的 if-consteval 块处理。
+    // In release builds the compare-and-branch is still well-
+    // predicted (almost always false) and [[assume]] after it
+    // enables auto-vectorisation of the hot path.
+    //
+    // 运行时纵深防御。
+    // 放在 [[assume]] 之前，确保 OOB 先撞守卫 → std::abort()。
+    // CI runner 的 GCC 16.1.0 将 [[assume]] 编译为运行时
+    // __builtin_unreachable() 检查，UBSan 在后续代码执行前就
+    // 拦截了。守卫在前保证 OOB → abort 路径始终生效。
+    //
+    // release 构建中比较分支仍高度可预测（几乎总是 false），
+    // 其后的 [[assume]] 解锁热路径自动向量化。
     if (!std::is_constant_evaluated()) {
-        volatile std::size_t sink = i;
-        (void)sink;
-
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }
     }
+    [[assume(i < static_cast<std::size_t>(L))]];
     return storage_.data[i];
 }
 
@@ -135,36 +142,25 @@ constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
     // Const overload of the if-consteval + [[assume]] pattern.
     // At compile time, out-of-bounds access is diagnosed as a hard
     // error via std::abort() (not a constant expression).
-    // At runtime, [[assume(i < L)]] enables the compiler to eliminate
-    // the runtime guard below in optimised builds, while the guard
-    // is retained for debug/CI where contracts or UBSan may interfere.
-    // The contract pre(i < L) is the primary safety net.
+    // At runtime, the guard catches OOB before [[assume]] so that
+    // std::abort() is always reached on bounds violation regardless
+    // of compiler [[assume]] implementation.
+    // [[assume(i < L)]] after the guard still unlocks
+    // auto-vectorisation in the hot path (well-predicted branch).
     //
-    // if-consteval + [[assume]] 模式的 const 重载。
-    // 编译期越界通过 std::abort()（非常量表达式）诊断。
-    // 运行期 [[assume(i < L)]] 使编译器在优化构建中消除下方
-    // 运行时守卫，而 debug/CI 中保留守卫应对契约或 UBSan 干扰。
-    // 契约 pre(i < L) 是主要安全网。
+    // 运行期守卫在 [[assume]] 之前，确保 OOB 先撞 std::abort()。
+    // [[assume(i < L)]] 在守卫之后仍能解锁热路径自动向量化。
     if consteval {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }
     }
-    [[assume(i < static_cast<std::size_t>(L))]];
-
-    // Volatile sink (see mutable overload for rationale).
-    // Guarded by !std::is_constant_evaluated().
-    //
-    // volatile 屏障（原理见可变重载）。
-    // 由 !std::is_constant_evaluated() 保护。
     if (!std::is_constant_evaluated()) {
-        volatile std::size_t sink = i;
-        (void)sink;
-
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }
     }
+    [[assume(i < static_cast<std::size_t>(L))]];
     return storage_.data[i];
 }
 
