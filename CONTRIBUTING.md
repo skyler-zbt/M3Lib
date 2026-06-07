@@ -79,20 +79,20 @@ operator[] always returns a scalar reference.
 2. **Branch:** Create a feature branch from `dev` (`feat/my-feature` or `fix/my-fix`).
 3. **Test:** All tests must pass (`xmake build tests`). Add tests for new functionality.
 4. **Style:** Code must pass `clang-format` lint (matching `.clang-format` in the repo root).
-5. **PR:** Open against the `dev` branch. The `main` branch tracks stable releases.
+5. **PR:** Open against the `dev` branch. The `master` branch tracks stable releases.
 6. **Review:** All PRs require at least one reviewer approval. Expect feedback within one week.
 
 ## Branch Model
 
 ```
-main  — stable releases (tagged)
-dev   — integration branch for the next release
+master — stable releases (tagged)
+dev    — integration branch for the next release
 feat/* — feature branches
 fix/*  — bug-fix branches
 ```
 
 - Merge `feat/*` / `fix/*` → `dev`
-- Merge `dev` → `main` on release (with a version tag)
+- Merge `dev` → `master` on release (with a version tag)
 
 ## Testing
 
