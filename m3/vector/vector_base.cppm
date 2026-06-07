@@ -81,38 +81,46 @@ template <int L, detail::Arithmetic T, detail::Qualifier Q>
 requires detail::ValidDimension<L>
 constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
     // Compile-time defense-in-depth.
-    // The contract pre(i < L) is the primary safety net.  This
-    // if-consteval guard provides a secondary gate for constant-
-    // evaluation contexts where contracts may not be enabled:
     // std::abort() is not a constant expression, so a compile-time
     // out-of-bounds access is diagnosed as a hard error.
     //
     // At runtime:
     // 1. [[assume(i < L)]] tells the compiler the index is always
-    //    in bounds.  In optimised builds this allows elimination of
-    //    the runtime guard below as dead code, unlocking auto-
-    //    vectorisation.
-    // 2. The runtime if-abort guard is kept for debug / CI builds
-    //    where contracts may not terminate correctly (e.g. UBSan
-    //    interference) and optimisations are off.
+    //    in bounds, unlocking auto-vectorisation in hot loops.
+    // 2. The volatile sink prevents the compiler from eliminating
+    //    the runtime guard as dead code after [[assume]], keeping
+    //    the OOB → abort path alive in debug and CI builds.
+    //    In release builds the compare-and-branch is still
+    //    optimised away because [[assume]] dominates.
     //
-    // 编译期纵深防御。
-    // 契约 pre(i < L) 是主要安全网。此 if-consteval 守卫为
-    // 常量求值上下文提供二级保护：std::abort() 不是常量表达式，
-    // 编译期越界访问会被诊断为硬错误。
+    // 编译期：std::abort() 不是常量表达式，越界触发硬编译错误。
     //
     // 运行期：
-    // 1. [[assume(i < L)]] 告诉编译器索引始终在边界内。
-    //    优化构建中编译器可将下方运行时守卫作为死代码消除，
-    //    解锁自动向量化。
-    // 2. 运行时 if-abort 守卫保留用于 debug/CI 构建，以应对
-    //    契约未正确终止（如 UBSan 干扰）且优化未启用的场景。
+    // 1. [[assume(i < L)]] 告诉编译器索引始终在边界内，
+    //    解锁热循环的自动向量化。
+    // 2. volatile 屏障阻止编译器在 [[assume]] 后将运行时守卫
+    //    当作死代码消除，保证 debug/CI 中 OOB → abort 路径存活。
+    //    release 构建中 [[assume]] 仍主导，比较分支被优化消除。
     if consteval {
         if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
             std::abort();
         }
     }
     [[assume(i < static_cast<std::size_t>(L))]];
+
+    // Volatile sink: forces the compiler to re-evaluate i and keep
+    // the runtime guard below.  Without this barrier, GCC may
+    // eliminate the guard as dead code after [[assume]], causing
+    // UBSan to flag unreachable-program-point on OOB access
+    // (observed on self-hosted CI runner with xlings GCC 16.1.0).
+    //
+    // volatile 屏障：强制编译器重新读取 i 并保留下方运行时守卫。
+    // 无双屏障时，GCC 可能在 [[assume]] 后将守卫消除为死代码，
+    // 导致 UBSan 在 OOB 时报告 unreachable-program-point
+    //（在 xlings GCC 16.1.0 的自托管 CI runner 上观察到）。
+    volatile std::size_t sink = i;
+    (void)sink;
+
     if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
         std::abort();
     }
@@ -141,6 +149,13 @@ constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
         }
     }
     [[assume(i < static_cast<std::size_t>(L))]];
+
+    // Volatile sink (see mutable overload for rationale).
+    //
+    // volatile 屏障（原理见可变重载）。
+    volatile std::size_t sink = i;
+    (void)sink;
+
     if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
         std::abort();
     }
