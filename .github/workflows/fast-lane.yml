@@ -29,14 +29,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build & Run (test_vec + test_math + test_cxx26 + test_boundary)
+      - name: Log toolchain version
+        run: |
+          gcc --version | tee artifacts/gcc-version.txt
+
+      - name: Build all tests
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
           xmake f -c -m debug -y
-          xmake build test_vec && xmake run test_vec
-          xmake build test_math && xmake run test_math
-          xmake build test_cxx26 && xmake run test_cxx26
-          xmake build test_boundary && xmake run test_boundary
+          xmake build tests
+
+      - name: Run tests
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake run test_vec
+          xmake run test_math
+          xmake run test_cxx26
+          xmake run test_boundary
 
   contract-tests:
     name: Contract Tests (observe)
@@ -61,6 +70,49 @@ jobs:
             exit 1
           fi
 
+  release-tests:
+    name: Release-Mode Tests
+    runs-on: self-hosted
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build all tests (release)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake f -c -m release --march=generic -y
+          xmake build tests
+
+      - name: Run tests (release)
+        run: |
+          export PATH=$HOME/.xlings/subos/current/bin:$PATH
+          xmake run test_vec
+          xmake run test_math
+          xmake run test_cxx26
+          xmake run test_boundary
+
+  mcpp-verify:
+    name: mcpp Build Check
+    runs-on: self-hosted
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: mcpp build
+
+      - name: Run tests
+        run: |
+          B=$(echo target/*/bin)
+          $B/test_vec
+          $B/test_math
+          $B/test_cxx26
+          $B/test_boundary
+
   asan-ubsan:
     name: ASan + UBSan
     runs-on: self-hosted
@@ -71,14 +123,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build & Run with sanitizers
+      - name: Build with sanitizers
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
           export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
           xmake f -c -m debug \
             --cxflags="-fsanitize=address,undefined -fno-omit-frame-pointer" \
             --ldflags="-fsanitize=address,undefined" -y
-          xmake build test_vec && xmake build test_math && xmake build test_cxx26 && xmake build test_boundary && xmake build test_contracts
+          xmake build tests
+
+      - name: Run with sanitizers
+        run: |
+          export LD_LIBRARY_PATH=$HOME/.xlings/data/runtimedir/gcc-16.1.0-linux-x86_64/lib64:$LD_LIBRARY_PATH
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_vec
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_math
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_cxx26
