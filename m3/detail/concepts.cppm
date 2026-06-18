@@ -3,9 +3,10 @@
 //   FloatingPoint      — restricts to floating-point types (float, double, long double)
 //   ValidVecDimension  — restricts vector dimensions to [1, 4]
 //   ValidMatrixSize    — restricts matrix rows and columns to [1, 4]
-//   VectorLike         — any type that behaves like a vector (has dimension, value_type, operator[])
-//   MatrixLike         — any type that behaves like a matrix (has columns, rows, column_type, operator[])
-//   element_ref_t<V>   — reference type returned by v[i]; decouples apply_* from Vec-specific
+//   VectorLike         — any type that behaves like a vector (has dimension, value_type,
+//   operator[]) MatrixLike         — any type that behaves like a matrix (has columns, rows,
+//   column_type, operator[]) element_ref_t<V>   — reference type returned by v[i]; decouples
+//   apply_* from Vec-specific
 //                         operator[] semantics, enabling future Matrix reuse
 //   BinaryOp / UnaryOp — constrains functors used by apply_binary / apply_unary
 //
