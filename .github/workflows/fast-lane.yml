@@ -31,6 +31,7 @@ jobs:
 
       - name: Log toolchain version
         run: |
+          mkdir -p artifacts
           gcc --version | tee artifacts/gcc-version.txt
 
       - name: Build all tests
@@ -107,11 +108,10 @@ jobs:
 
       - name: Run tests
         run: |
-          B=$(echo target/*/bin)
-          $B/test_vec
-          $B/test_math
-          $B/test_cxx26
-          $B/test_boundary
+          find target -name test_vec -exec {} \;
+          find target -name test_math -exec {} \;
+          find target -name test_cxx26 -exec {} \;
+          find target -name test_boundary -exec {} \;
 
   asan-ubsan:
     name: ASan + UBSan
