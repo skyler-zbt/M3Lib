@@ -32,14 +32,14 @@ main = "tests/test_boundary.cpp"
 [targets.test_contracts]
 kind = "bin"
 main = "tests/test_contracts.cpp"
-cxxflags = ["-fcontract-evaluation-semantic=observe"]
 
 [lib]
 path = "m3/m3.cppm"
 
 [build]
-sources = ["m3/**/*.cppm"]
-cxxflags = ["-fcontracts", "-fcontract-evaluation-semantic=enforce", "-march=native"]
+sources = ["m3/**/*.cppm", "tests/test_common.cppm"]
+cxxflags = ["-fcontracts", "-fcontract-evaluation-semantic=observe", "-march=native"]
+ldflags = ["-lstdc++exp", "-lstdc++"]
 
 [toolchain]
 default = "gcc@16.1.0"

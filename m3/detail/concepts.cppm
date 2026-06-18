@@ -1,19 +1,23 @@
 // Core concepts used across M3Lib for type constraints.
-//   Arithmetic       — restricts to built-in arithmetic types (int, float, double, …)
-//   FloatingPoint    — restricts to floating-point types (float, double, long double)
-//   ValidDimension   — restricts vector/matrix dimensions to [1, 4]
-//   VectorLike       — any type that behaves like a vector (has dimension, value_type, operator[])
-//   element_ref_t<V> — reference type returned by v[i]; decouples apply_* from Vec-specific
-//                       operator[] semantics, enabling future Matrix reuse
+//   Arithmetic         — restricts to built-in arithmetic types (int, float, double, …)
+//   FloatingPoint      — restricts to floating-point types (float, double, long double)
+//   ValidVecDimension  — restricts vector dimensions to [1, 4]
+//   ValidMatrixSize    — restricts matrix rows and columns to [1, 4]
+//   VectorLike         — any type that behaves like a vector (has dimension, value_type, operator[])
+//   MatrixLike         — any type that behaves like a matrix (has columns, rows, column_type, operator[])
+//   element_ref_t<V>   — reference type returned by v[i]; decouples apply_* from Vec-specific
+//                         operator[] semantics, enabling future Matrix reuse
 //   BinaryOp / UnaryOp — constrains functors used by apply_binary / apply_unary
 //
 // M3Lib 全局类型约束概念。
-//   Arithmetic       —— 限定内置算术类型（int、float、double 等）
-//   FloatingPoint    —— 限定浮点类型（float、double、long double）
-//   ValidDimension   —— 限定向量/矩阵维度为 [1, 4]
-//   VectorLike       —— 任何行为类似向量的类型（具有 dimension、value_type、operator[]）
-//   element_ref_t<V> —— v[i] 返回的引用类型；将 apply_* 与 Vec 专属的 operator[]
-//                       语义解耦，为未来 Matrix 复用做准备
+//   Arithmetic         —— 限定内置算术类型（int、float、double 等）
+//   FloatingPoint      —— 限定浮点类型（float、double、long double）
+//   ValidVecDimension  —— 限定向量维度为 [1, 4]
+//   ValidMatrixSize    —— 限定矩阵行和列维度为 [1, 4]
+//   VectorLike         —— 任何行为类似向量的类型（具有 dimension、value_type、operator[]）
+//   MatrixLike         —— 任何行为类似矩阵的类型（具有 columns、rows、column_type、operator[]）
+//   element_ref_t<V>   —— v[i] 返回的引用类型；将 apply_* 与 Vec 专属的 operator[]
+//                         语义解耦，为未来 Matrix 复用做准备
 //   BinaryOp / UnaryOp —— 约束 apply_binary / apply_unary 使用的函数对象
 export module m3.detail.concepts;
 
@@ -27,15 +31,15 @@ template <typename T>
 concept FloatingPoint = std::floating_point<T>;
 
 template <int L>
-concept ValidDimension = (L >= 1 && L <= 4);
+concept ValidVecDimension = (L >= 1 && L <= 4);
 
 // VectorLike: any type with dimension, value_type, qualifier_type,
 // operator[], and default-constructibility.
-// Enables apply_binary / apply_unary to work generically with Vec, Mat, Quat, etc.
+// Enables apply_binary / apply_unary to work generically with vector types.
 //
 // VectorLike：任何具有 dimension、value_type、qualifier_type、
 // operator[] 和默认可构造性的类型。
-// 使 apply_binary / apply_unary 能泛型作用于 Vec、Mat、Quat 等类型。
+// 使 apply_binary / apply_unary 能泛型作用于向量类型。
 template <typename V>
 concept VectorLike = requires {
     typename V::value_type;
@@ -47,6 +51,39 @@ concept VectorLike = requires {
         { cv[i] } -> std::same_as<const typename V::value_type&>;
     };
 };
+
+// MatrixLike: any type with columns, rows, column_type, value_type,
+// qualifier_type, operator[] returning column reference, and default-
+// constructibility.  Enables apply_* to work generically with matrix types.
+//
+// MatrixLike：任何具有 columns、rows、column_type、value_type、
+// qualifier_type、operator[] 返回列引用和默认可构造性的类型。
+// 使 apply_* 能泛型作用于矩阵类型。
+template <typename M>
+concept MatrixLike = requires {
+    typename M::value_type;
+    typename M::column_type;
+    requires std::same_as<typename M::column_type::value_type, typename M::value_type>;
+    typename M::qualifier_type;
+    { M::columns } -> std::same_as<int>;
+    { M::rows } -> std::same_as<int>;
+    requires std::default_initializable<M>;
+    requires Arithmetic<typename M::value_type>;
+    requires requires(M& m, const M& cm, std::size_t i) {
+        { m[i] } -> std::same_as<typename M::column_type&>;
+        { cm[i] } -> std::same_as<const typename M::column_type&>;
+    };
+};
+
+// ValidMatrixSize — restricts matrix rows and columns to [2, 4], excluding
+// degenerate 1×N / N×1 matrices (TD-012).  Square constraint is enforced by
+// individual Mat specialisations, not by this concept.
+//
+// ValidMatrixSize —— 将矩阵行和列维度限制为 [2, 4]，排除退化的
+// 1×N / N×1 矩阵（TD-012）。方阵约束由各 Mat 特化强制执行，
+// 不由此 concept 负责。
+template <int C, int R>
+concept ValidMatrixSize = (C >= 2 && C <= 4) && (R >= 2 && R <= 4);
 
 // element_ref_t<V> — abstracts the reference type returned by v[i].
 // Akin conceptually to std::iterator_traits::iter_reference_t but for
