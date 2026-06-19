@@ -54,20 +54,19 @@ concept VectorLike = requires {
 };
 
 // MatrixLike: any type with columns, rows, column_type, value_type,
-// qualifier_type, operator[] returning column reference, and default-
-// constructibility.  Enables apply_* to work generically with matrix types.
+// qualifier_type, operator[] returning a column reference, and default-
+// constructibility.
 //
 // MatrixLike：任何具有 columns、rows、column_type、value_type、
 // qualifier_type、operator[] 返回列引用和默认可构造性的类型。
-// 使 apply_* 能泛型作用于矩阵类型。
 template <typename M>
 concept MatrixLike = requires {
     typename M::value_type;
     typename M::column_type;
     requires std::same_as<typename M::column_type::value_type, typename M::value_type>;
     typename M::qualifier_type;
-    { M::columns } -> std::same_as<int>;
-    { M::rows } -> std::same_as<int>;
+    requires std::same_as<decltype(M::columns), const int>;
+    requires std::same_as<decltype(M::rows), const int>;
     requires std::default_initializable<M>;
     requires Arithmetic<typename M::value_type>;
     requires requires(M& m, const M& cm, std::size_t i) {
