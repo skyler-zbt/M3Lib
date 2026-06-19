@@ -1,5 +1,5 @@
 // Vec — the primary vector type with GLSL-style single-component swizzle accessors.
-// Dimensions are restricted to [1, 4] by ValidDimension.
+// Dimensions are restricted to [1, 4] by ValidVecDimension.
 // Per-specialisation accessor sets:
 //   Vec<1>: .x/.r/.s
 //   Vec<2>: .x/.y, .r/.g, .s/.t
@@ -8,7 +8,7 @@
 // Multi-character swizzle (.xy, .xyz, .rgb, etc.) is planned for v0.2.0.
 //
 // Vec —— 主向量类型，提供 GLSL 风格的单分量 swizzle 访问器。
-// 维度由 ValidDimension 限制为 [1, 4]。
+// 维度由 ValidVecDimension 限制为 [1, 4]。
 // 各特化的访问器集合：
 //   Vec<1>: .x/.r/.s
 //   Vec<2>: .x/.y, .r/.g, .s/.t
@@ -28,7 +28,7 @@ export namespace m3 {
 //
 // 主模板——以维度 L、元素类型 T 和对齐 Q 为参数
 template <int L, detail::Arithmetic T, detail::Qualifier Q = detail::Qualifier::aligned_none>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 class Vec : public m3::detail::VectorBase<L, T, Q> {
     using base_type = m3::detail::VectorBase<L, T, Q>::VectorBase;
     using base_type::base_type;

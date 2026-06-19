@@ -9,11 +9,12 @@ export module m3.vector.base;
 import std;
 
 import m3.detail;
+import m3.vector.storage;
 
 export namespace m3::detail {
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 class VectorBase {
 public:
     VectorBase() = default;
@@ -60,25 +61,25 @@ protected:
 };
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 constexpr VectorBase<L, T, Q>::VectorBase(T scalar) noexcept {
     storage_.data.fill(scalar);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 constexpr T* VectorBase<L, T, Q>::value_ptr() noexcept {
     return storage_.data.data();
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 constexpr const T* VectorBase<L, T, Q>::value_ptr() const noexcept {
     return storage_.data.data();
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
     // Compile-time defense-in-depth.
     // std::abort() is not a constant expression, so a compile-time
@@ -137,7 +138,7 @@ constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
-requires detail::ValidDimension<L>
+requires detail::ValidVecDimension<L>
 constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept {
     // Const overload of the if-consteval + [[assume]] pattern.
     // At compile time, out-of-bounds access is diagnosed as a hard
