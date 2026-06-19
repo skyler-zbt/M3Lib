@@ -50,3 +50,10 @@ target_end()
 -- 验证 VectorBase::operator[] 的契约 pre 条件。
 -- 这是 v0.1.1 [[assume]] 改造的 P0 回归测试套件。
 configure_m3_test_target("test_boundary")
+
+-- Mat type: construction, accessors, operators, comparison, products.
+-- S1.7 — Mat core type and basic operations.
+--
+-- Mat 类型：构造、访问器、运算符、比较、乘法。
+-- S1.7——Mat 核心类型与基本运算。
+configure_m3_test_target("test_mat")

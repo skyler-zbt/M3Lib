@@ -9,6 +9,7 @@ export module m3.vector.base;
 import std;
 
 import m3.detail;
+import m3.vector.storage;
 
 export namespace m3::detail {
 
