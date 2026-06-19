@@ -44,7 +44,6 @@ requires detail::ValidMatrixSize<C, R>
 class Mat : public detail::MatrixBase<C, R, T, Q> {
     using base_type = detail::MatrixBase<C, R, T, Q>;
     using base_type::base_type;
-
 public:
     static constexpr int columns = C;
     static constexpr int rows = R;

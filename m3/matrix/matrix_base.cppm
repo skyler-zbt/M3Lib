@@ -87,8 +87,7 @@ public:
     // 列访问（主要）。返回 Vec<R,T,Q>&——零 reinterpret_cast，零临时，
     // 零每次访问开销。存储是嵌套的（std::array<Vec<R,T,Q>, C>），
     // 所以列是对 storage_.columns_[i] 的真正引用，不是值拷贝。
-    constexpr Vec<R, T, Q>& operator[](std::size_t i) noexcept
-        pre(i < static_cast<std::size_t>(C));
+    constexpr Vec<R, T, Q>& operator[](std::size_t i) noexcept pre(i < static_cast<std::size_t>(C));
     constexpr const Vec<R, T, Q>& operator[](std::size_t i) const noexcept
         pre(i < static_cast<std::size_t>(C));
 
@@ -116,7 +115,6 @@ public:
     constexpr T* value_ptr() noexcept;
     [[nodiscard("raw pointer to underlying data; intended for C API / SIMD interop")]]
     constexpr const T* value_ptr() const noexcept;
-
 protected:
     detail::MatrixStorage<C, R, T, Q> storage_;
 };
@@ -171,8 +169,7 @@ constexpr Vec<R, T, Q>& MatrixBase<C, R, T, Q>::operator[](std::size_t i) noexce
 
 template <int C, int R, typename T, Qualifier Q>
 requires detail::ValidMatrixSize<C, R>
-constexpr const Vec<R, T, Q>&
-MatrixBase<C, R, T, Q>::operator[](std::size_t i) const noexcept {
+constexpr const Vec<R, T, Q>& MatrixBase<C, R, T, Q>::operator[](std::size_t i) const noexcept {
     if consteval {
         if (i >= static_cast<std::size_t>(C)) [[unlikely]] {
             std::abort();
@@ -209,8 +206,7 @@ constexpr const T* MatrixBase<C, R, T, Q>::value_ptr() const noexcept {
 
 template <int C, int R, typename T, Qualifier Q>
 requires detail::ValidMatrixSize<C, R>
-constexpr T&
-MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t r) noexcept {
+constexpr T& MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t r) noexcept {
     if consteval {
         if (c >= static_cast<std::size_t>(C) || r >= static_cast<std::size_t>(R)) [[unlikely]] {
             std::abort();
@@ -227,8 +223,7 @@ MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t r) noexcept {
 
 template <int C, int R, typename T, Qualifier Q>
 requires detail::ValidMatrixSize<C, R>
-constexpr const T&
-MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t r) const noexcept {
+constexpr const T& MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t r) const noexcept {
     if consteval {
         if (c >= static_cast<std::size_t>(C) || r >= static_cast<std::size_t>(R)) [[unlikely]] {
             std::abort();

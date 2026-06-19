@@ -2,8 +2,10 @@
 // Per GLSL convention (followed by glm and most graphics math libraries):
 //   - operator+(Mat, Mat), operator-(Mat, Mat), operator/(Mat, Mat)  → Hadamard
 //   - operator*(Mat, Mat)                                            → matrix product
-//   - operator*(Mat, Vec)                                            → column vector right-multiplication
-//   - operator*(Vec, Mat)                                            → row vector left-multiplication
+//   - operator*(Mat, Vec)                                            → column vector
+//   right-multiplication
+//   - operator*(Vec, Mat)                                            → row vector
+//   left-multiplication
 //   - operator*(Mat, scalar), operator*(scalar, Mat)                 → scalar broadcast
 //
 // Per TD-005: both operator*(Mat, Vec) and operator*(Vec, Mat) are
@@ -120,29 +122,25 @@ constexpr Mat<C, R, T, Q> mat_neg(const Mat<C, R, T, Q>& a) {
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator+(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q> operator+(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     return detail::mat_hadamard<detail::Add>(a, b);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator-(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q> operator-(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     return detail::mat_hadamard<detail::Sub>(a, b);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator/(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q> operator/(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     return detail::mat_hadamard<detail::Div>(a, b);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator-(const Mat<C, R, T, Q>& a) noexcept {
+constexpr Mat<C, R, T, Q> operator-(const Mat<C, R, T, Q>& a) noexcept {
     return detail::mat_neg(a);
 }
 
@@ -152,51 +150,44 @@ operator-(const Mat<C, R, T, Q>& a) noexcept {
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator*(const Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q> operator*(const Mat<C, R, T, Q>& a, T s) noexcept {
     return detail::mat_scalar_right<detail::Mul>(a, s);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator*(T s, const Mat<C, R, T, Q>& a) noexcept {
+constexpr Mat<C, R, T, Q> operator*(T s, const Mat<C, R, T, Q>& a) noexcept {
     return detail::mat_scalar_left<detail::Mul>(s, a);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator/(const Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q> operator/(const Mat<C, R, T, Q>& a, T s) noexcept {
     return detail::mat_scalar_right<detail::Div>(a, s);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator+(const Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q> operator+(const Mat<C, R, T, Q>& a, T s) noexcept {
     return detail::mat_scalar_right<detail::Add>(a, s);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator+(T s, const Mat<C, R, T, Q>& a) noexcept {
+constexpr Mat<C, R, T, Q> operator+(T s, const Mat<C, R, T, Q>& a) noexcept {
     return detail::mat_scalar_left<detail::Add>(s, a);
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator-(const Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q> operator-(const Mat<C, R, T, Q>& a, T s) noexcept {
     return detail::mat_scalar_right<detail::Sub>(a, s);
 }
 
 // ---- Compound assignment ----
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator+=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q>& operator+=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) += b(c, r);
@@ -204,8 +195,7 @@ operator+=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator-=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q>& operator-=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) -= b(c, r);
@@ -214,8 +204,7 @@ operator-=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
 
 // Hadamard /=
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator/=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q>& operator/=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) /= b(c, r);
@@ -224,8 +213,7 @@ operator/=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
 
 // Scalar compound assignment
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator*=(Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q>& operator*=(Mat<C, R, T, Q>& a, T s) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) *= s;
@@ -233,8 +221,7 @@ operator*=(Mat<C, R, T, Q>& a, T s) noexcept {
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator+=(Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q>& operator+=(Mat<C, R, T, Q>& a, T s) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) += s;
@@ -242,8 +229,7 @@ operator+=(Mat<C, R, T, Q>& a, T s) noexcept {
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator-=(Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q>& operator-=(Mat<C, R, T, Q>& a, T s) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) -= s;
@@ -251,8 +237,7 @@ operator-=(Mat<C, R, T, Q>& a, T s) noexcept {
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator/=(Mat<C, R, T, Q>& a, T s) noexcept {
+constexpr Mat<C, R, T, Q>& operator/=(Mat<C, R, T, Q>& a, T s) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
             a(c, r) /= s;
@@ -263,18 +248,17 @@ operator/=(Mat<C, R, T, Q>& a, T s) noexcept {
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr bool
-operator==(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr bool operator==(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
-            if (a(c, r) != b(c, r)) return false;
+            if (a(c, r) != b(c, r))
+                return false;
     return true;
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr bool
-operator!=(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr bool operator!=(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     return !(a == b);
 }
 
@@ -356,31 +340,27 @@ constexpr Vec<C, T, Q> vec_mat_mul(const Vec<R, T, Q>& v, const Mat<C, R, T, Q>&
 // Mat * Mat (matrix product) — NOT element-wise (no Hadamard * for Mat)
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q>
-operator*(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q> operator*(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     return detail::mat_matmul(a, b);
 }
 
 // Mat * Vec (column vector right multiplication)
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Vec<C, T, Q>
-operator*(const Mat<C, R, T, Q>& m, const Vec<C, T, Q>& v) noexcept {
+constexpr Vec<C, T, Q> operator*(const Mat<C, R, T, Q>& m, const Vec<C, T, Q>& v) noexcept {
     return detail::mat_vec_mul(m, v);
 }
 
 // Vec * Mat (row vector left multiplication)
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Vec<R, T, Q>
-operator*(const Vec<R, T, Q>& v, const Mat<C, R, T, Q>& m) noexcept {
+constexpr Vec<R, T, Q> operator*(const Vec<R, T, Q>& v, const Mat<C, R, T, Q>& m) noexcept {
     return detail::vec_mat_mul(v, m);
 }
 
 // Mat * Mat assignment (matrix product, not Hadamard)
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>&
-operator*=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
+constexpr Mat<C, R, T, Q>& operator*=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
     Mat<C, R, T, Q> tmp = detail::mat_matmul(a, b);
     a = tmp;
     return a;
