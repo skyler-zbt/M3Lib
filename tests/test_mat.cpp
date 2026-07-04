@@ -519,29 +519,31 @@ int main() {
     // 下列是密集连续的——ptr[i] 遍历是安全的。对齐限定符（如 aligned_16）
     // 下列间可能存在填充；建议通过 operator[](c).value_ptr() 逐列访问。
 
-    runner.add("value_ptr points to column-major data (default qualifier, contiguous)", [] -> TestResult {
-        float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        m3::Mat3<float> m{data};
-        const float* ptr = m.value_ptr();
-        for (std::size_t i = 0; i < 9; ++i)
-            if (auto r2 = check_float_eq(ptr[i], data[i], 1e-6f); !r2)
-                return r2;
-        return {};
-    });
+    runner.add("value_ptr points to column-major data (default qualifier, contiguous)",
+               [] -> TestResult {
+                   float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+                   m3::Mat3<float> m{data};
+                   const float* ptr = m.value_ptr();
+                   for (std::size_t i = 0; i < 9; ++i)
+                       if (auto r2 = check_float_eq(ptr[i], data[i], 1e-6f); !r2)
+                           return r2;
+                   return {};
+               });
 
-    runner.add("value_ptr writable returns T* for in-place mutation (default qualifier)", [] -> TestResult {
-        m3::Mat2<float> m{};
-        float* ptr = m.value_ptr();
-        ptr[0] = 1.0f;
-        ptr[1] = 2.0f;
-        ptr[2] = 3.0f;
-        ptr[3] = 4.0f;
-        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
-            return r2;
-        if (auto r2 = check_float_eq(m(1, 1), 4.0f, 1e-6f); !r2)
-            return r2;
-        return {};
-    });
+    runner.add("value_ptr writable returns T* for in-place mutation (default qualifier)",
+               [] -> TestResult {
+                   m3::Mat2<float> m{};
+                   float* ptr = m.value_ptr();
+                   ptr[0] = 1.0f;
+                   ptr[1] = 2.0f;
+                   ptr[2] = 3.0f;
+                   ptr[3] = 4.0f;
+                   if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
+                       return r2;
+                   if (auto r2 = check_float_eq(m(1, 1), 4.0f, 1e-6f); !r2)
+                       return r2;
+                   return {};
+               });
 
     runner.add("value_ptr column-by-column access (safe for all qualifiers)", [] -> TestResult {
         float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};

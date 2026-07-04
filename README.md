@@ -60,9 +60,15 @@ Whenever practical, M3Lib follows GLSL specifications and behaviours to reduce d
 - Full C++ Modules support
 - **Platform:** Linux x64 (tested on Fedora with GCC 16)
 
-> **Note:** Other platforms (Windows, macOS) and compilers (Clang, MSVC) are not yet supported.
-> Cross-platform CI is planned for v0.5.0.
+### Platform & Compiler Support
 
+|          | GCC       | Clang     | MSVC      |
+|----------|-----------|-----------|-----------|
+| Linux    | ✅        | 🚧        | ❌        |
+| Windows  | ❌        | 🚧        | 🚧        |
+| macOS    | ❌        | 🚧        | ❌        |
+
+✅ Supported &nbsp;|&nbsp; 🚧 Planned (v0.5.0) &nbsp;|&nbsp; ❌ Not planned
 ---
 
 ## Build
