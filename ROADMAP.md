@@ -12,7 +12,6 @@
 - `constexpr` structured bindings (C++26 P2686R4)
 - Matrix types `Mat<2,2>` through `Mat<4,4>` (square only)
 - Matrix operators (`+ - *` MM/MV, `== !=`, compound assignment)
-- `transpose`, `inverse`, `determinant`, factory functions
 - Core GLSL vector functions: `dot`, `cross`, `normalize`, `length`, `distance`, `reflect`, `refract`
 - Core GLSL common functions: `mix`, `clamp`, `lerp`
 - CI: xmake build + test on push, `-march=native` opt-in
@@ -162,7 +161,6 @@ and provide the type aliases users expect.
 - `constexpr` 结构化绑定（C++26 P2686R4）
 - 矩阵类型 `Mat<2,2>` 至 `Mat<4,4>`（仅方阵）
 - 矩阵运算符（`+ - *` MM/MV、`== !=`、复合赋值）
-- `transpose`、`inverse`、`determinant`、工厂函数
 - 核心 GLSL 向量函数：`dot`、`cross`、`normalize`、`length`、`distance`、`reflect`、`refract`
 - 核心 GLSL 通用函数：`mix`、`clamp`、`lerp`
 - CI：xmake 构建 + push 测试、`-march=native` 可选化

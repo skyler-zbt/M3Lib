@@ -20,8 +20,8 @@
 // The deviation from TD-007 (which suggested a MatrixLike apply_binary
 // overload) is documented here.  Reason: apply_binary's VectorLike
 // constraint requires operator[] returning value_type&.  Mat's operator[]
-// returns Vec<R,T,Q> by value (flat storage), which violates this
-// constraint.  Adding a MatrixLike overload to apply_binary would force
+// returns Vec<R,T,Q>& (a column reference, nested storage), which violates
+// this constraint.  Adding a MatrixLike overload to apply_binary would force
 // every vector dispatch through an if-constexpr branch, slowing the hot
 // path.
 //
@@ -43,7 +43,7 @@
 //
 // 偏离 TD-007（其建议 MatrixLike apply_binary 重载）的原因在此说明：
 // apply_binary 的 VectorLike 约束要求 operator[] 返回 value_type&。
-// Mat 的 operator[] 按值返回 Vec<R,T,Q>（扁平存储），违反该约束。
+// Mat 的 operator[] 返回 Vec<R,T,Q>&（列引用，嵌套存储），违反该约束。
 // 给 apply_binary 加 MatrixLike 重载会强制每个向量分派走
 // if-constexpr 分支，拖慢热路径。
 export module m3.matrix:operators;
@@ -347,7 +347,7 @@ constexpr Mat<C, R, T, Q> operator*(const Mat<C, R, T, Q>& a, const Mat<C, R, T,
 // Mat * Vec (column vector right multiplication)
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Vec<C, T, Q> operator*(const Mat<C, R, T, Q>& m, const Vec<C, T, Q>& v) noexcept {
+constexpr Vec<R, T, Q> operator*(const Mat<C, R, T, Q>& m, const Vec<C, T, Q>& v) noexcept {
     return detail::mat_vec_mul(m, v);
 }
 

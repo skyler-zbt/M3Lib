@@ -25,11 +25,11 @@ M3Lib aims to become a "modern, modular GLM" designed for graphics programming, 
 - 128 test cases (1 skipped due to GCC 16.1.0 ICE in test_contracts)
 
 **Planned (see [Roadmap](./ROADMAP.md)):**
-- Matrix types (v0.2.0)
-- Multi-character swizzle (v0.2.0)
+- GLSL math function completion (v0.2.0)
+- Type aliases `vec2 vec3 vec4 mat3 mat4` (v0.2.0)
+- Multi-character swizzle (v0.2.1)
 - Quaternion support (v0.3.0)
-- C++ standard SIMD (`std::simd`) integration (v0.5.0)
-- Cross-platform support (Windows/macOS) (v0.5.0)
+- Cross-platform support (v0.5.0)
 
 ---
 
