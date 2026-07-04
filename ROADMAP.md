@@ -1,201 +1,292 @@
 # M3Lib Roadmap
 
-> Based on the roundtable review of v0.1.0 (2026-06-07)
+> Revised 2026-07-04 based on external review feedback.
 
-## v0.1.1 (2026-06-14) — Hotfix
+## Completed
 
-**Goal:** Upgrade the project from "personal experiment" to "discoverable
-open-source project."
+### v0.1.0 — Vector Foundation (released)
 
-- [x] `git tag v0.1.0`
-- [x] `CHANGELOG.md` (Keep a Changelog 1.1.0 format)
-- [x] `CONTRIBUTING.md`
-- [x] `.github/ISSUE_TEMPLATE/`
-- [x] `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1)
-- [x] `NOTICE` (Apache-2.0 requirement)
-- [x] `operator[]` `[[assume]]` transformation (auto-vectorisation unlock)
-- [x] `element_ref_t<V>` trait (Matrix `apply_binary` reuse prep)
-- [x] Source comment honesty fixes (4 places)
-- [x] `-march=native` opt-in (`--march` option)
-- [x] README honesty (platform, features, mcpp status)
+- `Vec<1..4, T>` with GLSL-style single-component swizzle
+- Contracts-based bounds checking (C++26 P2900R14)
+- `=delete("reason")` diagnostics (C++26 P2573R2)
+- `constexpr` structured bindings (C++26 P2686R4)
+- Matrix types `Mat<2,2>` through `Mat<4,4>` (square only)
+- Matrix operators (`+ - *` MM/MV, `== !=`, compound assignment)
+- `transpose`, `inverse`, `determinant`, factory functions
+- Core GLSL vector functions: `dot`, `cross`, `normalize`, `length`, `distance`, `reflect`, `refract`
+- Core GLSL common functions: `mix`, `clamp`, `lerp`
+- CI: xmake build + test on push, `-march=native` opt-in
+- `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `NOTICE`
+- README in English and Simplified Chinese
 
-## v0.2.0 (2026-09)
+---
 
-**Goal:** Upgrade from "vector library" to "graphics math library."
+## Planned
 
-### Matrix types
+### v0.2.0 — Graphics Math Foundation
 
-- `Mat<3,3>` and `Mat<4,4>` templates (GLSL column-major)
-- Basic matrix operations (`+ - *` MM/MV/VM, `== !=`)
-- Matrix × scalar, compound assignment
-- `transpose`, `inverse`, `determinant`
-- `identity`, `scale`, `rotate` (single-axis), `translate` factories
-- Matrix `operator[]` returning column reference
+**Goal:** Complete the math function surface needed for basic graphics work,
+and provide the type aliases users expect.
 
-### GLSL math function completion
-
-- Utility: `abs sign floor ceil fract mod step smoothstep min max clamp`
-- Trig: `sin cos tan asin acos atan atan2 radians degrees`
+**GLSL math function completion**
+- Utility: `abs sign floor ceil fract mod step smoothstep min max`
+- Trigonometry: `sin cos tan asin acos atan atan2 radians degrees`
 - Exponential: `pow exp log exp2 log2 sqrt inversesqrt`
-- Per-component vector versions, scalar versions
+- Scalar + per-element vector overloads
 
-### Multi-character swizzle
+**Type aliases**
+- `vec2 vec3 vec4` (`Vec<2,float>` … `Vec<4,float>`)
+- `ivec2 ivec3 ivec4` (`Vec<2,int>` … `Vec<4,int>`)
+- `mat2 mat3 mat4` (`Mat<2,2,float>` … `Mat<4,4,float>`)
 
-- `.xy() .xyz() .rgb() .bgr()` etc. (at minimum all 2D/3D permutations)
+**Mat4 × Vec3 homogeneous transform**
+- `Mat4 * Vec3` with implicit `w=1` (position transform)
+- `Mat4 * Vec4` (full homogeneous multiply)
+- This is the single most important operation for graphics — projecting
+  3D points through a 4×4 transform matrix.
+
+**ULP floating-point comparison**
+- Replace fixed-epsilon `check_float_eq` with ULP-based comparison
+- Addresses the `1e-20f` tolerance issue identified in review
+
+### v0.2.1 — Polish & Multi-char Swizzle
+
+**Goal:** API cleanliness and developer experience.
+
+**Multi-character swizzle**
+- `.xy() .xyz() .rgb() .bgr()` etc. (all 2D/3D/4D permutations)
 - Correct move and copy semantics
+- Minimum: all 2D and 3D permutations; 4D can follow
 
-### API cleanup
+**API cleanup**
+- Eliminate `detail::` types from public signatures
+  (`m3::Qualifier` alias re-export)
+- Audit and complete `import std;` coverage
 
-- `detail::` public signature elimination (`m3::Qualifier` alias re-export)
-- `import std;` missing-file completion
+**Mat/Mat division semantics**
+- Current element-wise (Hadamard) division differs from GLSL convention
+  (where matrix "division" means multiply-by-inverse)
+- Evaluate: rename to `hadamard_div`, remove, or add explicit
+  `mul_inverse` alongside
 
-### CI/CD upgrade
-
+**CI upgrade**
 - mcpp CI tiered coverage (`mcpp-verify` job)
-- ULP floating-point comparison migration
 - Contracts ignore-mode testing
 - NaN/Inf boundary testing
+- mcpp decision: full CI support or official deprecation
 
-### mcpp decision point
+### v0.3.0 — 3D Transform Pipeline
 
-- Evaluate mcpp viability: fix remaining build issues or officially deprecate.
-  The v0.1.1 README marks mcpp as community-maintained/best-effort; v0.2.0
-  must decide whether to invest in full mcpp CI or remove mcpp support.
+**Goal:** Full 3D scene-graph transform support.
 
-## v0.3.0 (2026-12)
+**Quaternion**
+- `Quat` type (GLSL-style)
+- `angleAxis`, `lookRotation`, `euler` constructors
+- `slerp`, `nlerp` interpolation
+- `mat3_cast` / `mat4_cast` conversion
 
-**Goal:** Complete 3D transform pipeline support.
-
-- `Quat` quaternion type (GLSL style: `angleAxis/lookRotation/euler/slerp`)
-- `Transform` pipeline (TRS decompose/compose)
-- 3D projection matrices (`perspective/ortho/frustum`)
-- Camera helper (`lookAt`)
+**Transform pipeline**
+- `Transform` type (TRS decompose / compose)
+- 3D projection matrices: `perspective`, `ortho`, `frustum`
+- Camera helper: `lookAt`
 - `faceforward` function
+
+**Testing**
 - Property-based testing framework
-- Performance regression tests (benchmark suite)
+- Performance benchmark suite (microbenchmarks for hot paths)
 
-## v0.5.0 (2027-03)
+### v0.4.0 — Generalisation & Performance
 
-**Goal:** Production-ready, ecosystem-positioned.
+**Goal:** Remove dimension restrictions and establish performance baseline.
 
-- `std::simd` integration (first batch: `Vec<3,float>` SSE/AVX)
-- Cross-platform build (Windows MSVC/Clang, macOS Apple Clang)
+**Rectangular matrices**
+- Lift the `C == R` restriction on `Mat<C,R,T,Q>`
+- Non-square matrix multiplication
+
+**SIMD abstraction layer**
+- Design a SIMD backend abstraction (not coupled to `std::simd`)
+- Provide SSE/AVX backends as initial implementations
+- `std::simd` as an optional backend when standardised
+- No dependency on unstandardised features
+
+**Performance benchmarks**
+- CI-tracked microbenchmarks for Vec/Mat operations
+- Compare against GLM on common workloads
+
+### v0.5.0 — Ecosystem & Cross-platform
+
+**Goal:** Reachable from any platform, integrable with any toolchain.
+
+**Cross-platform**
+- Windows MSVC / Clang-CL
+- macOS Apple Clang
+- Green CI matrix: Linux/macOS/Windows × GCC/Clang/MSVC
+
+**Documentation**
+- API reference site (Doxygen / custom generator)
+- Migration guide (GLM → M3Lib)
+- Getting-started tutorial
+
+**Ecosystem integration**
+- GLM / Eigen interop helpers (conversion functions, not bindings)
 - xmake-repo package publication
 - Docker standardised build images
-- Documentation site (API reference + migration guide + tutorials)
-- Type aliases `vec2/vec3/vec4/ivec3/mat3/mat4`
 
-## v1.0.0 (2027-04 ± 1Q)
+### v1.0.0 — Stable API
 
-**Goal:** Stable API + ABI commitment.
+**Goal:** API stability commitment; suitable for production dependency.
 
+- **API stability** (not ABI — template-heavy modular libraries cannot
+  realistically promise ABI stability across compiler versions)
 - 6 months after C++26 final IS publication (core dependency stabilisation)
-- ABI compatibility commitment (within same GCC major version)
-- Green CI matrix across all platforms (Linux/macOS/Windows ×
-  GCC/Clang/MSVC)
-- Complete docs site + community governance model
+- Full green CI matrix across all supported platforms
 - API freeze; subsequent changes are minor-version additive only
+- Complete documentation site + community governance model
 
-> ⚠️ **Critical external dependency:** C++26 IS publication date.  If ISO
-> publishes later than 2026-10, v1.0.0 slips accordingly.
+> ⚠️ **Critical external dependency:** C++26 IS publication date.
+> If ISO publishes later than 2026-10, v1.0.0 slips accordingly.
 
 ---
 
 # M3Lib 路线图
 
-> 基于 v0.1.0 圆桌评审（2026-06-07）
+> 2026-07-04 基于外部评审反馈修订。
 
-## v0.1.1 (2026-06-14) — 热修复
+## 已完成
 
-**目标：** 将项目从"个人实验"升级为"可发现的开源项目"。
+### v0.1.0 — 向量基础（已发布）
 
-- [x] `git tag v0.1.0`
-- [x] `CHANGELOG.md`（Keep a Changelog 1.1.0 格式）
-- [x] `CONTRIBUTING.md`
-- [x] `.github/ISSUE_TEMPLATE/`
-- [x] `CODE_OF_CONDUCT.md`（Contributor Covenant 2.1）
-- [x] `NOTICE`（Apache-2.0 要求）
-- [x] `operator[]` `[[assume]]` 改造（解锁自动向量化）
-- [x] `element_ref_t<V>` trait（Matrix 复用 `apply_binary` 准备）
-- [x] 源码注释诚实修复（4 处）
-- [x] `-march=native` 可选化（`--march` 选项）
-- [x] README 诚实化（平台、功能、mcpp 状态）
+- `Vec<1..4, T>`，GLSL 风格单分量 swizzle
+- 基于契约的边界检查（C++26 P2900R14）
+- `=delete("reason")` 诊断（C++26 P2573R2）
+- `constexpr` 结构化绑定（C++26 P2686R4）
+- 矩阵类型 `Mat<2,2>` 至 `Mat<4,4>`（仅方阵）
+- 矩阵运算符（`+ - *` MM/MV、`== !=`、复合赋值）
+- `transpose`、`inverse`、`determinant`、工厂函数
+- 核心 GLSL 向量函数：`dot`、`cross`、`normalize`、`length`、`distance`、`reflect`、`refract`
+- 核心 GLSL 通用函数：`mix`、`clamp`、`lerp`
+- CI：xmake 构建 + push 测试、`-march=native` 可选化
+- `CHANGELOG.md`、`CONTRIBUTING.md`、`CODE_OF_CONDUCT.md`、`NOTICE`
+- 中英双语 README
 
-## v0.2.0 (2026-09)
+---
 
-**目标：** 从"向量库"升级为"图形数学库"。
+## 计划中
 
-### 矩阵类型
+### v0.2.0 — 图形数学基础
 
-- `Mat<3,3>` 和 `Mat<4,4>` 模板（GLSL 列主序）
-- 矩阵基本运算（`+ - *` MM/MV/VM、`== !=`）
-- 矩阵 × 标量、复合赋值
-- `transpose`、`inverse`、`determinant`
-- `identity`、`scale`、`rotate`（单轴）、`translate` 工厂函数
-- 矩阵 `operator[]` 返回列引用
+**目标：** 补齐基础图形工作所需的数学函数面，并提供用户期待的类型别名。
 
-### GLSL 数学函数补齐
-
-- 常用：`abs sign floor ceil fract mod step smoothstep min max clamp`
+**GLSL 数学函数补齐**
+- 常用：`abs sign floor ceil fract mod step smoothstep min max`
 - 三角：`sin cos tan asin acos atan atan2 radians degrees`
 - 指数：`pow exp log exp2 log2 sqrt inversesqrt`
-- 逐分量向量版、标量版
+- 标量 + 逐元素向量重载
 
-### 多字符 Swizzle
+**类型别名**
+- `vec2 vec3 vec4`（`Vec<2,float>` … `Vec<4,float>`）
+- `ivec2 ivec3 ivec4`（`Vec<2,int>` … `Vec<4,int>`）
+- `mat2 mat3 mat4`（`Mat<2,2,float>` … `Mat<4,4,float>`）
 
-- `.xy() .xyz() .rgb() .bgr()` 等（至少二维/三维全排列）
+**Mat4 × Vec3 齐次变换**
+- `Mat4 * Vec3`，隐式 `w=1`（位置变换）
+- `Mat4 * Vec4`（完整齐次乘法）
+- 这是图形编程最核心的操作——将 3D 点通过 4×4 变换矩阵投影
+
+**ULP 浮点比较**
+- 用基于 ULP 的比较替换固定 epsilon 的 `check_float_eq`
+- 解决评审指出的 `1e-20f` 容差问题
+
+### v0.2.1 — 打磨与多字符 Swizzle
+
+**目标：** API 整洁度与开发者体验。
+
+**多字符 Swizzle**
+- `.xy() .xyz() .rgb() .bgr()` 等（全部 2D/3D/4D 排列）
 - 正确的移动和拷贝语义
+- 最低要求：全部 2D 和 3D 排列；4D 可后续补充
 
-### API 清理
+**API 清理**
+- 消除公开签名中的 `detail::` 类型（`m3::Qualifier` 别名重导出）
+- 审计并补齐 `import std;` 覆盖
 
-- `detail::` 公开签名消除（`m3::Qualifier` 别名重导出）
-- 补齐遗漏的 `import std;`
+**Mat/Mat 除法语义**
+- 当前逐元素（Hadamard）除法与 GLSL 惯例不符（GLSL 中矩阵"除法"指乘以逆矩阵）
+- 评估方案：重命名为 `hadamard_div`、移除，或同时提供 `mul_inverse`
 
-### CI/CD 升级
-
+**CI 升级**
 - mcpp CI 阶梯覆盖（`mcpp-verify` job）
-- ULP 浮点比较迁移
 - Contracts ignore 模式测试
 - NaN/Inf 边界测试
+- mcpp 决策：完整 CI 支持或正式弃用
 
-### mcpp 决策点
+### v0.3.0 — 3D 变换管线
 
-- 评估 mcpp 可行性：修复余下构建问题或正式弃用。v0.1.1 的 README
-  将 mcpp 标记为社区维护/尽力支持；v0.2.0 必须决定是投入完整的 mcpp
-  CI 还是移除 mcpp 支持。
+**目标：** 完整 3D 场景图变换支持。
 
-## v0.3.0 (2026-12)
+**四元数**
+- `Quat` 类型（GLSL 风格）
+- `angleAxis`、`lookRotation`、`euler` 构造函数
+- `slerp`、`nlerp` 插值
+- `mat3_cast` / `mat4_cast` 转换
 
-**目标：** 支持完整 3D 变换管线。
-
-- `Quat` 四元数类型（GLSL 风格：`angleAxis/lookRotation/euler/slerp`）
-- `Transform` 管线（TRS 分解/组合）
-- 3D 投影矩阵（`perspective/ortho/frustum`）
-- 相机辅助函数（`lookAt`）
+**变换管线**
+- `Transform` 类型（TRS 分解/组合）
+- 3D 投影矩阵：`perspective`、`ortho`、`frustum`
+- 相机辅助函数：`lookAt`
 - `faceforward` 函数
+
+**测试**
 - Property-based testing 框架
-- 性能回归测试（benchmark suite）
+- 性能基准套件（热点路径微基准）
 
-## v0.5.0 (2027-03)
+### v0.4.0 — 泛化与性能
 
-**目标：** 生产就绪，生态就位。
+**目标：** 解除维度限制并建立性能基线。
 
-- `std::simd` 集成（第一批：`Vec<3,float>` SSE/AVX）
-- 跨平台构建（Windows MSVC/Clang、macOS Apple Clang）
+**矩形矩阵**
+- 解除 `Mat<C,R,T,Q>` 的 `C == R` 限制
+- 非方阵矩阵乘法
+
+**SIMD 抽象层**
+- 设计 SIMD 后端抽象（不与 `std::simd` 耦合）
+- 提供 SSE/AVX 后端作为初始实现
+- `std::simd` 作为可选后端（标准化后接入）
+- 不依赖尚未标准化的特性
+
+**性能基准**
+- CI 跟踪的 Vec/Mat 操作微基准
+- 与 GLM 在常见工作负载上对比
+
+### v0.5.0 — 生态与跨平台
+
+**目标：** 任何平台可触及，任何工具链可集成。
+
+**跨平台**
+- Windows MSVC / Clang-CL
+- macOS Apple Clang
+- 绿色 CI 矩阵：Linux/macOS/Windows × GCC/Clang/MSVC
+
+**文档**
+- API 参考站（Doxygen / 自定义生成器）
+- 迁移指南（GLM → M3Lib）
+- 入门教程
+
+**生态集成**
+- GLM / Eigen 互操作辅助（转换函数，非绑定）
 - xmake-repo 包发布
 - Docker 标准化构建镜像
-- 文档站（API 参考 + 迁移指南 + 教程）
-- 类型别名 `vec2/vec3/vec4/ivec3/mat3/mat4`
 
-## v1.0.0 (2027-04 ± 1Q)
+### v1.0.0 — 稳定 API
 
-**目标：** 稳定 API + ABI 承诺。
+**目标：** API 稳定性承诺，适合作为生产依赖。
 
+- **API 稳定**（非 ABI —— 模板重度模块化库无法跨编译器版本承诺
+  ABI 稳定性）
 - C++26 正式标准发布后 6 个月（核心依赖稳定）
-- ABI 兼容承诺（同 GCC 大版本内）
-- 全平台 CI 绿色矩阵（Linux/macOS/Windows × GCC/Clang/MSVC）
-- 完整文档站 + 社区治理模型
+- 全平台 CI 绿色矩阵
 - API 冻结，后续仅小版本加法
+- 完整文档站 + 社区治理模型
 
 > ⚠️ **关键外部依赖：** C++26 正式标准发布日期。若 ISO 发布晚于
 > 2026-10，v1.0.0 顺延。

@@ -82,28 +82,28 @@ operator[] always returns a scalar reference.
 
 1. **Discuss first:** Open an issue for non-trivial changes before coding.
    Feature requests and bug reports have dedicated issue templates.
-2. **Branch:** Create a feature branch from `dev`
+2. **Fork & branch:** Fork the repo and create a feature branch
    (`feat/my-feature` or `fix/my-fix`).
 3. **Test:** All tests must pass (`xmake build tests`).  Add tests for new
    functionality.
 4. **Style:** Code must pass `clang-format` lint (matching `.clang-format`
    in the repo root).
-5. **PR:** Open against the `dev` branch.  The `master` branch tracks stable
-   releases.
-6. **Review:** All PRs require at least one reviewer approval.  Expect
-   feedback within one week.
+5. **PR:** Open against the `master` branch.
+6. **Review:** PRs will be reviewed as time permits.  Expect feedback
+   within one week for active contributions.
 
 ## Branch Model
 
 ```
-master — stable releases (tagged)
-dev    — integration branch for the next release
+master — primary development and stable releases (tagged)
 feat/* — feature branches
 fix/*  — bug-fix branches
 ```
 
-- Merge `feat/*` / `fix/*` → `dev`.
-- Merge `dev` → `master` on release (with a version tag).
+M3Lib uses a single-branch model: `master` is both the development and
+release branch.  External contributors fork the repo and open PRs against
+`master`.  There is no separate integration branch — keeping things simple
+for a solo-maintainer project.
 
 ## Testing
 
@@ -200,23 +200,23 @@ M3Lib 支持双构建系统：
 
 1. **先讨论：** 非微小变更在编码前先开 issue。功能请求和缺陷报告有专用
    模板。
-2. **分支：** 从 `dev` 创建功能分支（`feat/功能名` 或 `fix/修复名`）。
+2. **Fork 并分支：** Fork 仓库并创建功能分支（`feat/功能名` 或 `fix/修复名`）。
 3. **测试：** 所有测试必须通过（`xmake build tests`）。为新功能添加测试。
 4. **格式：** 代码必须通过 `clang-format` lint。
-5. **PR：** 向 `dev` 分支发起。`master` 分支跟踪稳定发布。
-6. **审查：** 所有 PR 需要至少一人审查批准。一周内可期待反馈。
+5. **PR：** 向 `master` 分支发起。
+6. **审查：** PR 将视时间安排审查。活跃贡献可在一周内期待反馈。
 
 ## 分支模型
 
 ```
-master — 稳定发布（已标签）
-dev    — 下一版本的集成分支
+master — 主开发与稳定发布分支（已标签）
 feat/* — 功能分支
 fix/*  — 修复分支
 ```
 
-- 合并 `feat/*` / `fix/*` → `dev`。
-- 发布时合并 `dev` → `master`（附带版本标签）。
+M3Lib 采用单分支模型：`master` 同时作为开发分支和发布分支。外部贡献者
+Fork 仓库后向 `master` 发起 PR。不设置独立的集成分支——保持简单，适合
+单人维护项目。
 
 ## 测试
 

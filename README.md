@@ -17,7 +17,8 @@ M3Lib aims to become a "modern, modular GLM" designed for graphics programming, 
 
 **Currently available:**
 - Vector types `Vec<1..4, T>` with GLSL-style single-component swizzle (.x, .y, .z, .w, .r, .g, .b, .a, .s, .t, .p, .q)
-- Core GLSL math functions (normalize, dot, cross, length, distance, abs, sign, floor, ceil, fract, mod, clamp, mix, step, smoothstep, min, max, sin, cos, tan, asin, acos, atan, atan2, radians, degrees, pow, exp, log, exp2, log2, sqrt, inversesqrt, reflect, refract)
+- Core GLSL vector math functions (dot, cross, normalize, length, distance, reflect, refract)
+- Core GLSL common functions (mix, clamp, lerp)
 - Contracts-based bounds checking (C++26 P2900R14)
 - C++26 `=delete("reason")` diagnostics
 - `constexpr` structured bindings (C++26 P2686R4)

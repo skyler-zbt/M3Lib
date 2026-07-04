@@ -7,13 +7,12 @@
 //   - column_type        = Vec<R, T, Q>
 //   - qualifier_type     = Qualifier
 //   - columns / rows     = C / R
-//   - operator[]         returns Vec<R, T, Q> by value (flat storage)
+//   - operator[]         returns Vec<R, T, Q>& by reference (nested storage)
 //
-// The by-value column accessor deviates from the TD-002 reference design
-// (Vec& reference return).  The deviation is documented in
-// m3/detail/storage/matrix_storage.cppm — flat storage was chosen to break
-// a module dependency cycle; the by-value form composes correctly with
-// column-wise operators (see mat_operators.cppm).
+// Column access returns a reference to the stored Vec column.  Storage
+// is nested (array of Vec columns), not flat — each column is an
+// independent Vec<R,T,Q> with its own alignment.  Column-to-column
+// contiguity is NOT guaranteed when Q ≠ aligned_none.
 //
 // Mat —— M3Lib v0.2.0 的主矩阵类型。
 // alpha 阶段仅方阵（C == R）。C, R ∈ {2, 3, 4}。
@@ -24,11 +23,11 @@
 //   - column_type        = Vec<R, T, Q>
 //   - qualifier_type     = Qualifier
 //   - columns / rows     = C / R
-//   - operator[]         按值返回 Vec<R, T, Q>（扁平存储）
+//   - operator[]         按引用返回 Vec<R, T, Q>&（嵌套存储）
 //
-// 按值列访问器偏离 TD-002 参考设计（Vec& 引用返回）。偏离原因见
-// m3/detail/storage/matrix_storage.cppm 文档——扁平存储为打破模块依赖
-// 循环；按值形式与按列运算正确组合（见 mat_operators.cppm）。
+// 列访问返回存储的 Vec 列的引用。存储为嵌套（Vec 列数组），
+// 非扁平——每列是独立的 Vec<R,T,Q>，拥有自己的对齐。当
+// Q ≠ aligned_none 时，列间不保证连续。
 export module m3.matrix.mat;
 
 import std;

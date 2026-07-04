@@ -14,16 +14,24 @@ export namespace m3 {
 
 // ---- mix / lerp ----
 
+// mix uses x*(1-a) + y*a (not x + (y-x)*a) for better numerical stability
+// when a is close to 1 — (y-x) can suffer catastrophic cancellation, and
+// multiplying by a near-1 amplifies the error.  GLSL 4.60 §8.3 also
+// recommends this formulation.
+//
+// mix 使用 x*(1-a) + y*a（而非 x + (y-x)*a）以获得更好的数值稳定性——
+// 当 a 接近 1 时，(y-x) 可能发生灾难性抵消，再乘以接近 1 的 a 会放大
+// 误差。GLSL 4.60 §8.3 也推荐此公式。
 template <detail::Arithmetic T>
 [[nodiscard("pure function: discarding a blend result is likely a bug")]]
 constexpr T mix(T x, T y, T a) noexcept {
-    return x + (y - x) * a;
+    return x * (static_cast<T>(1) - a) + y * a;
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a blend result is likely a bug")]]
 constexpr Vec<L, T, Q> mix(const Vec<L, T, Q>& x, const Vec<L, T, Q>& y, T a) noexcept {
-    return x + (y - x) * a;
+    return x * (static_cast<T>(1) - a) + y * a;
 }
 
 // ---- clamp ----

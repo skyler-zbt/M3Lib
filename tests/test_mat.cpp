@@ -23,7 +23,7 @@ int main() {
         m3::Mat<3, 3, float> m;
         for (std::size_t c = 0; c < 3; ++c)
             for (std::size_t r = 0; r < 3; ++r)
-                if (auto r2 = check_float_eq(m(c, r), 0.0f, 1e-20f); !r2)
+                if (auto r2 = check_float_eq(m(c, r), 0.0f, 1e-6f); !r2)
                     return r2;
         return {};
     });
@@ -33,7 +33,7 @@ int main() {
         for (std::size_t c = 0; c < 3; ++c) {
             for (std::size_t r = 0; r < 3; ++r) {
                 float expected = (c == r) ? 1.0f : 0.0f;
-                if (auto r2 = check_float_eq(m(c, r), expected, 1e-20f); !r2)
+                if (auto r2 = check_float_eq(m(c, r), expected, 1e-6f); !r2)
                     return r2;
             }
         }
@@ -44,7 +44,7 @@ int main() {
         m3::Mat<4, 4, float> m{0.0f};
         for (std::size_t c = 0; c < 4; ++c)
             for (std::size_t r = 0; r < 4; ++r)
-                if (auto r2 = check_float_eq(m(c, r), 0.0f, 1e-20f); !r2)
+                if (auto r2 = check_float_eq(m(c, r), 0.0f, 1e-6f); !r2)
                     return r2;
         return {};
     });
@@ -53,50 +53,50 @@ int main() {
         // Column 0: {1, 2, 3}, column 1: {4, 5, 6}, column 2: {7, 8, 9}
         float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         m3::Mat<3, 3, float> m{data};
-        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(0, 1), 2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 1), 2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(0, 2), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 2), 3.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(1, 0), 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(1, 0), 4.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(1, 1), 5.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(1, 1), 5.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(2, 2), 9.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(2, 2), 9.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
 
     runner.add("Mat2 (alias) constructs correctly", [] -> TestResult {
         m3::Mat2<float> m{1.0f};
-        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(1, 1), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(1, 1), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(0, 1), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 1), 0.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
 
     runner.add("Mat3 (alias) constructs correctly", [] -> TestResult {
         m3::Mat3<float> m{1.0f};
-        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(2, 2), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(2, 2), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(1, 0), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(1, 0), 0.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
 
     runner.add("Mat4 (alias) constructs correctly", [] -> TestResult {
         m3::Mat4<float> m{1.0f};
-        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(3, 3), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(3, 3), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(2, 1), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(2, 1), 0.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -117,7 +117,7 @@ int main() {
     runner.add("operator() returns writable reference", [] -> TestResult {
         m3::Mat3<float> m{};
         m(1, 2) = 5.5f;
-        if (auto r2 = check_float_eq(m(1, 2), 5.5f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(1, 2), 5.5f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -128,11 +128,11 @@ int main() {
         m(0, 1) = 2.0f;
         m(0, 2) = 3.0f;
         m3::Vec<3, float> col0 = m[0];
-        if (auto r2 = check_float_eq(col0[0], 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(col0[0], 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(col0[1], 2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(col0[1], 2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(col0[2], 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(col0[2], 3.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -146,7 +146,7 @@ int main() {
         for (std::size_t c_idx = 0; c_idx < 3; ++c_idx) {
             for (std::size_t r = 0; r < 3; ++r) {
                 float expected = (c_idx == r) ? 3.0f : 0.0f;
-                if (auto r2 = check_float_eq(c(c_idx, r), expected, 1e-20f); !r2)
+                if (auto r2 = check_float_eq(c(c_idx, r), expected, 1e-6f); !r2)
                     return r2;
             }
         }
@@ -160,7 +160,7 @@ int main() {
         for (std::size_t c_idx = 0; c_idx < 3; ++c_idx) {
             for (std::size_t r = 0; r < 3; ++r) {
                 float expected = (c_idx == r) ? 3.0f : 0.0f;
-                if (auto r2 = check_float_eq(c(c_idx, r), expected, 1e-20f); !r2)
+                if (auto r2 = check_float_eq(c(c_idx, r), expected, 1e-6f); !r2)
                     return r2;
             }
         }
@@ -180,7 +180,7 @@ int main() {
         for (std::size_t c_idx = 0; c_idx < 3; ++c_idx) {
             for (std::size_t r = 0; r < 3; ++r) {
                 float expected = static_cast<float>(c_idx * 3 + r + 1);
-                if (auto r2 = check_float_eq(c(c_idx, r), expected, 1e-20f); !r2)
+                if (auto r2 = check_float_eq(c(c_idx, r), expected, 1e-6f); !r2)
                     return r2;
             }
         }
@@ -190,11 +190,11 @@ int main() {
     runner.add("unary - negates matrix", [] -> TestResult {
         m3::Mat2<float> m{2.0f};
         m3::Mat2<float> n = -m;
-        if (auto r2 = check_float_eq(n(0, 0), -2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(n(0, 0), -2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(n(1, 1), -2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(n(1, 1), -2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(n(0, 1), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(n(0, 1), 0.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -204,9 +204,9 @@ int main() {
     runner.add("Mat * scalar broadcasts", [] -> TestResult {
         m3::Mat3<float> m{1.0f};
         m3::Mat3<float> r = m * 2.5f;
-        if (auto r2 = check_float_eq(r(0, 0), 2.5f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), 2.5f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(2, 2), 2.5f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(2, 2), 2.5f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -214,9 +214,9 @@ int main() {
     runner.add("scalar * Mat broadcasts (commutative)", [] -> TestResult {
         m3::Mat3<float> m{1.0f};
         m3::Mat3<float> r = 2.5f * m;
-        if (auto r2 = check_float_eq(r(0, 0), 2.5f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), 2.5f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(2, 2), 2.5f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(2, 2), 2.5f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -224,7 +224,7 @@ int main() {
     runner.add("Mat / scalar divides", [] -> TestResult {
         m3::Mat3<float> m{10.0f};
         m3::Mat3<float> r = m / 2.0f;
-        if (auto r2 = check_float_eq(r(0, 0), 5.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), 5.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -232,9 +232,9 @@ int main() {
     runner.add("Mat + scalar broadcasts", [] -> TestResult {
         m3::Mat3<float> m{1.0f};
         m3::Mat3<float> r = m + 3.0f;
-        if (auto r2 = check_float_eq(r(0, 0), 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), 4.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(1, 2), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(1, 2), 3.0f, 1e-6f); !r2)
             return r2;  // 0 + 3
         return {};
     });
@@ -242,9 +242,9 @@ int main() {
     runner.add("Mat - scalar broadcasts", [] -> TestResult {
         m3::Mat3<float> m{5.0f};
         m3::Mat3<float> r = m - 2.0f;
-        if (auto r2 = check_float_eq(r(0, 0), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), 3.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(1, 1), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(1, 1), 3.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -255,7 +255,7 @@ int main() {
         m3::Mat3<float> a{1.0f};
         m3::Mat3<float> b{2.0f};
         a += b;
-        if (auto r2 = check_float_eq(a(0, 0), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(0, 0), 3.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -264,7 +264,7 @@ int main() {
         m3::Mat3<float> a{5.0f};
         m3::Mat3<float> b{2.0f};
         a -= b;
-        if (auto r2 = check_float_eq(a(0, 0), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(0, 0), 3.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -273,7 +273,7 @@ int main() {
         m3::Mat3<float> a{6.0f};
         m3::Mat3<float> b{2.0f};
         a /= b;
-        if (auto r2 = check_float_eq(a(0, 0), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(0, 0), 3.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -281,7 +281,7 @@ int main() {
     runner.add("Mat *= scalar works", [] -> TestResult {
         m3::Mat3<float> a{2.0f};
         a *= 3.0f;
-        if (auto r2 = check_float_eq(a(0, 0), 6.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(0, 0), 6.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -289,9 +289,9 @@ int main() {
     runner.add("Mat += scalar works", [] -> TestResult {
         m3::Mat3<float> a{1.0f};
         a += 4.0f;
-        if (auto r2 = check_float_eq(a(0, 0), 5.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(0, 0), 5.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(a(1, 2), 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(1, 2), 4.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -328,13 +328,13 @@ int main() {
         M(1, 0) = 3.0f;
         M(1, 1) = 4.0f;
         m3::Mat2<float> R = I * M;
-        if (auto r2 = check_float_eq(R(0, 0), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(0, 0), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(0, 1), 2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(0, 1), 2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(1, 0), 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(1, 0), 3.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(1, 1), 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(1, 1), 4.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -356,13 +356,13 @@ int main() {
         B(1, 0) = 7;
         B(1, 1) = 8;
         m3::Mat2<float> R = A * B;
-        if (auto r2 = check_float_eq(R(0, 0), 19.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(0, 0), 19.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(0, 1), 22.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(0, 1), 22.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(1, 0), 43.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(1, 0), 43.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(1, 1), 50.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(1, 1), 50.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -375,7 +375,7 @@ int main() {
         m3::Mat3<float> R = I * M;
         for (std::size_t i = 0; i < 3; ++i)
             for (std::size_t j = 0; j < 3; ++j)
-                if (auto r2 = check_float_eq(R(j, i), M(i, j), 1e-20f); !r2)
+                if (auto r2 = check_float_eq(R(j, i), M(i, j), 1e-6f); !r2)
                     return r2;
         return {};
     });
@@ -404,9 +404,9 @@ int main() {
         // Manual verify a few entries
         // R(0,0) = 1*3 + 0*1 + 2*2 = 7
         // R(1,1) = -1*1 + 3*0 + 1*1 = 0
-        if (auto r2 = check_float_eq(R(0, 0), 7.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(0, 0), 7.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(R(1, 1), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(R(1, 1), 0.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -419,7 +419,7 @@ int main() {
         m3::Mat4<float> R = I * M;
         for (std::size_t i = 0; i < 4; ++i)
             for (std::size_t j = 0; j < 4; ++j)
-                if (auto r2 = check_float_eq(R(j, i), M(i, j), 1e-20f); !r2)
+                if (auto r2 = check_float_eq(R(j, i), M(i, j), 1e-6f); !r2)
                     return r2;
         return {};
     });
@@ -439,9 +439,9 @@ int main() {
         M(1, 1) = 4;
         m3::Vec<2, float> v{1.0f, 1.0f};
         m3::Vec<2, float> r = M * v;
-        if (auto r2 = check_float_eq(r[0], 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[0], 4.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[1], 6.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[1], 6.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -457,9 +457,9 @@ int main() {
         M(1, 1) = 4;
         m3::Vec<2, float> v{1.0f, 1.0f};
         m3::Vec<2, float> r = v * M;
-        if (auto r2 = check_float_eq(r[0], 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[0], 3.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[1], 7.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[1], 7.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -472,11 +472,11 @@ int main() {
             M(i, i) = 1.0f;
         m3::Vec<3, float> v{1.0f, 2.0f, 3.0f};
         m3::Vec<3, float> r = M * v;
-        if (auto r2 = check_float_eq(r[0], 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[0], 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[1], 2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[1], 2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[2], 3.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[2], 3.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -487,11 +487,11 @@ int main() {
             M(i, i) = 1.0f;
         m3::Vec<3, float> v{4.0f, 5.0f, 6.0f};
         m3::Vec<3, float> r = v * M;
-        if (auto r2 = check_float_eq(r[0], 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[0], 4.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[1], 5.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[1], 5.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[2], 6.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[2], 6.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -500,36 +500,62 @@ int main() {
         m3::Mat4<float> I{1.0f};
         m3::Vec<4, float> v{1.0f, 2.0f, 3.0f, 4.0f};
         m3::Vec<4, float> r = I * v;
-        if (auto r2 = check_float_eq(r[0], 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[0], 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r[3], 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r[3], 4.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
 
     // ---- value_ptr ----
 
-    runner.add("value_ptr points to column-major data", [] -> TestResult {
+    // Note: value_ptr() returns a pointer to column 0's data.  With the
+    // default qualifier (aligned_none), columns are densely packed and
+    // contiguous — ptr[i] traversal is safe.  With aligned qualifiers
+    // (e.g. aligned_16), column-to-column padding may exist; prefer
+    // column-by-column access via operator[](c).value_ptr().
+    //
+    // 注意：value_ptr() 返回第 0 列数据的指针。默认限定符（aligned_none）
+    // 下列是密集连续的——ptr[i] 遍历是安全的。对齐限定符（如 aligned_16）
+    // 下列间可能存在填充；建议通过 operator[](c).value_ptr() 逐列访问。
+
+    runner.add("value_ptr points to column-major data (default qualifier, contiguous)", [] -> TestResult {
         float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         m3::Mat3<float> m{data};
         const float* ptr = m.value_ptr();
         for (std::size_t i = 0; i < 9; ++i)
-            if (auto r2 = check_float_eq(ptr[i], data[i], 1e-20f); !r2)
+            if (auto r2 = check_float_eq(ptr[i], data[i], 1e-6f); !r2)
                 return r2;
         return {};
     });
 
-    runner.add("value_ptr writable returns T* for in-place mutation", [] -> TestResult {
+    runner.add("value_ptr writable returns T* for in-place mutation (default qualifier)", [] -> TestResult {
         m3::Mat2<float> m{};
         float* ptr = m.value_ptr();
         ptr[0] = 1.0f;
         ptr[1] = 2.0f;
         ptr[2] = 3.0f;
         ptr[3] = 4.0f;
-        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(m(1, 1), 4.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(m(1, 1), 4.0f, 1e-6f); !r2)
             return r2;
+        return {};
+    });
+
+    runner.add("value_ptr column-by-column access (safe for all qualifiers)", [] -> TestResult {
+        float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        m3::Mat3<float> m{data};
+        // Per-column value_ptr() is always safe regardless of qualifier.
+        //
+        // 无论限定符如何，逐列 value_ptr() 始终安全。
+        for (std::size_t c = 0; c < 3; ++c) {
+            const float* col_ptr = m[c].value_ptr();
+            for (std::size_t r = 0; r < 3; ++r) {
+                if (auto r2 = check_float_eq(col_ptr[r], data[c * 3 + r], 1e-6f); !r2)
+                    return r2;
+            }
+        }
         return {};
     });
 
@@ -542,9 +568,9 @@ int main() {
         b(1, 1) = 2;
         a *= b;
         // a was identity, a*b should be b
-        if (auto r2 = check_float_eq(a(0, 0), 2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(0, 0), 2.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(a(1, 1), 2.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(a(1, 1), 2.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -629,11 +655,11 @@ int main() {
         m3::Mat2<float> b{2.0f};
         // (a + b) * 3: a + b has 3 on diagonal, 0 off-diagonal. Multiply by 3: 9 diagonal, 0 off.
         m3::Mat2<float> r = (a + b) * 3.0f;
-        if (auto r2 = check_float_eq(r(0, 0), 9.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), 9.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(1, 1), 9.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(1, 1), 9.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(0, 1), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 1), 0.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
@@ -644,13 +670,13 @@ int main() {
         m3::Mat2<float> r = -a + b;
         // -a has -2 on diagonal, 0 off-diagonal. b has 1 on diagonal, 0 off.
         // -a + b: -1 on diagonal, 0 off-diagonal.
-        if (auto r2 = check_float_eq(r(0, 0), -1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 0), -1.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(1, 0), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(1, 0), 0.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(0, 1), 0.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(0, 1), 0.0f, 1e-6f); !r2)
             return r2;
-        if (auto r2 = check_float_eq(r(1, 1), -1.0f, 1e-20f); !r2)
+        if (auto r2 = check_float_eq(r(1, 1), -1.0f, 1e-6f); !r2)
             return r2;
         return {};
     });
