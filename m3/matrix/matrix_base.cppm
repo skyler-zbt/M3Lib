@@ -8,7 +8,7 @@
 //   - Mat::operator[] returns Vec<R,T,Q>& (a column reference)
 // Treating Mat as a Vector would conflate dimension semantics.
 //
-// S1.1+v0.2.0-rc1: storage is NESTED column-major (std::array<Vec<R,T,Q>, C>)
+// S1.1+v0.2-rc1: storage is NESTED column-major (std::array<Vec<R,T,Q>, C>)
 // per TD-002 reference design.  operator[] returns Vec<R,T,Q>& directly
 // from storage_.columns_[i] — zero reinterpret_cast, zero temporary.
 // This was previously impossible due to the module cycle
@@ -33,7 +33,7 @@
 //   - Mat::operator[] 返回 Vec<R,T,Q>&（列引用）
 // 将 Mat 视为 Vector 会混淆维度语义。
 //
-// S1.1+v0.2.0-rc1：存储为嵌套列主序（std::array<Vec<R,T,Q>, C>），
+// S1.1+v0.2-rc1：存储为嵌套列主序（std::array<Vec<R,T,Q>, C>），
 // 按 TD-002 参考设计。operator[] 直接从 storage_.columns_[i] 返回
 // Vec<R,T,Q>&——零 reinterpret_cast，零临时对象。
 // 这在之前因模块循环

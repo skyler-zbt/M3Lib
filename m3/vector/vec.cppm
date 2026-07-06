@@ -5,7 +5,7 @@
 //   Vec<2>: .x/.y, .r/.g, .s/.t
 //   Vec<3>: .x/.y/.z, .r/.g/.b, .s/.t/.p
 //   Vec<4>: .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q
-// Multi-character swizzle (.xy, .xyz, .rgb, etc.) is planned for v0.2.0.
+// Multi-character swizzle (.xy, .xyz, .rgb, etc.) is planned for v0.3.
 //
 // Vec —— 主向量类型，提供 GLSL 风格的单分量 swizzle 访问器。
 // 维度由 ValidVecDimension 限制为 [1, 4]。
@@ -14,7 +14,7 @@
 //   Vec<2>: .x/.y, .r/.g, .s/.t
 //   Vec<3>: .x/.y/.z, .r/.g/.b, .s/.t/.p
 //   Vec<4>: .x/.y/.z/.w, .r/.g/.b/.a, .s/.t/.p/.q
-// 多字符 swizzle（.xy、.xyz、.rgb 等）计划在 v0.2.0 实现。
+// 多字符 swizzle（.xy、.xyz、.rgb 等）计划在 v0.3 实现。
 export module m3.vector.vec;
 
 import std;

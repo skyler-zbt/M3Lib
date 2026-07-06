@@ -5,7 +5,7 @@
 // Each test forks a child process; the parent asserts the child was
 // terminated by SIGABRT, confirming the contract layer is active.
 //
-// This is a P0 regression suite for the v0.1.1 [[assume]] change:
+// This is a P0 regression suite for the [[assume]] change:
 // the old runtime if-std::abort() guard was replaced by [[assume]]
 // in the hot path, and the contract pre-condition is now the sole
 // safety mechanism at runtime.  These tests verify that safety net
@@ -17,7 +17,7 @@
 // 每个测试 fork 子进程；父进程断言子进程被 SIGABRT 终止，
 // 确认契约层已生效。
 //
-// 这是 v0.1.1 [[assume]] 改造的 P0 回归测试套件：
+// 这是 [[assume]] 改造的 P0 回归测试套件：
 // 旧的运行时 if-std::abort() 守卫被热路径中的 [[assume]] 替代，
 // 契约 pre 条件现在是运行时唯一的安全机制。这些测试验证
 // 安全网没有被削弱。

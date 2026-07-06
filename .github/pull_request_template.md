@@ -4,16 +4,12 @@
   This template applies to ALL pull requests.
   本模板适用于所有 PR。
 
-  ⚠️ PR target / 发起目标 / Base branch
+  Branch model / 分支模型
 
-       feat/* or fix/* ──→ dev ──→ master (on release)
-
-  DO NOT open a PR directly against `master`.
-  Open against `dev` instead.  Merging to master is reserved for
-  release-time integration of stable dev commits.
-
-  不要直接向 master 发起 PR。
-  改向 dev 发起。合 master 保留给发布时从稳定 dev 集成。
+  M3Lib uses a single-branch model: `master` is both the development and
+  release branch.  Open PRs against `master`.
+  M3Lib 采用单分支模型：`master` 同时作为开发与发布分支。
+  PR 直接向 `master` 发起即可。
 -->
 
 ## What / 改了什么
@@ -36,9 +32,8 @@
 
 ## Checklist / 检查清单
 
-- [ ] Code follows `clang-format` (runs in CI)
-- [ ] Comments use bilingual block format (English first, then Chinese) per PREFERENCE §二
-- [ ] Public API has no `[[nodiscard]]` violations
-- [ ] No new `try-catch` (use `std::expected` / `std::optional`)
-- [ ] No new C-macros / `#include` (use `import std;` / modules)
-- [ ] CHANGELOG.md updated under "Unreleased" / 已更新 CHANGELOG.md
+- [ ] Code follows `clang-format` (runs in CI) / 代码遵循 `clang-format`（CI 自动检查）
+- [ ] Comments use bilingual block format (English first, then Chinese) per [CONTRIBUTING.md — Code Style](./CONTRIBUTING.md#code-style) / 注释采用双语块分隔格式（先完整英文段落，再完整中文段落），参见 [CONTRIBUTING.md — 代码风格](./CONTRIBUTING.md#code-style)
+- [ ] Public API has no `[[nodiscard]]` violations / 公共 API 无 `[[nodiscard]]` 违规
+- [ ] No new `try-catch` (use `std::expected` / `std::optional`) / 不新增 `try-catch`（使用 `std::expected` / `std::optional`）
+- [ ] No new C-macros / `#include` (use `import std;` / modules) / 不新增 C 宏或 `#include`（使用 `import std;` / modules）

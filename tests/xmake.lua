@@ -44,11 +44,11 @@ target_end()
 
 -- Boundary tests: OOB access in enforce mode (must abort).
 -- Verifies the contract pre-condition on VectorBase::operator[].
--- This is the P0 regression suite for the v0.1.1 [[assume]] change.
+-- This is the P0 regression suite for the [[assume]] change.
 --
 -- 边界测试：enforce 模式下越界访问（必须 abort）。
 -- 验证 VectorBase::operator[] 的契约 pre 条件。
--- 这是 v0.1.1 [[assume]] 改造的 P0 回归测试套件。
+-- 这是 [[assume]] 改造的 P0 回归测试套件。
 configure_m3_test_target("test_boundary")
 
 -- Mat type: construction, accessors, operators, comparison, products.

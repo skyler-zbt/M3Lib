@@ -1,4 +1,4 @@
-// Mat — primary matrix type for M3Lib v0.2.0.
+// Mat — primary matrix type for M3Lib v0.2.
 // Square matrices (C == R) only in this alpha.  C, R ∈ {2, 3, 4}.
 // Column-major layout (TD-002), GLSL std430-compatible.
 //
@@ -14,7 +14,7 @@
 // independent Vec<R,T,Q> with its own alignment.  Column-to-column
 // contiguity is NOT guaranteed when Q ≠ aligned_none.
 //
-// Mat —— M3Lib v0.2.0 的主矩阵类型。
+// Mat —— M3Lib v0.2 的主矩阵类型。
 // alpha 阶段仅方阵（C == R）。C, R ∈ {2, 3, 4}。
 // 列主序布局（TD-002），兼容 GLSL std430。
 //
@@ -50,12 +50,12 @@ public:
     using column_type = Vec<R, T, Q>;
     using qualifier_type = detail::Qualifier;
 
-    // Mat is square-only in v0.2.0 alpha; C == R enforced at the type
-    // level.  The general rectangular matrix is deferred to v0.4.0.
+    // Mat is square-only in v0.2 alpha; C == R enforced at the type
+    // level.  The general rectangular matrix is deferred to v0.5.
     //
-    // v0.2.0 alpha 仅方阵；C == R 在类型层强制。通用矩形矩阵推迟到 v0.4.0。
-    static_assert(C == R, "Mat<C,R,...> is square-only in v0.2.0 alpha; C must equal R. "
-                          "Rectangular matrices are deferred to v0.4.0.");
+    // v0.2 alpha 仅方阵；C == R 在类型层强制。通用矩形矩阵推迟到 v0.5。
+    static_assert(C == R, "Mat<C,R,...> is square-only in v0.2 alpha; C must equal R. "
+                          "Rectangular matrices are deferred to v0.5.");
 
     Mat() = default;
 
@@ -67,9 +67,9 @@ public:
     explicit constexpr Mat(const T* arr) noexcept : base_type(arr) {}
 };
 
-// Convenience aliases for the square matrices supported in v0.2.0.
+// Convenience aliases for the square matrices supported in v0.2.
 //
-// v0.2.0 支持的方阵便捷别名。
+// v0.2 支持的方阵便捷别名。
 template <detail::Arithmetic T, detail::Qualifier Q = detail::Qualifier::aligned_none>
 using Mat2 = Mat<2, 2, T, Q>;
 

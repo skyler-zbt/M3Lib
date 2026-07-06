@@ -11,8 +11,8 @@
 // (TD-002 reference design).
 //
 // The Vec inner alignment padding (per Q) is preserved per-column.
-// Future v0.5.0 may evaluate flat layout for SIMD register views; for
-// v0.2.0 the nested layout is the simpler and faster choice on hot paths
+// Future v0.6 may evaluate flat layout for SIMD register views; for
+// v0.2 the nested layout is the simpler and faster choice on hot paths
 // (compiler can elide the Vec wrapping in release builds).
 //
 // Lives in m3.matrix (not m3.detail.storage) to break the cycle that
@@ -33,7 +33,7 @@
 // Vec<R,T,Q>& 零 reinterpret_cast（TD-002 参考设计）。
 //
 // Vec 内部的对齐填充（按 Q）保留在每列内。
-// 未来 v0.5.0 可能评估扁平布局以支持 SIMD 寄存器视图；v0.2.0 嵌套
+// 未来 v0.6 可能评估扁平布局以支持 SIMD 寄存器视图；v0.2 嵌套
 // 布局是热路径上更简单更快的选择（编译器在 release 构建中可消除
 // Vec 包装开销）。
 //

@@ -1,14 +1,14 @@
 # M3Lib Fast Lane — triggered on every push
 # Build + tests + ASan/UBSan on self-hosted runner
 #
-# v0.1.1: contract-tests job uses --cxflags override for observe mode.
+# contract-tests job uses --cxflags override for observe mode.
 # GCC picks the last -fcontract-evaluation-semantic flag (observe > enforce).
 # continue-on-error due to GCC 16.1.0 ICE.
 #
 # M3Lib 快车道 — 每次 push 触发
 # 在自托管 runner 上执行编译 + 测试 + 内存/未定义行为检查
 #
-# v0.1.1：contract-tests job 使用 --cxflags 覆盖实现 observe 模式。
+# contract-tests job 使用 --cxflags 覆盖实现 observe 模式。
 # GCC 取最后一个 -fcontract-evaluation-semantic 标志（observe > enforce）。
 # 因 GCC 16.1.0 ICE 使用 continue-on-error。
 

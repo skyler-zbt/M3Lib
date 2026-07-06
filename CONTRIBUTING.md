@@ -69,7 +69,7 @@ operator[] always returns a scalar reference.
 的假设解耦。
 ```
 
-## Code Style
+## Code Style {#code-style}
 
 - No C macros, no `#include`, no try-catch / exceptions.
 - Use `import std;` and C++ modules exclusively.
@@ -122,9 +122,16 @@ xmake run test_contracts
 Test files live in `tests/`.  The shared test infrastructure (`test_common`
 module) provides `check()`, `check_float_eq()`, and `TestRunner`.
 
-**Note:** `test_boundary` uses enforce mode with fork-based signal checking.
+- **Note:** `test_boundary` uses enforce mode with fork-based signal checking.
 `test_contracts` uses observe mode.  One test in `test_contracts` is
 currently skipped due to a GCC 16.1.0 internal compiler error.
+
+> ℹ️ Project changelog is **not maintained** during early development
+> (API and modules are unstable).  Changelog will be reintroduced when
+> the project approaches v1.0.0.
+
+> ℹ️ 项目早期开发阶段**不维护变更日志**（接口和模块尚不稳定）。
+> 待项目接近 v1.0.0 时再恢复变更日志。
 
 ## Issue Labels
 
@@ -135,7 +142,7 @@ currently skipped due to a GCC 16.1.0 internal compiler error.
 | `good first issue` | Suitable for new contributors          |
 | `help wanted`      | Extra attention needed                 |
 | `P0`–`P3`          | Priority (P0 = critical)               |
-| `v0.2.0` etc.      | Milestone target                       |
+| `v0.2` etc.         | Milestone target                       |
 
 ## Licence
 
@@ -188,7 +195,7 @@ M3Lib 支持双构建系统：
 允许的前缀：`feat:`、`fix:`、`perf:`、`refactor:`、`docs:`、`style:`、
 `test:`、`chore:`、`ci:`。
 
-## 代码风格
+## 代码风格 {#code-style}
 
 - 不使用 C 宏，不写 `#include`，不用 try-catch / 异常。
 - 只用 `import std;` 和 C++ modules。
@@ -236,7 +243,7 @@ GCC 16.1.0 内部编译器错误跳过。
 | `good first issue`| 适合新贡献者           |
 | `help wanted`     | 需要额外关注           |
 | `P0`–`P3`         | 优先级（P0 = 紧急）    |
-| `v0.2.0` 等       | 里程碑目标             |
+| `v0.2` 等         | 里程碑目标             |
 
 ## 许可证
 

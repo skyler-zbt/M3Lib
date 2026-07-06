@@ -55,11 +55,11 @@ add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
 
 -- Package definition for add_requires("M3Lib") consumers.
 -- Currently disabled: M3Lib is consumed via source-level inclusion,
--- not through xmake-repo / add_requires().  Re-enable when v0.2.0
+-- not through xmake-repo / add_requires().  Re-enable when v0.2
 -- is ready for package distribution.
 --
 -- 当前禁用：M3Lib 通过源码级引入而非 xmake-repo / add_requires() 消费。
--- 待 v0.2.0 准备就绪后重新启用。
+-- 待 v0.2 准备就绪后重新启用。
 -- package("M3Lib")
 --     set_description("A modern C++ graphics math library")
 --     set_license("Apache-2.0")

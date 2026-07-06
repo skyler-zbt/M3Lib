@@ -796,13 +796,13 @@ int main() {
         return {};
     });
 
-    // ---- Regression: operator[] with [[assume]] (v0.1.1) ----
+    // ---- Regression: operator[] with [[assume]] ----
     // Verify that the if-consteval + [[assume]] transformation preserves
     // correct element access for all valid indices across all dimensions.
     // The [[assume]] hint tells the compiler the index is always in bounds,
     // unlocking auto-vectorisation without changing observable behaviour.
     //
-    // ---- 回归测试：带 [[assume]] 的 operator[] (v0.1.1) ----
+    // ---- 回归测试：带 [[assume]] 的 operator[] ----
     // 验证 if-consteval + [[assume]] 改造在所有维度的合法索引上
     // 保持正确的元素访问。[[assume]] 提示告诉编译器索引始终在边界内，
     // 解锁自动向量化而不改变可观察行为。
@@ -867,12 +867,12 @@ int main() {
         return {};
     });
 
-    // ---- element_ref_t trait verification (v0.1.1) ----
+    // ---- element_ref_t trait verification ----
     // Verify that element_ref_t resolves correctly for Vec types.
     // Uses remove_reference_t so the result is T (value type), not T&.
     // This trait enables future Matrix reuse of apply_binary / apply_unary.
     //
-    // ---- element_ref_t trait 验证 (v0.1.1) ----
+    // ---- element_ref_t trait 验证 ----
     // 验证 element_ref_t 对 Vec 类型的正确解析。
     // 使用 remove_reference_t，结果为 T（值类型）而非 T&。
     // 此 trait 使未来 Matrix 能复用 apply_binary / apply_unary。
