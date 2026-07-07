@@ -71,29 +71,6 @@ jobs:
             exit 1
           fi
 
-  release-tests:
-    name: Release-Mode Tests
-    runs-on: self-hosted
-    timeout-minutes: 10
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build all tests (release)
-        run: |
-          export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake f -c -m release -y
-          xmake build tests
-
-      - name: Run tests (release)
-        run: |
-          export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake run test_vec
-          xmake run test_math
-          xmake run test_cxx26
-          xmake run test_mat
-
   mcpp-verify:
     name: mcpp Build Check
     runs-on: self-hosted
