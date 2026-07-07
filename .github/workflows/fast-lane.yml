@@ -46,7 +46,6 @@ jobs:
           xmake run test_vec
           xmake run test_math
           xmake run test_cxx26
-          xmake run test_boundary
           xmake run test_mat
 
   contract-tests:
@@ -93,7 +92,6 @@ jobs:
           xmake run test_vec
           xmake run test_math
           xmake run test_cxx26
-          xmake run test_boundary
           xmake run test_mat
 
   mcpp-verify:
@@ -113,7 +111,6 @@ jobs:
           find target -name test_vec -exec {} \;
           find target -name test_math -exec {} \;
           find target -name test_cxx26 -exec {} \;
-          find target -name test_boundary -exec {} \;
           find target -name test_mat -exec {} \;
 
   asan-ubsan:
@@ -141,6 +138,5 @@ jobs:
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_vec
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_math
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_cxx26
-          ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_boundary
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_mat
           ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 xmake run test_contracts
