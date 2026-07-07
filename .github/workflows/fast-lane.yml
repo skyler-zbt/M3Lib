@@ -83,7 +83,7 @@ jobs:
       - name: Build all tests (release)
         run: |
           export PATH=$HOME/.xlings/subos/current/bin:$PATH
-          xmake f -c -m release --march=generic -y
+          xmake f -c -m release -y
           xmake build tests
 
       - name: Run tests (release)
