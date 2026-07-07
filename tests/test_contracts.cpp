@@ -34,6 +34,26 @@ static void fire_contract_violation() {
     contract_assert(false);
 }
 
+// Contract violation handler — module interface unit.
+// Provides handle_contract_violation() for both enforce and observe modes;
+// observe mode relies on it returning normally to keep the process alive,
+// while enforce mode reaches the same handler and lets our explicit
+// std::abort() do the terminating so the log line is always emitted before
+// the process dies.
+
+// 测试可执行文件的契约违规处理 module interface unit。
+// 为 enforce 与 observe 模式提供 handle_contract_violation()；observe 模式依赖其
+// 正常返回以保持进程存活，enforce 模式下由本函数显式调用 std::abort() 终止进程，
+// 确保日志行先于终止输出。
+void handle_contract_violation(const std::contracts::contract_violation& v) {
+    auto loc = v.location();
+    std::print(std::cerr, "[contract violation] {} at {}:{}:{}\n", v.comment(), loc.file_name(),
+               loc.line(), loc.column());
+    if (v.is_terminating()) {
+        std::abort();
+    }
+}
+
 // === test cases ===
 
 int main() {

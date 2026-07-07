@@ -90,7 +90,6 @@ M3Lib supports two build systems:
 ```bash
 xmake f -m debug                   # debug: unoptimised, fast iteration
 xmake f -m release                 # release: optimised, portable
-xmake f -m release --march=native  # release: host-CPU-optimised (non-portable)
 xmake build M3                     # build library
 xmake build tests                  # build + run all tests
 xmake run test_vec

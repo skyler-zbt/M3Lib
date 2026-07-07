@@ -89,7 +89,6 @@ M3Lib 支持双构建系统：
 ```bash
 xmake f -m debug                   # debug：未优化，快速迭代
 xmake f -m release                 # release：优化，可移植
-xmake f -m release --march=native  # release：针对本机 CPU 优化（不可移植）
 xmake build M3                     # 编译库
 xmake build tests                  # 编译 + 运行全部测试
 xmake run test_vec

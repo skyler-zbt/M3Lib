@@ -1,59 +1,56 @@
--- M3Lib test targets
---    xmake build tests         (all tests)
---    xmake run test_vec        (Vec type tests)
---    xmake run test_math       (math function tests)
---    xmake run test_cxx26      (C++26 feature tests)
---    xmake run test_contracts  (contract violation tests)
+-- M3Lib test targets.  Debug-only: tests are not built in release.
+-- Run `xmake build tests` to build all, or `xmake run test_<name>` to run.
 
--- Shared configuration for all M3Lib test targets.
--- Applies C++26 standard, module policies, contracts flag, and experimental std link.
-local function configure_m3_test_target(target_name)
-    target(target_name)
+-- M3Lib 测试 target。仅 debug 模式：release 模式不构建测试。
+-- 运行 `xmake build tests` 构建全部，或 `xmake run test_<name>` 运行单个测试。
+
+-- Tests need contracts enforced regardless of library build mode.
+-- Inherits set_languages / module policies / stdc++exp link from m3/xmake.lua.
+
+-- 测试无论库构建模式如何都需要 enforce contracts。
+-- 继承 set_languages / module policies / stdc++exp link 自 m3/xmake.lua。
+set_languages("c++26")
+add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=enforce")
+
+if is_mode("debug") then
+    -- Shared files: test_common.cppm exposes the TestRunner / check /
+    -- check_float_eq helpers used by every test.  handle_contract_violation
+    -- is defined inline in each test_*.cpp that needs observe-mode
+    -- verification (currently only test_contracts), keeping the build
+    -- configuration minimal.
+
+    -- 共享文件：test_common.cppm 暴露所有测试用的 TestRunner / check /
+    -- check_float_eq 辅助函数。handle_contract_violation 在需要验证
+    -- observe 模式的各 test_*.cpp 内联定义（目前仅 test_contracts），
+    -- 保持构建配置最小化。
+
+    target("test_vec")
         set_kind("binary")
         add_deps("M3")
-        add_files(target_name .. ".cpp", "test_common.cppm", {public = true})
-        set_languages("c++26")
-        set_policy("build.c++.modules", true)
-        set_policy("build.c++.modules.std", true)
-        add_cxflags("-fcontracts")
-        add_links("stdc++exp")
-    target_end()
+        add_files("test_vec.cpp", "test_common.cppm", {public = true})
+
+    target("test_math")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_math.cpp", "test_common.cppm",  {public = true})
+
+    target("test_cxx26")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_cxx26.cpp", "test_common.cppm", {public = true})
+
+    target("test_mat")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_mat.cpp", "test_common.cppm", {public = true})
+
+    -- observe semantic: violations log instead of abort, so the driver can
+    -- verify the contract fired.
+    --
+    -- observe 语义：违反时记录日志而非终止，以便测试驱动验证契约是否触发。
+    target("test_contracts")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_contracts.cpp", "test_common.cppm", {public = true})
+        add_cxflags("-fcontract-evaluation-semantic=observe")
 end
-
--- Vec type: construction, accessors, operators, comparison, formatter
-configure_m3_test_target("test_vec")
-
--- Math functions: dot, cross, normalize, length, distance,
--- reflect, refract, mix, clamp, lerp
-configure_m3_test_target("test_math")
-
--- C++26 features: structured bindings, tuple protocol, contracts valid access
-configure_m3_test_target("test_cxx26")
-
--- Contract violations: pre(i < L) with observe semantic (violations log, don't terminate)
-target("test_contracts")
-    set_kind("binary")
-    add_deps("M3")
-    add_files("test_contracts.cpp", "test_common.cppm", {public = true})
-    set_languages("c++26")
-    set_policy("build.c++.modules", true)
-    set_policy("build.c++.modules.std", true)
-    add_cxflags("-fcontracts", "-fcontract-evaluation-semantic=observe")
-    add_links("stdc++exp")
-target_end()
-
--- Boundary tests: OOB access in enforce mode (must abort).
--- Verifies the contract pre-condition on VectorBase::operator[].
--- This is the P0 regression suite for the [[assume]] change.
---
--- 边界测试：enforce 模式下越界访问（必须 abort）。
--- 验证 VectorBase::operator[] 的契约 pre 条件。
--- 这是 [[assume]] 改造的 P0 回归测试套件。
-configure_m3_test_target("test_boundary")
-
--- Mat type: construction, accessors, operators, comparison, products.
--- S1.7 — Mat core type and basic operations.
---
--- Mat 类型：构造、访问器、运算符、比较、乘法。
--- S1.7——Mat 核心类型与基本运算。
-configure_m3_test_target("test_mat")

@@ -25,9 +25,9 @@ main = "tests/test_math.cpp"
 kind = "bin"
 main = "tests/test_cxx26.cpp"
 
-[targets.test_boundary]
+[targets.test_mat]
 kind = "bin"
-main = "tests/test_boundary.cpp"
+main = "tests/test_mat.cpp"
 
 [targets.test_contracts]
 kind = "bin"
