@@ -74,7 +74,7 @@ M3Lib 依赖 **C++26 contracts (P2900R14)**，该特性目前仅在 **GCC 16+**
 |          | GCC       | Clang     | MSVC      |
 |----------|-----------|-----------|-----------|
 | Linux    | ✅        | 🚧        | ❌        |
-| Windows  | 🚧        | 🚧        | 🚧        |
+| Windows  | ✅        | 🚧        | 🚧        |
 | macOS    | ❌        | ❌        | ❌        |
 
 ✅ 已支持 &nbsp;|&nbsp; 🚧 规划中 &nbsp;|&nbsp; ❌ 暂未计划

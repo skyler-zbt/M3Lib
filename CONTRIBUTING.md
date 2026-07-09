@@ -78,6 +78,48 @@ operator[] always returns a scalar reference.
   complete Chinese paragraph.  Not line-by-line interleaving.
 - Formatting enforced via `.clang-format` (mcpp-community style).
 
+## Architecture Layering {#architecture-layering}
+
+M3Lib follows a four-layer model.  Each layer has a fixed
+responsibility; layers may not reach upward.
+
+1. **Storage layer** (`VectorStorage`, `MatrixStorage`) — physical
+   memory layout, alignment, ABI.  No math, no logic.  The layout is
+   permanent.
+2. **Base / access layer** (`VectorBase`, `MatrixBase`) — lifetime,
+   construction, element access, `value_ptr()`.  No math algorithms
+   (`dot`, `length`, `inverse`, …).  No `virtual`, no RTTI, no extra
+   state — `sizeof` is decided by Storage alone.
+3. **Public type layer** (`Vec`, `Mat`, future `Quat` / `Transform`)
+   — dimension info, type aliases, specialisation-specific surface
+   (`x/y/z/w`, `rgba`, `stpq`, swizzle).  This is the *expression*
+   layer, not the algorithm layer.
+   Higher-level types may compose existing representations,
+   but should not duplicate lower-layer storage mechanisms.
+4. **Math algorithm layer** (`m3.math:vector`, `m3.math:common`,
+   future `m3.math:matrix` / `m3.math:quaternion` / `m3.math:geometry`)
+   — all mathematical operations as free functions.  Operations
+   describe *actions on types*, not *properties of types*.
+   
+The public type layer defines representation-facing interfaces and type semantics.
+The math layer defines operations and algorithms over those types.
+
+Types own representation.
+Math modules own behaviour.
+
+Invariants:
+
+- The storage layout is permanent; the interface is evolvable.
+- Reflection / generative reflection (P3157, when available) may generate
+  *interfaces* and *metadata* (such as accessors, swizzles, serialization,
+  or formatting support), but must never alter Storage's physical layout
+  or ABI contract.
+- New math types (`Quat`, `Transform`, …) follow the same four-layer
+  split; do not add math methods to the type layer.
+- Storage stays co-located with its type (`m3/vector/`, `m3/matrix/`)
+  to honour the TD-002 module-cycle decision — do not centralise it
+  into a `detail/storage/` directory.
+
 ## Pull Request Process
 
 1. **Discuss first:** Open an issue for non-trivial changes before coding.
@@ -201,6 +243,37 @@ M3Lib 支持双构建系统：
 - 错误处理用 `std::expected` / `std::optional`，不用异常。
 - 双语代码注释：先完整英文段落，空一行，再完整中文段落。不逐行交错。
 - 格式由 `.clang-format` 强制（mcpp-community 风格）。
+
+## 架构分层 {#architecture-layering}
+
+M3Lib 遵循四层模型。每层职责固定，不得向上越层。
+
+1. **存储层**（`VectorStorage`、`MatrixStorage`）——物理内存布局、对齐、ABI。
+   不含数学、不含逻辑。布局是永久的。
+2. **Base / 访问层**（`VectorBase`、`MatrixBase`）——生命周期、构造、元素访问、
+   `value_ptr()`。不含数学算法（`dot`、`length`、`inverse`…）。无 `virtual`、
+   无 RTTI、无额外状态——`sizeof` 仅由 Storage 决定。
+3. **公共类型层**（`Vec`、`Mat`、未来的 `Quat` / `Transform`）——维度信息、类型别名、
+   特化专属接口（`x/y/z/w`、`rgba`、`stpq`、swizzle）。这是*表达层*，非算法层。
+   高层类型可以组合已有表示，但不应重复实现底层存储机制。
+4. **数学算法层**（`m3.math:vector`、`m3.math:common`、未来的
+   `m3.math:matrix` / `m3.math:quaternion` / `m3.math:geometry`）——所有数学运算
+   均为自由函数。运算描述的是*对类型的操作*，而非*类型的属性*。
+
+公共类型层负责面向表示的接口和类型语义。
+数学算法层负责这些类型之上的操作和算法。
+
+类型拥有表示。
+数学模块拥有行为。
+
+不变量：
+
+- 存储布局是永久的，接口是可演进的。
+- 反射 / 生成式反射（P3157 落地后）可以用于生成*接口*和*元数据*（例如访问器、swizzle、序列化、格式化支持等），
+  但绝不得改变Storage 的物理布局或 ABI 契约。
+- 新增数学类型（`Quat`、`Transform`…）遵循相同的四层划分；不得在类型层加数学方法。
+- Storage 与其类型 co-located（`m3/vector/`、`m3/matrix/`），以遵守 TD-002
+  模块循环决策——不要集中到 `detail/storage/` 目录。
 
 ## PR 流程
 

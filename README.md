@@ -75,7 +75,7 @@ their implementation.
 |          | GCC       | Clang     | MSVC      |
 |----------|-----------|-----------|-----------|
 | Linux    | ✅        | 🚧        | ❌        |
-| Windows  | 🚧        | 🚧        | 🚧        |
+| Windows  | ✅       | 🚧        | 🚧        |
 | macOS    | ❌        | ❌        | ❌        |
 
 ✅ Supported &nbsp;|&nbsp; 🚧 Planned &nbsp;|&nbsp; ❌ Not planned
