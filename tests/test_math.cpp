@@ -322,5 +322,150 @@ int main() {
         return {};
     });
 
+    // ---- abs ----
+
+    runner.add("abs scalar int", [] -> TestResult {
+        if (auto r = check(m3::abs(-5) == 5); !r)
+            return r;
+        if (auto r = check(m3::abs(5) == 5); !r)
+            return r;
+        if (auto r = check(m3::abs(0) == 0); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("abs scalar float", [] -> TestResult {
+        if (auto r = check_float_eq(m3::abs(-3.14f), 3.14f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("abs vec3", [] -> TestResult {
+        m3::vec3 v{-1.0f, 2.0f, -3.0f};
+        auto result = m3::abs(v);
+        if (auto r = check_float_eq(result[0], 1.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[1], 2.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[2], 3.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    // ---- sign ----
+
+    runner.add("sign scalar", [] -> TestResult {
+        if (auto r = check(m3::sign(-5.0f) == -1.0f); !r)
+            return r;
+        if (auto r = check(m3::sign(0.0f) == 0.0f); !r)
+            return r;
+        if (auto r = check(m3::sign(5.0f) == 1.0f); !r)
+            return r;
+        return {};
+    });
+
+    // ---- floor / ceil / fract ----
+
+    runner.add("floor scalar", [] -> TestResult {
+        if (auto r = check_float_eq(m3::floor(1.7f), 1.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(m3::floor(-1.2f), -2.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("ceil scalar", [] -> TestResult {
+        if (auto r = check_float_eq(m3::ceil(1.2f), 2.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(m3::ceil(-1.7f), -1.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("fract scalar", [] -> TestResult {
+        if (auto r = check_float_eq(m3::fract(1.25f), 0.25f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(m3::fract(-0.5f), 0.5f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    // ---- mod (GLSL semantics: x - y * floor(x/y)) ----
+
+    runner.add("mod scalar GLSL semantics", [] -> TestResult {
+        // GLSL mod(-1.5, 2.0) = -1.5 - 2.0 * floor(-0.75) = -1.5 + 2.0 = 0.5
+        // std::fmod(-1.5, 2.0) = -1.5 (different!)
+        if (auto r = check_float_eq(m3::mod(-1.5f, 2.0f), 0.5f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(m3::mod(5.5f, 2.0f), 1.5f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("mod vec3", [] -> TestResult {
+        m3::vec3 x{5.5f, -1.5f, 3.0f};
+        m3::vec3 y{2.0f, 2.0f, 2.0f};
+        auto result = m3::mod(x, y);
+        if (auto r = check_float_eq(result[0], 1.5f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[1], 0.5f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[2], 1.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    // ---- min / max ----
+
+    runner.add("min vec3", [] -> TestResult {
+        m3::vec3 a{1.0f, 5.0f, 3.0f};
+        m3::vec3 b{4.0f, 2.0f, 6.0f};
+        auto result = m3::min(a, b);
+        if (auto r = check_float_eq(result[0], 1.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[1], 2.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[2], 3.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("max vec3 scalar broadcast", [] -> TestResult {
+        m3::vec3 a{1.0f, 5.0f, 3.0f};
+        auto result = m3::max(a, 4.0f);
+        if (auto r = check_float_eq(result[0], 4.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[1], 5.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(result[2], 4.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    // ---- step / smoothstep ----
+
+    runner.add("step scalar", [] -> TestResult {
+        if (auto r = check_float_eq(m3::step(0.5f, 0.3f), 0.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(m3::step(0.5f, 0.7f), 1.0f, 1e-6f); !r)
+            return r;
+        if (auto r = check_float_eq(m3::step(0.5f, 0.5f), 1.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
+    runner.add("smoothstep scalar", [] -> TestResult {
+        // smoothstep(0, 1, 0.5) = 0.5 (Hermite at t=0.5)
+        if (auto r = check_float_eq(m3::smoothstep(0.0f, 1.0f, 0.5f), 0.5f, 1e-6f); !r)
+            return r;
+        // smoothstep(0, 1, 0) = 0
+        if (auto r = check_float_eq(m3::smoothstep(0.0f, 1.0f, 0.0f), 0.0f, 1e-6f); !r)
+            return r;
+        // smoothstep(0, 1, 1) = 1
+        if (auto r = check_float_eq(m3::smoothstep(0.0f, 1.0f, 1.0f), 1.0f, 1e-6f); !r)
+            return r;
+        return {};
+    });
+
     return runner.run();
 }
