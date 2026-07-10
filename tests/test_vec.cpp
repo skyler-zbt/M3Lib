@@ -905,5 +905,23 @@ int main() {
         return {};
     });
 
+    // ---- GLSL-style type aliases ----
+    //
+    // ---- GLSL 风格类型别名 ----
+
+    runner.add("type aliases: vec2/vec3/vec4 are float vectors", [] -> TestResult {
+        static_assert(std::is_same_v<m3::vec2, m3::Vec<2, float>>);
+        static_assert(std::is_same_v<m3::vec3, m3::Vec<3, float>>);
+        static_assert(std::is_same_v<m3::vec4, m3::Vec<4, float>>);
+        return {};
+    });
+
+    runner.add("type aliases: ivec2/ivec3/ivec4 are int vectors", [] -> TestResult {
+        static_assert(std::is_same_v<m3::ivec2, m3::Vec<2, int>>);
+        static_assert(std::is_same_v<m3::ivec3, m3::Vec<3, int>>);
+        static_assert(std::is_same_v<m3::ivec4, m3::Vec<4, int>>);
+        return {};
+    });
+
     return runner.run();
 }

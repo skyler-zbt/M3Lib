@@ -370,6 +370,22 @@ public:
     }
 };
 
+// ---- GLSL-style type aliases ----
+// Float vectors (GLSL vec2/vec3/vec4)
+//
+// ---- GLSL 风格类型别名 ----
+// 浮点向量（GLSL vec2/vec3/vec4）
+using vec2 = Vec<2, float>;
+using vec3 = Vec<3, float>;
+using vec4 = Vec<4, float>;
+
+// Integer vectors (GLSL ivec2/ivec3/ivec4)
+//
+// 整数向量（GLSL ivec2/ivec3/ivec4）
+using ivec2 = Vec<2, int>;
+using ivec3 = Vec<3, int>;
+using ivec4 = Vec<4, int>;
+
 }  // namespace m3
 
 // ---- C++26 constexpr structured bindings (P2686R4) ----
