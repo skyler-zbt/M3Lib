@@ -30,47 +30,25 @@
 - `std::formatter` for `Vec` (debug display)
 - xmake + mcpp dual build; CI: lint + enforce + observe modes
 
----
+### v0.2 — Graphics Math Foundation (shipped)
 
-## Next milestone
-
-### v0.2 — Graphics Math Foundation
-
-**Goal:** Provide the function surface and type aliases needed for basic
-graphics work, so M3Lib becomes a viable alternative to GLM for shader-
-adjacent code.
-
-#### P0 — type aliases
-
-- `vec2 vec3 vec4` (`Vec<2..4, float>`)
-- `ivec2 ivec3 ivec4` (`Vec<2..4, int>`)
-- `Mat2 Mat3 Mat4` already exist as type aliases; verify coverage
-
-#### P0 — GLSL trigonometric functions
-
-- `sin cos tan asin acos atan atan2 radians degrees`
-- Scalar + per-element vector overloads
-- Free functions in `m3.math.trig`
-
-#### P0 — GLSL exponential functions
-
-- `pow exp log exp2 log2 sqrt inversesqrt`
-- Scalar + per-element vector overloads
-- Free functions in `m3.math.exp`
-
-#### P0 — GLSL common utility functions
-
-- `abs sign floor ceil fract mod step smoothstep min max`
-- Scalar + per-element vector overloads
-- Free functions in `m3.math.common` (extending the existing module)
-
-#### P0 — Mat4 × Vec3 homogeneous transform
-
-- Define homogeneous transformation helpers for Mat4 and Vec3/Vec4,
-  with explicit semantics for position and direction transformations.
-- `Mat4 * Vec4` (full homogeneous multiply)
-- The single most important operation for graphics — projecting 3D
-  points through a 4×4 transform matrix
+- GLSL type aliases: `vec2 vec3 vec4` (`Vec<2..4, float>`),
+  `ivec2 ivec3 ivec4` (`Vec<2..4, int>`); `Mat2 Mat3 Mat4` verified
+- GLSL trigonometric functions in `m3.math:trig`:
+  `sin cos tan asin acos atan atan2 radians degrees`
+  (scalar + per-element vector overloads)
+- GLSL exponential functions in `m3.math:exp`:
+  `pow exp log exp2 log2 sqrt inversesqrt`
+  (scalar + per-element vector overloads)
+- GLSL common utility functions in `m3.math:common`:
+  `abs sign floor ceil fract mod step smoothstep min max`
+  (scalar + per-element vector overloads, including scalar broadcast)
+- Homogeneous transform helpers in `m3.math:transform`:
+  `transform_point(Mat4, Vec3) -> Vec3` (with perspective divide),
+  `transform_direction(Mat4, Vec3) -> Vec3` (no perspective divide)
+- `mod` follows GLSL semantics (`x - y * floor(x/y)`, not `std::fmod`)
+- `smoothstep` carries `pre(e0 < e1)` contract
+- All new functions are `constexpr`, `noexcept`, `[[nodiscard]]`
 
 ---
 
@@ -215,44 +193,25 @@ into deep modules.  No public API changes; behaviour preserved.
 - `Vec` 的 `std::formatter`（调试显示）
 - xmake + mcpp 双构建；CI：lint + enforce + observe 模式
 
----
+### v0.2 — 图形数学基础（已交付）
 
-## 下一里程碑
-
-### v0.2 — 图形数学基础
-
-**目标：** 提供基础图形工作所需的函数面与类型别名，使 M3Lib 成为
-GLM 在 shader 邻近代码中的可行替代。
-
-#### P0 — 类型别名
-
-- `vec2 vec3 vec4`（`Vec<2..4, float>`）
-- `ivec2 ivec3 ivec4`（`Vec<2..4, int>`）
-- `Mat2 Mat3 Mat4` 已作为类型别名存在；核实覆盖
-
-#### P0 — GLSL 三角函数
-
-- `sin cos tan asin acos atan atan2 radians degrees`
-- 标量 + 逐元素向量重载
-- 自由函数置于 `m3.math.trig`
-
-#### P0 — GLSL 指数函数
-
-- `pow exp log exp2 log2 sqrt inversesqrt`
-- 标量 + 逐元素向量重载
-- 自由函数置于 `m3.math.exp`
-
-#### P0 — GLSL 常用工具函数
-
-- `abs sign floor ceil fract mod step smoothstep min max`
-- 标量 + 逐元素向量重载
-- 自由函数置于 `m3.math.common`（扩展现有模块）
-
-#### P0 — Mat4 × Vec3 齐次变换
-
-- 为 Mat4 与 Vec3/Vec4 设计齐次变换辅助接口，明确区分位置变换与方向变换语义。
-- `Mat4 * Vec4`（完整齐次乘法）
-- 图形编程最核心的操作——将 3D 点通过 4×4 变换矩阵投影
+- GLSL 类型别名：`vec2 vec3 vec4`（`Vec<2..4, float>`）、
+  `ivec2 ivec3 ivec4`（`Vec<2..4, int>`）；`Mat2 Mat3 Mat4` 已核实
+- GLSL 三角函数，置于 `m3.math:trig`：
+  `sin cos tan asin acos atan atan2 radians degrees`
+  （标量 + 逐元素向量重载）
+- GLSL 指数函数，置于 `m3.math:exp`：
+  `pow exp log exp2 log2 sqrt inversesqrt`
+  （标量 + 逐元素向量重载）
+- GLSL 通用工具函数，置于 `m3.math:common`：
+  `abs sign floor ceil fract mod step smoothstep min max`
+  （标量 + 逐元素向量重载，含标量广播）
+- 齐次变换辅助函数，置于 `m3.math:transform`：
+  `transform_point(Mat4, Vec3) -> Vec3`（含透视除法）、
+  `transform_direction(Mat4, Vec3) -> Vec3`（无透视除法）
+- `mod` 遵循 GLSL 语义（`x - y * floor(x/y)`，非 `std::fmod`）
+- `smoothstep` 带 `pre(e0 < e1)` 契约
+- 所有新增函数均为 `constexpr`、`noexcept`、`[[nodiscard]]`
 
 ---
 

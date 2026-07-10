@@ -17,18 +17,20 @@ M3Lib aims to become a "modern, modular GLM" designed for graphics programming, 
 
 **Currently available:**
 - Vector types `Vec<1..4, T>` with GLSL-style single-component swizzle (.x, .y, .z, .w, .r, .g, .b, .a, .s, .t, .p, .q)
+- GLSL type aliases: `vec2 vec3 vec4` (float), `ivec2 ivec3 ivec4` (int), `Mat2 Mat3 Mat4`
 - Vec arithmetic operators (`+ - * /` element-wise, scalar broadcast, compound assignment, `== !=`)
 - Square matrix types `Mat<2..4, T>` with column-major layout, plus `Mat2`/`Mat3`/`Mat4` aliases
 - Matrix operators (`+ - *` matrix-matrix and matrix-vector, `== !=`, compound assignment)
 - Core GLSL vector math functions (dot, cross, normalize, length, distance, reflect, refract)
-- Core GLSL common functions (mix, clamp, lerp)
+- GLSL trigonometric functions (sin, cos, tan, asin, acos, atan, atan2, radians, degrees)
+- GLSL exponential functions (pow, exp, log, exp2, log2, sqrt, inversesqrt)
+- GLSL common functions (mix, clamp, lerp, abs, sign, floor, ceil, fract, mod, step, smoothstep, min, max)
+- Homogeneous transform helpers (transform_point, transform_direction)
 - Contracts-based bounds checking (C++26 P2900R14)
 - C++26 `=delete("reason")` diagnostics
 - `constexpr` structured bindings (C++26 P2686R4)
 
 **Planned (see [Roadmap](./ROADMAP.md)):**
-- GLSL math function completion (v0.2)
-- Type aliases `vec2 vec3 vec4 mat3 mat4` (v0.2)
 - Multi-character swizzle (v0.3)
 - Quaternion support (v0.4)
 - Cross-platform support (v0.6)
@@ -58,16 +60,15 @@ Whenever practical, M3Lib follows GLSL specifications and behaviours to reduce d
 
 ## Requirements
 
-M3Lib relies on **C++26 contracts (P2900R14)**, currently implemented
-only in **GCC 16+**.  Static reflection (P2996) is reserved for future
+M3Lib relies on **C++26 contracts (P2900R14)**, currently implemented only in **GCC 16+**.  
+Reflection (P2996、P3157) is reserved for future
 API work and is not yet consumed by the library.  Other compilers
-(Clang, MSVC) lag behind on contracts; full multi-compiler support awaits
-their implementation.
+(Clang, MSVC) lag behind on contracts; full multi-compiler support awaits their implementation.
 
 - **Compiler:** GCC 16 or newer (required for contracts)
 - Full C++ Modules support
 - **Currently tested platform:** Linux x64 (Fedora + GCC 16)
-- **Windows:** planned for testing; not yet validated
+- **Windows:** (msys2(ucrt64) + GCC 16)
 - **macOS:** not planned (no maintainer hardware available)
 
 ### Platform & Compiler Support
@@ -120,11 +121,8 @@ xmake build tests && xmake run test_vec
 mcpp build -p test_vec && ./target/*/bin/test_vec
 ```
 
-The current test suite covers construction, accessors, operators, compound
-assignment, boundary conditions, contracts, structured bindings, and
-`=delete("reason")` diagnostics.  Test count is not reported here because
-the API and feature surface are still evolving rapidly during early
-development.
+The exact test count is intentionally not listed here, 
+as the test suite evolves continuously with the API during early development.
 
 ---
 
@@ -140,4 +138,4 @@ See [LICENSE](./LICENSE) for details.
 
 - [OpenGL Mathematics (GLM)](https://github.com/icaven/glm) — a header-only C++ mathematics library for graphics software based on the GLSL specifications.
 - [xmake](https://github.com/xmake-io/xmake) — a cross-platform build utility based on Lua.
-- [mcpp](https://github.com/mcpp-community/mcpp) — a modern modular build tool with built-in toolchain management.
+- [mcpp](https://github.com/mcpp-community/mcpp) — an experimental build tool focused on C++ Modules.

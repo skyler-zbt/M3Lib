@@ -184,7 +184,7 @@ due to a GCC 16.1.0 internal compiler error.
 | `good first issue` | Suitable for new contributors          |
 | `help wanted`      | Extra attention needed                 |
 | `P0`–`P3`          | Priority (P0 = critical)               |
-| `v0.2` etc.         | Milestone target                       |
+| `v0.2` etc.        | Milestone target                       |
 
 ## Licence
 
