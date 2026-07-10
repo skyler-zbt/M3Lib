@@ -44,6 +44,21 @@ if is_mode("debug") then
         add_deps("M3")
         add_files("test_mat.cpp", "test_common.cppm", {public = true})
 
+    target("test_trig")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_trig.cpp", "test_common.cppm", {public = true})
+
+    target("test_exp")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_exp.cpp", "test_common.cppm", {public = true})
+
+    target("test_transform")
+        set_kind("binary")
+        add_deps("M3")
+        add_files("test_transform.cpp", "test_common.cppm", {public = true})
+
     -- observe semantic: violations log instead of abort, so the driver can
     -- verify the contract fired.
     --
