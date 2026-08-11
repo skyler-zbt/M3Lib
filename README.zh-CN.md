@@ -1,139 +1,83 @@
 # M3Lib
 
-> M3Lib（Modern · Module · Math）—— 一个模块化的图形学数学库。
+> **M3Lib**（Modern · Module · Math）—— 模块化的 C++ 图形数学库。
 
 [English](./README.md)
 
-M3Lib 的目标是成为"现代化、模块化的 GLM"，为图形学、游戏引擎与实时渲染领域提供更符合现代 C++ 理念的数学基础设施。
+---
+
+## 是什么
+
+M3Lib 提供面向 GLSL 的向量、矩阵类型与数学辅助，用于图形编程、游戏引擎与实时渲染。库以 **C++ Modules** 构建，目标是成为现代化、模块化的 [GLM](https://github.com/icaven/glm) 替代方案。
+
+使用方式：
+
+```cpp
+import m3;
+```
 
 ---
 
-## 项目状态
+## 为什么
+
+- **Modules 优先：** 围绕 C++ Modules 设计，而不是仅头文件堆叠。
+- **对齐 GLSL 语义：** 在可行范围内遵循 [GLSL 4.60](./docs/GLSLangSpec.4.60.pdf) 的命名与行为，让 CPU 数学贴近着色器数学。
+- **现代 C++26：** 用契约做边界检查，并为后续语言特性留出空间。
+- **布局叙事清晰：** 显式对齐 qualifier，以及通向 GPU 布局类型的规划（见路线图）。
+
+---
+
+## 当前进度
 
 > [!CAUTION]
-> 早期开发中 —— 项目处于活跃开发阶段。
-> 接口、模块结构、行为以及实现细节可能发生变动。
-> 欢迎通过 Issues 提交问题、反馈或想法。
+> 早期开发（约 **v0.2**）。API、模块与行为仍可能变动。不是稳定发行版。
 
-**当前可用：**
-- 向量类型 `Vec<1..4, T>`，GLSL 风格单分量 swizzle（.x、.y、.z、.w、.r、.g、.b、.a、.s、.t、.p、.q）
-- GLSL 类型别名：`vec2 vec3 vec4`（float）、`ivec2 ivec3 ivec4`（int）、`Mat2 Mat3 Mat4`
-- Vec 算术运算符（`+ - * /` 逐元素、标量广播、复合赋值、`== !=`）
-- 方阵类型 `Mat<2..4, T>`，列主序布局，提供 `Mat2`/`Mat3`/`Mat4` 别名
-- 矩阵运算符（`+ - *` 矩阵乘与矩阵-向量，`== !=`，复合赋值）
-- 核心 GLSL 向量数学函数（dot、cross、normalize、length、distance、reflect、refract）
-- GLSL 三角函数（sin、cos、tan、asin、acos、atan、atan2、radians、degrees）
-- GLSL 指数函数（pow、exp、log、exp2、log2、sqrt、inversesqrt）
-- GLSL 通用函数（mix、clamp、lerp、abs、sign、floor、ceil、fract、mod、step、smoothstep、min、max）
-- 齐次变换辅助函数（transform_point、transform_direction）
-- 基于契约的边界检查（C++26 P2900R14）
-- C++26 `=delete("reason")` 诊断
-- `constexpr` 结构化绑定（C++26 P2686R4）
+| 问题 | 回答 |
+|------|------|
+| **能不能编译、能不能用？** | **能**，按实验库使用：在受支持工具链上构建 `M3` 并 `import m3;`。 |
+| **能不能上生产？** | **不能。** 仍有正确性工作（尤其是 v0.3 的矩阵积索引修复）。在修好之前请谨慎采信计算结果。 |
+| **测试可靠吗？** | `tests/` 计划整目录重写；请勿把当前测试当作完整或正确性保证。 |
+| **当前能力范围** | `Vec` / 方阵 `Mat`、GLSL 风格别名与核心三角 / 指数 / 通用 / 几何辅助，以及基础变换辅助。细节见 [ROADMAP.md](./ROADMAP.md)。 |
 
-**计划中（详见[路线图](./ROADMAP.md)）：**
-- 多字符 swizzle（v0.3）
-- 四元数支持（v0.4）
-- 跨平台支持（v0.6）
+### 平台与编译器
 
----
+需要 **GCC 16+**（C++26 contracts / P2900）及 C++ Modules 支持。
 
-## 项目目标
+|          | GCC 16+ | Clang | MSVC |
+|----------|---------|-------|------|
+| Linux    | ✅ 已测（如 Fedora） | 🚧 | ❌ |
+| Windows  | ✅ 已测（MSYS2 UCRT64） | 🚧 | 🚧 |
+| macOS    | ❌ | ❌ | ❌ |
 
-M3Lib 希望成为：
+✅ 今天可用 &nbsp;|&nbsp; 🚧 待工具链跟上后规划 &nbsp;|&nbsp; ❌ 暂未计划（macOS 无维护者硬件）
 
-- 一个完全基于 Modules 架构的现代 C++ 数学库
-- 更契合现代 C++26 设计思想的 GLM 替代方案
-
-与传统数学库相比，M3Lib 更加注重：
-
-- 完整的 C++ Modules 支持
-- GLSL 风格的接口与行为规范
-- 清晰且一致的 API 设计
-- 强类型安全
-- 合理的内存对齐设计
-- 对现代 SIMD 及编译器优化能力的利用
-- 贴近 GPU / Shader 风格的数学接口
-
-在可行范围内，M3Lib 将尽可能遵循 GLSL 规范与行为，以减少 CPU 端与 GPU 端数学代码之间的差异，为开发者提供更一致的编码体验。
-
----
-
-## 环境要求
-
-M3Lib 依赖 **C++26 contracts (P2900R14)**，该特性目前仅在 **GCC 16+**实现。
-反射（P2996、P3157）预留给未来 API 使用，库当前并未消费。
-其他编译器（Clang、MSVC）对 contracts 跟进滞后；完整多编译器支持需待其实现。
-
-- **编译器：** GCC 16 或更新（contracts 所需）
-- 完整的 C++ Modules 支持
-- **当前已测试平台：** Linux x64（Fedora + GCC 16）
-- **Windows：** （msys2(ucrt64) + GCC 16 ）
-- **macOS：** 未计划（无维护者硬件）
-
-### 平台与编译器支持
-
-|          | GCC       | Clang     | MSVC      |
-|----------|-----------|-----------|-----------|
-| Linux    | ✅        | 🚧        | ❌        |
-| Windows  | ✅        | 🚧        | 🚧        |
-| macOS    | ❌        | ❌        | ❌        |
-
-✅ 已支持 &nbsp;|&nbsp; 🚧 规划中 &nbsp;|&nbsp; ❌ 暂未计划
 ---
 
 ## 构建
 
-M3Lib 支持双构建系统：
-
-### xmake（主构建系统，CI 覆盖）
+主构建：**xmake**。可选：[mcpp](https://github.com/mcpp-community/mcpp)（尽力支持）。
 
 ```bash
-xmake f -m debug                   # debug：未优化，快速迭代
-xmake f -m release                 # release：优化，可移植
-xmake build M3                     # 编译库
-xmake build tests                  # 编译 + 运行全部测试
-xmake run test_vec
+xmake f -m debug          # 或：xmake f -m release
+xmake build M3            # 构建库
 ```
-
-### mcpp（社区维护，尽力支持）
-
-[mcpp](https://github.com/mcpp-community/mcpp) —— 现代模块化构建工具，内置工具链管理。
-
-```bash
-mcpp build              # 编译库
-mcpp build -p test_vec  # 编译测试
-./target/*/bin/test_vec # 运行测试
-```
-
-> **注意：** mcpp 构建为社区维护，不保证所有测试目标可用 mcpp 构建。
-> mcpp CI 覆盖计划在 v0.6 实现。
-
----
-
-## 运行测试
-
-```bash
-# xmake
-xmake build tests && xmake run test_vec
-
-# mcpp
-mcpp build -p test_vec && ./target/*/bin/test_vec
-```
-
-当前测试数量仍随 API 演进变化，因此 README 不固定记录具体数量。
 
 ---
 
 ## 许可证
 
-本项目基于 Apache License 2.0 开源。
-
-详见 [LICENSE](./LICENSE)。
+[Apache License 2.0](./LICENSE)
 
 ---
 
 ## 相关链接
 
-- [OpenGL Mathematics (GLM)](https://github.com/icaven/glm) —— 一个符合 GLSL 规范的 C++ 仅头文件数学库
-- [xmake](https://github.com/xmake-io/xmake) —— 一个基于 Lua 的跨平台构建工具
-- [mcpp](https://github.com/mcpp-community/mcpp) —— 一个面向 C++ Modules 的实验性构建工具。
+| | |
+|--|--|
+| 路线图 | [ROADMAP.md](./ROADMAP.md) |
+| 测试 / CI 说明 | [docs/testing-and-ci.md](./docs/testing-and-ci.md) |
+| 推迟的 GLSL 范围 | [docs/glsl-deferred.md](./docs/glsl-deferred.md) |
+| GLSL 4.60 规范 | [docs/GLSLangSpec.4.60.pdf](./docs/GLSLangSpec.4.60.pdf) |
+| GLM | https://github.com/icaven/glm |
+| xmake | https://github.com/xmake-io/xmake |
+| mcpp | https://github.com/mcpp-community/mcpp |
