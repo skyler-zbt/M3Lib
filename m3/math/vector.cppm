@@ -1,10 +1,4 @@
-// GLSL vector functions: dot, cross, normalize, length, distance, reflect, refract.
-// All functions are constexpr and accept Vec<L, T, Q> for any valid dimension.
-// cross() is restricted to Vec<3> per GLSL convention.
-//
-// GLSL 向量函数：dot、cross、normalize、length、distance、reflect、refract。
-// 所有函数均为 constexpr，接受任意合法维度的 Vec<L, T, Q>。
-// 按 GLSL 惯例，cross() 仅限于 Vec<3>。
+
 export module m3.math:vector;
 
 import std;
@@ -80,4 +74,4 @@ refract(const Vec<L, T, Q>& I, const Vec<L, T, Q>& N, T eta) noexcept {
     return I * eta - N * (eta * d + std::sqrt(k));
 }
 
-}  // namespace m3
+}

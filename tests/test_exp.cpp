@@ -1,6 +1,3 @@
-// M3Lib — Exponential function tests: pow, exp, log, exp2, log2, sqrt,
-// inversesqrt.
-//    xmake build test_exp && xmake run test_exp
 
 import std;
 import m3;
@@ -8,8 +5,6 @@ import test_common;
 
 int main() {
     TestRunner runner;
-
-    // ---- pow ----
 
     runner.add("pow scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::pow(2.0f, 3.0f), 8.0f, 1e-6f); !r)
@@ -30,8 +25,6 @@ int main() {
         return {};
     });
 
-    // ---- exp / log ----
-
     runner.add("exp log scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::exp(0.0f), 1.0f, 1e-6f); !r)
             return r;
@@ -41,7 +34,7 @@ int main() {
             return r;
         if (auto r = check_float_eq(m3::log(std::numbers::e_v<float>), 1.0f, 1e-6f); !r)
             return r;
-        // exp and log are inverses
+
         if (auto r = check_float_eq(m3::log(m3::exp(2.5f)), 2.5f, 1e-6f); !r)
             return r;
         return {};
@@ -61,8 +54,6 @@ int main() {
         return {};
     });
 
-    // ---- exp2 / log2 ----
-
     runner.add("exp2 log2 scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::exp2(0.0f), 1.0f, 1e-6f); !r)
             return r;
@@ -72,7 +63,7 @@ int main() {
             return r;
         if (auto r = check_float_eq(m3::log2(1.0f), 0.0f, 1e-6f); !r)
             return r;
-        // exp2 and log2 are inverses
+
         if (auto r = check_float_eq(m3::log2(m3::exp2(5.0f)), 5.0f, 1e-6f); !r)
             return r;
         return {};
@@ -87,8 +78,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- sqrt / inversesqrt ----
 
     runner.add("sqrt scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::sqrt(4.0f), 2.0f, 1e-6f); !r)

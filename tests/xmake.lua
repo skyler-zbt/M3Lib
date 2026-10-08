@@ -53,7 +53,7 @@ if is_mode("debug") then
 
     -- observe semantic: violations log instead of abort, so the driver can
     -- verify the contract fired.
-    --
+
     target("test_contracts")
         set_kind("binary")
         add_deps("M3")

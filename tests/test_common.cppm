@@ -1,10 +1,4 @@
-// Shared test infrastructure for M3Lib.
-// Provides check / check_float_eq helpers and a TestRunner harness.
-// Import this module instead of duplicating the boilerplate in each test target.
-//
-// M3Lib 共享测试基础设施。
-// 提供 check / check_float_eq 辅助函数和 TestRunner 框架。
-// 导入此模块即可，无需在每个测试目标中重复样板代码。
+
 export module test_common;
 
 import std;
@@ -23,12 +17,7 @@ export {
     template <typename T>
     inline TestResult check_float_eq(T a, T b, T eps,
                                      std::source_location loc = std::source_location::current()) {
-        // NaN 与任何值的比较都返回 false，会导致测试静默通过。
-        // 显式检查 NaN 以确保测试失败而非假通过。
-        //
-        // NaN comparisons always return false, which would cause the test
-        // to silently pass.  Explicitly check for NaN to ensure the test
-        // fails rather than producing a false positive.
+
         if (std::isnan(static_cast<double>(a)) || std::isnan(static_cast<double>(b))) {
             return std::unexpected(std::string{loc.file_name()} + ":" + std::to_string(loc.line()) +
                                    ": NaN detected in check_float_eq(" + std::to_string(a) + ", " +

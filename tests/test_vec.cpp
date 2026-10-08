@@ -1,20 +1,11 @@
-// M3Lib — Vec type tests: construction, accessors, operators, comparison, formatter.
-//    xmake build test_vec && xmake run test_vec
-//    mcpp build -p test_vec && ./target/*/bin/test_vec
 
 import std;
 import m3;
 
-// === test infrastructure ===
-
 import test_common;
-
-// === test cases ===
 
 int main() {
     TestRunner runner;
-
-    // ---- Construction ----
 
     runner.add("default construct zero-initialises", [] -> TestResult {
         m3::Vec<3, float> v{};
@@ -126,8 +117,6 @@ int main() {
         return {};
     });
 
-    // ---- Vec1 accessors ----
-
     runner.add("vec1 x/r/s accessors alias element 0", [] -> TestResult {
         m3::Vec<1, float> v{};
         v.x() = 7.0f;
@@ -148,8 +137,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Vec2 accessors ----
 
     runner.add("vec2 x/y accessors", [] -> TestResult {
         m3::Vec<2, float> v{};
@@ -183,8 +170,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Vec3 accessors ----
 
     runner.add("vec3 x/y/z accessors", [] -> TestResult {
         m3::Vec<3, float> v{};
@@ -228,8 +213,6 @@ int main() {
         return {};
     });
 
-    // ---- Vec4 accessors ----
-
     runner.add("vec4 x/y/z/w accessors", [] -> TestResult {
         m3::Vec<4, float> v{};
         v.x() = 1.0f;
@@ -266,8 +249,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- operator[] / value_ptr ----
 
     runner.add("operator[] read broadcast values", [] -> TestResult {
         m3::Vec<3, float> v{1.0f};
@@ -327,8 +308,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Component-wise operators ----
 
     runner.add("vector add", [] -> TestResult {
         m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
@@ -405,8 +384,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Scalar operators ----
 
     runner.add("vec mul scalar right", [] -> TestResult {
         m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
@@ -485,13 +462,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Compound assignment operators ----
-    // Verify that +=, -=, *=, /= produce correct results and mutate
-    // the left-hand operand in place.
-    //
-    // ---- 复合赋值运算符 ----
-    // 验证 +=、-=、*=、/= 产生正确结果并原地修改左操作数。
 
     runner.add("vector +=", [] -> TestResult {
         m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
@@ -585,8 +555,6 @@ int main() {
         return {};
     });
 
-    // ---- Comparison ----
-
     runner.add("equal vectors", [] -> TestResult {
         m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
         m3::Vec<3, float> b{1.0f, 2.0f, 3.0f};
@@ -612,8 +580,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Edge cases ----
 
     runner.add("zero add zero is zero", [] -> TestResult {
         m3::Vec<3, float> a{};
@@ -686,7 +652,7 @@ int main() {
     });
 
     runner.add("int division truncation", [] -> TestResult {
-        // C++ integer division truncates toward zero
+
         m3::Vec<2, int> a{5, 7};
         auto c = a / 2;
         if (auto r = check(c[0] == 2 && c[1] == 3); !r)
@@ -714,8 +680,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Integration ----
 
     runner.add("vec1 all vector operations", [] -> TestResult {
         m3::Vec<1, float> a{3.0f};
@@ -762,8 +726,6 @@ int main() {
         return {};
     });
 
-    // ---- std::formatter ----
-
     runner.add("format vec3 int", [] -> TestResult {
         m3::Vec<3, int> v{1, 2, 3};
         auto s = std::format("{}", v);
@@ -795,17 +757,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- Regression: operator[] with [[assume]] ----
-    // Verify that the if-consteval + [[assume]] transformation preserves
-    // correct element access for all valid indices across all dimensions.
-    // The [[assume]] hint tells the compiler the index is always in bounds,
-    // unlocking auto-vectorisation without changing observable behaviour.
-    //
-    // ---- 回归测试：带 [[assume]] 的 operator[] ----
-    // 验证 if-consteval + [[assume]] 改造在所有维度的合法索引上
-    // 保持正确的元素访问。[[assume]] 提示告诉编译器索引始终在边界内，
-    // 解锁自动向量化而不改变可观察行为。
 
     runner.add("operator[] valid indices vec1", [] -> TestResult {
         m3::Vec<1, float> v{3.14f};
@@ -867,16 +818,6 @@ int main() {
         return {};
     });
 
-    // ---- element_ref_t trait verification ----
-    // Verify that element_ref_t resolves correctly for Vec types.
-    // Uses remove_reference_t so the result is T (value type), not T&.
-    // This trait enables future Matrix reuse of apply_binary / apply_unary.
-    //
-    // ---- element_ref_t trait 验证 ----
-    // 验证 element_ref_t 对 Vec 类型的正确解析。
-    // 使用 remove_reference_t，结果为 T（值类型）而非 T&。
-    // 此 trait 使未来 Matrix 能复用 apply_binary / apply_unary。
-
     runner.add("element_ref_t resolves to float for Vec<float>", [] -> TestResult {
         using V = m3::Vec<3, float>;
         if (auto r = check(std::is_same_v<m3::detail::element_ref_t<V>, float>); !r)
@@ -904,10 +845,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- GLSL-style type aliases ----
-    //
-    // ---- GLSL 风格类型别名 ----
 
     runner.add("type aliases: vec2/vec3/vec4 are float vectors", [] -> TestResult {
         static_assert(std::is_same_v<m3::vec2, m3::Vec<2, float>>);

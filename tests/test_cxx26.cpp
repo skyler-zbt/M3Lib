@@ -1,21 +1,11 @@
-// M3Lib — C++26 features: structured bindings (P2686R4), tuple protocol,
-// contracts pre-condition valid access (P2900R14), = delete("reason") compile test.
-//    xmake build test_cxx26 && xmake run test_cxx26
-//    mcpp build -p test_cxx26 && ./target/*/bin/test_cxx26
 
 import std;
 import m3;
 
-// === test infrastructure ===
-
 import test_common;
-
-// === test cases ===
 
 int main() {
     TestRunner runner;
-
-    // ---- Structured bindings (P2686R4) ----
 
     runner.add("structured binding vec2", [] -> TestResult {
         m3::Vec<2, float> v{};
@@ -60,10 +50,6 @@ int main() {
         return {};
     });
 
-    // Note: constexpr structured bindings require GCC PR117784 (partial in 16.1.1)
-
-    // ---- Tuple protocol (get<I>) ----
-
     runner.add("get<I> reference modifies element", [] -> TestResult {
         m3::Vec<3, float> v{};
         v[0] = 1.0f;
@@ -99,8 +85,6 @@ int main() {
         return {};
     });
 
-    // ---- Contracts (P2900R14) valid access ----
-
     runner.add("operator[] valid index 0 passes contract", [] -> TestResult {
         m3::Vec<4, int> v{0};
         v[0] = 42;
@@ -119,7 +103,7 @@ int main() {
 
     runner.add("operator[] const valid access passes contract", [] -> TestResult {
         const m3::Vec<3, float> v{1.0f, 2.0f, 3.0f};
-        // All valid indices — no violation
+
         if (auto r = check_float_eq(v[0], 1.0f, 1e-6f); !r)
             return r;
         if (auto r = check_float_eq(v[1], 2.0f, 1e-6f); !r)

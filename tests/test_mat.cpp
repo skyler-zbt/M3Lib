@@ -1,23 +1,11 @@
-// M3Lib — Mat type tests: construction, accessors, operators, comparison, products.
-//    xmake build test_mat && xmake run test_mat
-//
-// Covers S1.7 acceptance criteria: ~50 cases spanning construction,
-// element access, Hadamard ops, scalar broadcast, compound assignment,
-// matrix product, Mat*Vec, Vec*Mat, and boundary checks.
 
 import std;
 import m3;
 
-// === test infrastructure ===
-
 import test_common;
-
-// === test cases ===
 
 int main() {
     TestRunner runner;
-
-    // ---- Construction ----
 
     runner.add("default Mat3 constructs zero", [] -> TestResult {
         m3::Mat<3, 3, float> m;
@@ -50,7 +38,7 @@ int main() {
     });
 
     runner.add("column-major pointer ctor reads columns contiguously", [] -> TestResult {
-        // Column 0: {1, 2, 3}, column 1: {4, 5, 6}, column 2: {7, 8, 9}
+
         float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         m3::Mat<3, 3, float> m{data};
         if (auto r2 = check_float_eq(m(0, 0), 1.0f, 1e-6f); !r2)
@@ -112,8 +100,6 @@ int main() {
         return {};
     });
 
-    // ---- Element access ----
-
     runner.add("operator() returns writable reference", [] -> TestResult {
         m3::Mat3<float> m{};
         m(1, 2) = 5.5f;
@@ -136,8 +122,6 @@ int main() {
             return r2;
         return {};
     });
-
-    // ---- Element-wise (Hadamard) operators ----
 
     runner.add("Mat + Mat element-wise adds", [] -> TestResult {
         m3::Mat3<float> a{1.0f};
@@ -171,11 +155,11 @@ int main() {
         m3::Mat3<float> a{0.0f};
         for (std::size_t c = 0; c < 3; ++c)
             for (std::size_t r = 0; r < 3; ++r)
-                a(c, r) = static_cast<float>(c * 3 + r + 1);  // 1..9
+                a(c, r) = static_cast<float>(c * 3 + r + 1);
         m3::Mat3<float> b{0.0f};
         for (std::size_t c = 0; c < 3; ++c)
             for (std::size_t r = 0; r < 3; ++r)
-                b(c, r) = 1.0f;  // all ones — safe denominator
+                b(c, r) = 1.0f;
         m3::Mat3<float> c = a / b;
         for (std::size_t c_idx = 0; c_idx < 3; ++c_idx) {
             for (std::size_t r = 0; r < 3; ++r) {
@@ -198,8 +182,6 @@ int main() {
             return r2;
         return {};
     });
-
-    // ---- Scalar broadcast operators ----
 
     runner.add("Mat * scalar broadcasts", [] -> TestResult {
         m3::Mat3<float> m{1.0f};
@@ -235,7 +217,7 @@ int main() {
         if (auto r2 = check_float_eq(r(0, 0), 4.0f, 1e-6f); !r2)
             return r2;
         if (auto r2 = check_float_eq(r(1, 2), 3.0f, 1e-6f); !r2)
-            return r2;  // 0 + 3
+            return r2;
         return {};
     });
 
@@ -248,8 +230,6 @@ int main() {
             return r2;
         return {};
     });
-
-    // ---- Compound assignment ----
 
     runner.add("Mat += Mat works", [] -> TestResult {
         m3::Mat3<float> a{1.0f};
@@ -296,8 +276,6 @@ int main() {
         return {};
     });
 
-    // ---- Equality ----
-
     runner.add("Mat == Mat true for identical", [] -> TestResult {
         m3::Mat3<float> a{1.0f};
         m3::Mat3<float> b{1.0f};
@@ -317,8 +295,6 @@ int main() {
             return r2;
         return {};
     });
-
-    // ---- Matrix product (Mat * Mat) ----
 
     runner.add("Mat2 * Mat2 product (identity * M = M)", [] -> TestResult {
         m3::Mat2<float> I{1.0f};
@@ -340,12 +316,7 @@ int main() {
     });
 
     runner.add("Mat2 * Mat2 classic product", [] -> TestResult {
-        // A = [[1,2],[3,4]], B = [[5,6],[7,8]] in row-major view (column 0 of A is {1,2}, etc.)
-        // A*B in column-major formula: result(c, r) = sum_k A(c, k) * B(k, r)
-        // R(0, 0) = A(0,0)*B(0,0) + A(0,1)*B(1,0) = 1*5 + 2*7 = 19
-        // R(0, 1) = A(0,0)*B(0,1) + A(0,1)*B(1,1) = 1*6 + 2*8 = 22
-        // R(1, 0) = A(1,0)*B(0,0) + A(1,1)*B(1,0) = 3*5 + 4*7 = 43
-        // R(1, 1) = A(1,0)*B(0,1) + A(1,1)*B(1,1) = 3*6 + 4*8 = 50
+
         m3::Mat2<float> A{0.0f}, B{0.0f};
         A(0, 0) = 1;
         A(0, 1) = 2;
@@ -371,7 +342,7 @@ int main() {
         m3::Mat3<float> I{1.0f};
         m3::Mat3<float> M{0.0f};
         for (std::size_t i = 0; i < 3; ++i)
-            M(i, i) = static_cast<float>(i + 1);  // diagonal 1,2,3
+            M(i, i) = static_cast<float>(i + 1);
         m3::Mat3<float> R = I * M;
         for (std::size_t i = 0; i < 3; ++i)
             for (std::size_t j = 0; j < 3; ++j)
@@ -401,9 +372,7 @@ int main() {
         B(2, 1) = 1;
         B(2, 2) = 1;
         m3::Mat3<float> R = A * B;
-        // Manual verify a few entries
-        // R(0,0) = 1*3 + 0*1 + 2*2 = 7
-        // R(1,1) = -1*1 + 3*0 + 1*1 = 0
+
         if (auto r2 = check_float_eq(R(0, 0), 7.0f, 1e-6f); !r2)
             return r2;
         if (auto r2 = check_float_eq(R(1, 1), 0.0f, 1e-6f); !r2)
@@ -424,14 +393,8 @@ int main() {
         return {};
     });
 
-    // ---- Mat * Vec and Vec * Mat ----
-
     runner.add("Mat2 * Vec2 right multiplication", [] -> TestResult {
-        // M set up with M(c, r) indexing: M(0,0)=1, M(0,1)=2, M(1,0)=3, M(1,1)=4
-        // Means M = [[1, 3], [2, 4]] in row-major view (column 0 = {1,2}, column 1 = {3,4}).
-        // v = [1, 1], M * v: r[r] = sum over c of M(c, r) * v[c]
-        //   r[0] = 1*1 + 3*1 = 4
-        //   r[1] = 2*1 + 4*1 = 6
+
         m3::Mat2<float> M{0.0f};
         M(0, 0) = 1;
         M(0, 1) = 2;
@@ -447,9 +410,7 @@ int main() {
     });
 
     runner.add("Vec2 * Mat2 left multiplication", [] -> TestResult {
-        // v * M: result[c] = sum over r of v[r] * M(c, r)
-        //   r[0] = v[0]*M(0,0) + v[1]*M(0,1) = 1*1 + 1*2 = 3
-        //   r[1] = v[0]*M(1,0) + v[1]*M(1,1) = 1*3 + 1*4 = 7
+
         m3::Mat2<float> M{0.0f};
         M(0, 0) = 1;
         M(0, 1) = 2;
@@ -465,8 +426,7 @@ int main() {
     });
 
     runner.add("Mat3 * Vec3 product (per-column interpretation)", [] -> TestResult {
-        // M columns: c0 = {1,0,0}, c1 = {0,1,0}, c2 = {0,0,1}
-        // v = {1,2,3}, M*v should be {1,2,3} for identity-like M
+
         m3::Mat3<float> M{0.0f};
         for (std::size_t i = 0; i < 3; ++i)
             M(i, i) = 1.0f;
@@ -507,18 +467,6 @@ int main() {
         return {};
     });
 
-    // ---- value_ptr ----
-
-    // Note: value_ptr() returns a pointer to column 0's data.  With the
-    // default qualifier (aligned_none), columns are densely packed and
-    // contiguous — ptr[i] traversal is safe.  With aligned qualifiers
-    // (e.g. aligned_16), column-to-column padding may exist; prefer
-    // column-by-column access via operator[](c).value_ptr().
-    //
-    // 注意：value_ptr() 返回第 0 列数据的指针。默认限定符（aligned_none）
-    // 下列是密集连续的——ptr[i] 遍历是安全的。对齐限定符（如 aligned_16）
-    // 下列间可能存在填充；建议通过 operator[](c).value_ptr() 逐列访问。
-
     runner.add("value_ptr points to column-major data (default qualifier, contiguous)",
                [] -> TestResult {
                    float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -548,9 +496,7 @@ int main() {
     runner.add("value_ptr column-by-column access (safe for all qualifiers)", [] -> TestResult {
         float data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         m3::Mat3<float> m{data};
-        // Per-column value_ptr() is always safe regardless of qualifier.
-        //
-        // 无论限定符如何，逐列 value_ptr() 始终安全。
+
         for (std::size_t c = 0; c < 3; ++c) {
             const float* col_ptr = m[c].value_ptr();
             for (std::size_t r = 0; r < 3; ++r) {
@@ -561,15 +507,13 @@ int main() {
         return {};
     });
 
-    // ---- Compound assignment * = Mat ----
-
     runner.add("Mat *= Mat (matrix product assignment)", [] -> TestResult {
         m3::Mat2<float> a{1.0f};
         m3::Mat2<float> b{0.0f};
         b(0, 0) = 2;
         b(1, 1) = 2;
         a *= b;
-        // a was identity, a*b should be b
+
         if (auto r2 = check_float_eq(a(0, 0), 2.0f, 1e-6f); !r2)
             return r2;
         if (auto r2 = check_float_eq(a(1, 1), 2.0f, 1e-6f); !r2)
@@ -577,10 +521,8 @@ int main() {
         return {};
     });
 
-    // ---- MatrixLike concept compliance (static asserts) ----
-
     runner.add("MatrixLike concept satisfied", [] -> TestResult {
-        // Diagnostic: what does m[i] return?
+
         using M = m3::Mat3<float>;
         using RetType = decltype(std::declval<M&>()[std::declval<std::size_t>()]);
         using ColType = M::column_type;
@@ -589,7 +531,7 @@ int main() {
                       "Mat::operator[] must return column_type& (TD-002 reference)");
         static_assert(std::same_as<ConstRetType, const ColType&>,
                       "Mat::operator[] const must return const column_type&");
-        // Each MatrixLike sub-constraint
+
         static_assert(requires { typename M::value_type; });
         static_assert(requires { typename M::column_type; });
         static_assert(requires { typename M::qualifier_type; });
@@ -614,12 +556,8 @@ int main() {
         return {};
     });
 
-    // ---- Edge cases ----
-
     runner.add("non-square requirement: Mat<3,4> rejected at compile time", [] -> TestResult {
-        // This test verifies the static_assert fires.  We don't actually
-        // instantiate Mat<3,4,...>; the static_assert is on the type.
-        // We just confirm Mat<2,2>, Mat<3,3>, Mat<4,4> all work.
+
         m3::Mat<2, 2, float> m2{};
         m3::Mat<3, 3, float> m3x{};
         m3::Mat<4, 4, float> m4{};
@@ -650,12 +588,10 @@ int main() {
         return {};
     });
 
-    // ---- Operator precedence / associativity ----
-
     runner.add("a + b * scalar (precedence)", [] -> TestResult {
         m3::Mat2<float> a{1.0f};
         m3::Mat2<float> b{2.0f};
-        // (a + b) * 3: a + b has 3 on diagonal, 0 off-diagonal. Multiply by 3: 9 diagonal, 0 off.
+
         m3::Mat2<float> r = (a + b) * 3.0f;
         if (auto r2 = check_float_eq(r(0, 0), 9.0f, 1e-6f); !r2)
             return r2;
@@ -670,8 +606,7 @@ int main() {
         m3::Mat2<float> a{2.0f};
         m3::Mat2<float> b{1.0f};
         m3::Mat2<float> r = -a + b;
-        // -a has -2 on diagonal, 0 off-diagonal. b has 1 on diagonal, 0 off.
-        // -a + b: -1 on diagonal, 0 off-diagonal.
+
         if (auto r2 = check_float_eq(r(0, 0), -1.0f, 1e-6f); !r2)
             return r2;
         if (auto r2 = check_float_eq(r(1, 0), 0.0f, 1e-6f); !r2)
@@ -682,8 +617,6 @@ int main() {
             return r2;
         return {};
     });
-
-    // ---- Final summary ----
 
     return runner.run();
 }

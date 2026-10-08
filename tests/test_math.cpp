@@ -1,21 +1,11 @@
-// M3Lib — Math function tests: dot, cross, normalize, length, distance,
-// reflect, refract, mix, clamp, lerp.
-//    xmake build test_math && xmake run test_math
-//    mcpp build -p test_math && ./target/*/bin/test_math
 
 import std;
 import m3;
 
-// === test infrastructure ===
-
 import test_common;
-
-// === test cases ===
 
 int main() {
     TestRunner runner;
-
-    // ---- dot ----
 
     runner.add("dot vec3", [] -> TestResult {
         m3::Vec<3, float> a{1.0f, 2.0f, 3.0f};
@@ -61,11 +51,9 @@ int main() {
         m3::Vec<4, int> a{1, 2, 3, 4};
         m3::Vec<4, int> b{2, 3, 4, 5};
         if (auto r = check(m3::dot(a, b) == 40); !r)
-            return r;  // 2+6+12+20
+            return r;
         return {};
     });
-
-    // ---- cross ----
 
     runner.add("cross unit x × unit y = unit z", [] -> TestResult {
         m3::Vec<3, float> a{1.0f, 0.0f, 0.0f};
@@ -99,8 +87,6 @@ int main() {
         return {};
     });
 
-    // ---- length ----
-
     runner.add("length of 3-4-5 triangle", [] -> TestResult {
         m3::Vec<2, float> v{3.0f, 4.0f};
         if (auto r = check_float_eq(m3::length(v), 5.0f, 1e-6f); !r)
@@ -122,8 +108,6 @@ int main() {
         return {};
     });
 
-    // ---- distance ----
-
     runner.add("distance origin to (1,2,2) is 3", [] -> TestResult {
         m3::Vec<3, float> a{0.0f, 0.0f, 0.0f};
         m3::Vec<3, float> b{1.0f, 2.0f, 2.0f};
@@ -138,8 +122,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- normalize ----
 
     runner.add("normalize unit vector unchanged", [] -> TestResult {
         m3::Vec<3, float> v{1.0f, 0.0f, 0.0f};
@@ -170,20 +152,18 @@ int main() {
     runner.add("normalize preserves direction", [] -> TestResult {
         m3::Vec<3, float> v{2.0f, 6.0f, 9.0f};
         auto n = m3::normalize(v);
-        // Cross product of parallel vectors is zero
+
         auto c = m3::cross(v, n);
         if (auto r = check_float_eq(m3::length(c), 0.0f, 1e-5f); !r)
             return r;
         return {};
     });
 
-    // ---- reflect ----
-
     runner.add("reflect 45 degree mirror", [] -> TestResult {
-        m3::Vec<2, float> I{1.0f, -1.0f};  // incoming from top-right
-        m3::Vec<2, float> N{0.0f, 1.0f};   // surface normal up
+        m3::Vec<2, float> I{1.0f, -1.0f};
+        m3::Vec<2, float> N{0.0f, 1.0f};
         auto R = m3::reflect(I, N);
-        // R should be (1, 1) — reflected upward
+
         if (auto r = check_float_eq(R[0], 1.0f, 1e-5f); !r)
             return r;
         if (auto r = check_float_eq(R[1], 1.0f, 1e-5f); !r)
@@ -200,32 +180,28 @@ int main() {
         return {};
     });
 
-    // ---- refract ----
-
     runner.add("refract glass to air bends away from normal", [] -> TestResult {
-        // Going from glass (1.5) to air (1.0): eta = n1/n2 = 1.5
-        m3::Vec<2, float> I{0.0f, -1.0f};  // straight down
-        m3::Vec<2, float> N{0.0f, 1.0f};   // surface normal up
+
+        m3::Vec<2, float> I{0.0f, -1.0f};
+        m3::Vec<2, float> N{0.0f, 1.0f};
         auto R = m3::refract(m3::normalize(I), N, 1.0f / 1.5f);
-        // Straight down through glass-to-air: no bending, just passes through
+
         if (auto r = check_float_eq(R[0], 0.0f, 1e-5f); !r)
             return r;
         if (auto r = check(R[1] < 0.0f); !r)
-            return r;  // still downward
+            return r;
         return {};
     });
 
     runner.add("refract total internal reflection returns zero", [] -> TestResult {
-        // Grazing angle from glass (1.5) to air (1.0): eta = 1.5/1.0 = 1.5
-        m3::Vec<2, float> I{-1.0f, -0.05f};  // nearly parallel to surface
+
+        m3::Vec<2, float> I{-1.0f, -0.05f};
         m3::Vec<2, float> N{0.0f, 1.0f};
         auto R = m3::refract(m3::normalize(I), N, 1.5f);
         if (auto r = check_float_eq(m3::length(R), 0.0f, 1e-6f); !r)
             return r;
         return {};
     });
-
-    // ---- mix ----
 
     runner.add("mix scalar at a=0.3", [] -> TestResult {
         if (auto r = check_float_eq(m3::mix(0.0f, 10.0f, 0.3f), 3.0f, 1e-6f); !r)
@@ -259,8 +235,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- clamp ----
 
     runner.add("clamp scalar in range", [] -> TestResult {
         if (auto r = check_float_eq(m3::clamp(5.0f, 0.0f, 10.0f), 5.0f, 1e-6f); !r)
@@ -304,8 +278,6 @@ int main() {
         return {};
     });
 
-    // ---- lerp ----
-
     runner.add("lerp equals mix", [] -> TestResult {
         m3::Vec<2, float> x{0.0f, 10.0f};
         m3::Vec<2, float> y{10.0f, 0.0f};
@@ -321,8 +293,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- abs ----
 
     runner.add("abs scalar int", [] -> TestResult {
         if (auto r = check(m3::abs(-5) == 5); !r)
@@ -352,8 +322,6 @@ int main() {
         return {};
     });
 
-    // ---- sign ----
-
     runner.add("sign scalar", [] -> TestResult {
         if (auto r = check(m3::sign(-5.0f) == -1.0f); !r)
             return r;
@@ -363,8 +331,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- floor / ceil / fract ----
 
     runner.add("floor scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::floor(1.7f), 1.0f, 1e-6f); !r)
@@ -390,11 +356,8 @@ int main() {
         return {};
     });
 
-    // ---- mod (GLSL semantics: x - y * floor(x/y)) ----
-
     runner.add("mod scalar GLSL semantics", [] -> TestResult {
-        // GLSL mod(-1.5, 2.0) = -1.5 - 2.0 * floor(-0.75) = -1.5 + 2.0 = 0.5
-        // std::fmod(-1.5, 2.0) = -1.5 (different!)
+
         if (auto r = check_float_eq(m3::mod(-1.5f, 2.0f), 0.5f, 1e-6f); !r)
             return r;
         if (auto r = check_float_eq(m3::mod(5.5f, 2.0f), 1.5f, 1e-6f); !r)
@@ -414,8 +377,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- min / max ----
 
     runner.add("min vec3", [] -> TestResult {
         m3::vec3 a{1.0f, 5.0f, 3.0f};
@@ -442,8 +403,6 @@ int main() {
         return {};
     });
 
-    // ---- step / smoothstep ----
-
     runner.add("step scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::step(0.5f, 0.3f), 0.0f, 1e-6f); !r)
             return r;
@@ -455,13 +414,13 @@ int main() {
     });
 
     runner.add("smoothstep scalar", [] -> TestResult {
-        // smoothstep(0, 1, 0.5) = 0.5 (Hermite at t=0.5)
+
         if (auto r = check_float_eq(m3::smoothstep(0.0f, 1.0f, 0.5f), 0.5f, 1e-6f); !r)
             return r;
-        // smoothstep(0, 1, 0) = 0
+
         if (auto r = check_float_eq(m3::smoothstep(0.0f, 1.0f, 0.0f), 0.0f, 1e-6f); !r)
             return r;
-        // smoothstep(0, 1, 1) = 1
+
         if (auto r = check_float_eq(m3::smoothstep(0.0f, 1.0f, 1.0f), 1.0f, 1e-6f); !r)
             return r;
         return {};

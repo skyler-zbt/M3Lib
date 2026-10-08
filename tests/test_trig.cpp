@@ -1,6 +1,3 @@
-// M3Lib — Trigonometric function tests: sin, cos, tan, asin, acos, atan,
-// atan2, radians, degrees.
-//    xmake build test_trig && xmake run test_trig
 
 import std;
 import m3;
@@ -8,8 +5,6 @@ import test_common;
 
 int main() {
     TestRunner runner;
-
-    // ---- sin / cos scalar ----
 
     runner.add("sin scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::sin(0.0f), 0.0f, 1e-6f); !r)
@@ -30,8 +25,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- sin / cos vector ----
 
     runner.add("sin vec3", [] -> TestResult {
         m3::vec3 v{0.0f, m3::radians(90.0f), m3::radians(180.0f)};
@@ -54,8 +47,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- tan / asin / acos / atan ----
 
     runner.add("tan scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::tan(0.0f), 0.0f, 1e-6f); !r)
@@ -85,8 +76,6 @@ int main() {
         return {};
     });
 
-    // ---- atan2 ----
-
     runner.add("atan2 scalar", [] -> TestResult {
         if (auto r = check_float_eq(m3::atan2(1.0f, 1.0f), m3::radians(45.0f), 1e-6f); !r)
             return r;
@@ -107,8 +96,6 @@ int main() {
             return r;
         return {};
     });
-
-    // ---- radians / degrees round-trip ----
 
     runner.add("radians degrees round-trip", [] -> TestResult {
         if (auto r = check_float_eq(m3::degrees(m3::radians(45.0f)), 45.0f, 1e-6f); !r)

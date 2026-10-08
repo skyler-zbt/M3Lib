@@ -1,11 +1,4 @@
-// GLSL 4.60 §8.1 trigonometric functions: sin, cos, tan, asin, acos, atan,
-// atan2, radians, degrees.
-// Each function provides a scalar overload (constrained to FloatingPoint)
-// and a Vec<1..4> per-element overload via apply_unary / apply_binary.
-//
-// GLSL 4.60 §8.1 三角函数：sin、cos、tan、asin、acos、atan、atan2、radians、degrees。
-// 每个函数均提供标量重载（约束为 FloatingPoint）和通过 apply_unary / apply_binary
-// 实现的 Vec<1..4> 逐元素重载。
+
 export module m3.math:trig;
 
 import std;
@@ -15,12 +8,6 @@ import m3.vector;
 
 namespace m3::detail {
 
-// Element-wise functors for trigonometric operations.  Each wraps the
-// corresponding std::math function so that apply_unary / apply_binary can
-// dispatch generically across Vec<1..4>.
-//
-// 三角运算的逐元素函数对象。每个包装对应的 std::math 函数，
-// 使 apply_unary / apply_binary 能泛型分派到 Vec<1..4>。
 struct Sin {
     template <typename T>
     constexpr T operator()(T x) const noexcept {
@@ -84,11 +71,9 @@ struct Degrees {
     }
 };
 
-}  // namespace m3::detail
+}
 
 export namespace m3 {
-
-// ---- sin ----
 
 template <detail::FloatingPoint T>
 [[nodiscard("pure function: discarding a trig result is likely a bug")]]
@@ -102,8 +87,6 @@ constexpr Vec<L, T, Q> sin(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Sin, Vec<L, T, Q>>(v);
 }
 
-// ---- cos ----
-
 template <detail::FloatingPoint T>
 [[nodiscard("pure function: discarding a trig result is likely a bug")]]
 constexpr T cos(T x) noexcept {
@@ -115,8 +98,6 @@ template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 constexpr Vec<L, T, Q> cos(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Cos, Vec<L, T, Q>>(v);
 }
-
-// ---- tan ----
 
 template <detail::FloatingPoint T>
 [[nodiscard("pure function: discarding a trig result is likely a bug")]]
@@ -130,8 +111,6 @@ constexpr Vec<L, T, Q> tan(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Tan, Vec<L, T, Q>>(v);
 }
 
-// ---- asin ----
-
 template <detail::FloatingPoint T>
 [[nodiscard("pure function: discarding a trig result is likely a bug")]]
 constexpr T asin(T x) noexcept {
@@ -143,8 +122,6 @@ template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 constexpr Vec<L, T, Q> asin(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Asin, Vec<L, T, Q>>(v);
 }
-
-// ---- acos ----
 
 template <detail::FloatingPoint T>
 [[nodiscard("pure function: discarding a trig result is likely a bug")]]
@@ -158,8 +135,6 @@ constexpr Vec<L, T, Q> acos(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Acos, Vec<L, T, Q>>(v);
 }
 
-// ---- atan (single-argument) ----
-
 template <detail::FloatingPoint T>
 [[nodiscard("pure function: discarding a trig result is likely a bug")]]
 constexpr T atan(T x) noexcept {
@@ -171,8 +146,6 @@ template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 constexpr Vec<L, T, Q> atan(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Atan, Vec<L, T, Q>>(v);
 }
-
-// ---- atan2 (two-argument) ----
 
 template <detail::FloatingPoint T>
 [[nodiscard]]
@@ -186,8 +159,6 @@ constexpr Vec<L, T, Q> atan2(const Vec<L, T, Q>& y, const Vec<L, T, Q>& x) noexc
     return detail::apply_binary<detail::Atan2, Vec<L, T, Q>>(y, x);
 }
 
-// ---- radians ----
-
 template <detail::FloatingPoint T>
 [[nodiscard]]
 constexpr T radians(T degrees) noexcept {
@@ -199,8 +170,6 @@ template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 constexpr Vec<L, T, Q> radians(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Radians, Vec<L, T, Q>>(v);
 }
-
-// ---- degrees ----
 
 template <detail::FloatingPoint T>
 [[nodiscard]]
@@ -214,4 +183,4 @@ constexpr Vec<L, T, Q> degrees(const Vec<L, T, Q>& v) noexcept {
     return detail::apply_unary<detail::Degrees, Vec<L, T, Q>>(v);
 }
 
-}  // namespace m3
+}
