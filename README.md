@@ -30,14 +30,14 @@ import m3;
 ## Status
 
 > [!CAUTION]
-> Early development (about **v0.2**). APIs, modules, and behaviour may change. Not a stable release.
+> Early development. APIs, modules, and behaviour may change. Not a stable release.
 
 | Question | Answer |
 |----------|--------|
 | **Can I build and use it?** | **Yes**, as an experimental library: build `M3` and `import m3;` on a supported toolchain. |
 | **Is it production-ready?** | **No.** Correctness work remains (notably matrix product indexing in v0.3). Treat results with care until that lands. |
 | **Are tests reliable?** | The `tests/` tree is due for a full rewrite; do not treat current tests as a completeness or correctness guarantee. |
-| **Current surface** | `Vec` / square `Mat`, GLSL-style aliases and core trig / exp / common / geometric helpers, plus basic transform helpers. Details: [ROADMAP.md](./ROADMAP.md). |
+| **Current surface** | `Vec` / square `Mat`, GLSL-style aliases and core trig / exp / common / geometric helpers, plus basic transform helpers. |
 
 ### Platforms & compilers
 
@@ -72,12 +72,8 @@ xmake build M3            # build the library
 
 ## Links
 
-| | |
-|--|--|
-| Roadmap | [ROADMAP.md](./ROADMAP.md) |
-| Testing / CI notes | [docs/testing-and-ci.md](./docs/testing-and-ci.md) |
-| Deferred GLSL scope | [docs/glsl-deferred.md](./docs/glsl-deferred.md) |
 | GLSL 4.60 specification | [docs/GLSLangSpec.4.60.pdf](./docs/GLSLangSpec.4.60.pdf) |
+|--|--|
 | GLM | https://github.com/icaven/glm |
 | xmake | https://github.com/xmake-io/xmake |
 | mcpp | https://github.com/mcpp-community/mcpp |

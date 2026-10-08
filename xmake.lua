@@ -1,16 +1,19 @@
--- M3Lib: Modern · Module · Math — modular graphics math library.
--- Top-level xmake.lua: only the build-mode switch and sub-project includes.
--- All toolchain / language / target configuration lives in m3/ and tests/.
-
--- M3Lib：Modern · Module · Math —— 模块化的图形学数学库。
--- 顶层 xmake.lua：仅包含构建模式开关与子项目引用。
--- 所有工具链 / 语言 / target 配置均位于 m3/ 与 tests/。
-
+-- M3Lib entry point. Keep repository-wide defaults and sub-project wiring here.
 add_rules("mode.debug", "mode.release")
+add_rules("plugin.compile_commands.autoupdate")
 
--- regenerate compile_commands.json on every build.
--- 每次构建时重新生成 compile_commands.json。
-add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
+-- These are defaults for this repository. The M3 target does not pin an
+-- architecture or toolchain, allowing an embedding project to choose them.
+set_arch("x64")
+
+-- Select the supported compiler environment for builds of this repository.
+if is_host("linux") then
+    set_toolchains("gcc")
+    -- Prefer system binutils over a separately installed toolchain's binutils.
+    add_cxflags("-B/usr/bin")
+elseif is_host("windows") then
+    set_toolchains("mingw", {msystem = "ucrt64"})
+end
 
 includes("m3")
 includes("tests")

@@ -30,14 +30,14 @@ import m3;
 ## 当前进度
 
 > [!CAUTION]
-> 早期开发（约 **v0.2**）。API、模块与行为仍可能变动。不是稳定发行版。
+> 早期开发。API、模块与行为仍可能变动。不是稳定发行版。
 
 | 问题 | 回答 |
 |------|------|
 | **能不能编译、能不能用？** | **能**，按实验库使用：在受支持工具链上构建 `M3` 并 `import m3;`。 |
-| **能不能上生产？** | **不能。** 仍有正确性工作（尤其是 v0.3 的矩阵积索引修复）。在修好之前请谨慎采信计算结果。 |
+| **能不能上生产？** | **不能。** 仍有正确性工作。在修好之前请谨慎采信计算结果。 |
 | **测试可靠吗？** | `tests/` 计划整目录重写；请勿把当前测试当作完整或正确性保证。 |
-| **当前能力范围** | `Vec` / 方阵 `Mat`、GLSL 风格别名与核心三角 / 指数 / 通用 / 几何辅助，以及基础变换辅助。细节见 [ROADMAP.md](./ROADMAP.md)。 |
+| **当前能力范围** | `Vec` / 方阵 `Mat`、GLSL 风格别名与核心三角 / 指数 / 通用 / 几何辅助，以及基础变换辅助。 |
 
 ### 平台与编译器
 
@@ -72,12 +72,8 @@ xmake build M3            # 构建库
 
 ## 相关链接
 
-| | |
-|--|--|
-| 路线图 | [ROADMAP.md](./ROADMAP.md) |
-| 测试 / CI 说明 | [docs/testing-and-ci.md](./docs/testing-and-ci.md) |
-| 推迟的 GLSL 范围 | [docs/glsl-deferred.md](./docs/glsl-deferred.md) |
 | GLSL 4.60 规范 | [docs/GLSLangSpec.4.60.pdf](./docs/GLSLangSpec.4.60.pdf) |
+|--|--|
 | GLM | https://github.com/icaven/glm |
 | xmake | https://github.com/xmake-io/xmake |
 | mcpp | https://github.com/mcpp-community/mcpp |
