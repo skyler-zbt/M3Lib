@@ -53,38 +53,25 @@ export namespace m3::detail {
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidVecDimension<L>
-    constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept {
-
-        if consteval {
-            if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-                std::abort();
-            }
+    constexpr T& VectorBase<L, T, Q>::operator[](std::size_t i) noexcept
+    {
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
         }
 
-        if (!std::is_constant_evaluated()) {
-            if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-                std::abort();
-            }
-        }
         [[assume(i < static_cast<std::size_t>(L))]];
         return storage_.data[i];
     }
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidVecDimension<L>
-    constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept {
+    constexpr const T& VectorBase<L, T, Q>::operator[](std::size_t i) const noexcept
+    {
+        if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
+            std::abort();
+        }
 
-        if consteval {
-            if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-                std::abort();
-            }
-        }
-        if (!std::is_constant_evaluated()) {
-            if (i >= static_cast<std::size_t>(L)) [[unlikely]] {
-                std::abort();
-            }
-        }
-        [[assume(i < static_cast<std::size_t>(L))]];
-        return storage_.data[i];
+         [[assume(i < static_cast<std::size_t>(L))]];
+         return storage_.data[i];
     }
 }

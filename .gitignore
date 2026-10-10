@@ -17,3 +17,6 @@ contract_violations.log
 *.gcov
 *.gcda
 *.gcno
+
+# Tests Scripts
+tests/third_party/

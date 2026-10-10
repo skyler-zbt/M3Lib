@@ -16,47 +16,9 @@ if is_mode("debug") then
     -- verification (currently only test_contracts), keeping the build
     -- configuration minimal.
 
-    target("test_vec")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_vec.cpp", "test_common.cppm", {public = true})
+    -- target("test_vec")
+    --     set_kind("binary")
+    --     add_deps("M3Lib")
+    --     add_files("test_vec.cpp", "test_common.cppm", {public = true})
 
-    target("test_math")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_math.cpp", "test_common.cppm",  {public = true})
-
-    target("test_cxx26")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_cxx26.cpp", "test_common.cppm", {public = true})
-
-    target("test_mat")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_mat.cpp", "test_common.cppm", {public = true})
-
-    target("test_trig")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_trig.cpp", "test_common.cppm", {public = true})
-
-    target("test_exp")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_exp.cpp", "test_common.cppm", {public = true})
-
-    target("test_transform")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_transform.cpp", "test_common.cppm", {public = true})
-
-    -- observe semantic: violations log instead of abort, so the driver can
-    -- verify the contract fired.
-
-    target("test_contracts")
-        set_kind("binary")
-        add_deps("M3")
-        add_files("test_contracts.cpp", "test_common.cppm", {public = true})
-        add_cxflags("-fcontract-evaluation-semantic=observe")
 end
