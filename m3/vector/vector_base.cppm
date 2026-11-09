@@ -27,28 +27,28 @@ export namespace m3::detail {
         [[nodiscard("raw pointer to underlying data; intended for C API / SIMD interop")]]
         constexpr const T* value_ptr() const noexcept;
 
-        constexpr T& operator[](std::size_t i) noexcept pre(i < static_cast<std::size_t>(L));
-        constexpr const T& operator[](std::size_t i) const noexcept pre(i < static_cast<std::size_t>(L));
+        constexpr T& operator[](std::size_t i) noexcept /* pre(i < static_cast<std::size_t>(L)) */;
+        constexpr const T& operator[](std::size_t i) const noexcept /* pre(i < static_cast<std::size_t>(L)) */;
     protected:
-        detail::VectorStorage<L, T, Q> storage_;
+        detail::VectorStorage<L, T, Q> m_storage;
     };
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidVecDimension<L>
     constexpr VectorBase<L, T, Q>::VectorBase(T scalar) noexcept {
-        storage_.data.fill(scalar);
+        m_storage.m_data.fill(scalar);
     }
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidVecDimension<L>
     constexpr T* VectorBase<L, T, Q>::value_ptr() noexcept {
-        return storage_.data.data();
+        return m_storage.m_data.data();
     }
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
     requires detail::ValidVecDimension<L>
     constexpr const T* VectorBase<L, T, Q>::value_ptr() const noexcept {
-        return storage_.data.data();
+        return m_storage.m_data.data();
     }
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
@@ -60,7 +60,7 @@ export namespace m3::detail {
         }
 
         [[assume(i < static_cast<std::size_t>(L))]];
-        return storage_.data[i];
+        return m_storage.m_data[i];
     }
 
     template <int L, detail::Arithmetic T, detail::Qualifier Q>
@@ -72,6 +72,6 @@ export namespace m3::detail {
         }
 
          [[assume(i < static_cast<std::size_t>(L))]];
-         return storage_.data[i];
+         return m_storage.m_data[i];
     }
 }

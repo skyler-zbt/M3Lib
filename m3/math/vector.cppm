@@ -37,24 +37,81 @@ cross(const Vec<3, T, Q>& a, const Vec<3, T, Q>& b) noexcept {
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a length computation is likely a bug")]] constexpr auto
 length(const Vec<L, T, Q>& v) noexcept -> decltype(std::sqrt(dot(v, v))) {
-    return std::sqrt(dot(v, v));
+    if constexpr (std::is_integral_v<T>) {
+        // The result is floating point: widen before multiplying integral components.
+        using result_type = decltype(std::sqrt(T{}));
+        result_type squared_length{};
+        for (int i = 0; i < L; ++i) {
+            const auto component = static_cast<result_type>(v[i]);
+            squared_length += component * component;
+        }
+        return std::sqrt(squared_length);
+    } else {
+        if (!std::is_constant_evaluated()) {
+            const T squared_length = dot(v, v);
+            if (std::isnormal(squared_length)) {
+                return std::sqrt(squared_length);
+            }
+        }
+        // Avoid losing representable norms to overflow or underflow of the squares.
+        T result{};
+        for (int i = 0; i < L; ++i) {
+            result = std::hypot(result, v[i]);
+        }
+        return result;
+    }
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a distance computation is likely a bug")]] constexpr auto
 distance(const Vec<L, T, Q>& a, const Vec<L, T, Q>& b) noexcept -> decltype(length(a - b)) {
-    return length(a - b);
+    if constexpr (std::is_integral_v<T>) {
+        using result_type = decltype(length(a));
+        Vec<L, result_type, Q> difference;
+        for (int i = 0; i < L; ++i) {
+            if constexpr (std::is_same_v<T, bool>) {
+                difference[i] = a[i] != b[i] ? result_type{1} : result_type{0};
+            } else {
+                // Unsigned magnitudes hold even the full signed min-to-max span.
+                // Subtract before floating conversion so adjacent 64-bit values stay distinct.
+                using unsigned_type = std::make_unsigned_t<T>;
+                const auto first = static_cast<unsigned_type>(a[i]);
+                const auto second = static_cast<unsigned_type>(b[i]);
+                const auto magnitude = a[i] >= b[i]
+                    ? static_cast<unsigned_type>(first - second)
+                    : static_cast<unsigned_type>(second - first);
+                difference[i] = static_cast<result_type>(magnitude);
+            }
+        }
+        return length(difference);
+    } else {
+        return length(a - b);
+    }
 }
 
 template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a normalized vector is likely a bug; use normalize() to "
             "produce a unit vector")]] constexpr Vec<L, T, Q>
 normalize(const Vec<L, T, Q>& v) noexcept {
-    auto len = length(v);
-    if (len == static_cast<decltype(len)>(0)) {
-        return Vec<L, T, Q>{static_cast<T>(0)};
+    if (!std::is_constant_evaluated()) {
+        const T squared_length = dot(v, v);
+        if (std::isnormal(squared_length)) {
+            return v / std::sqrt(squared_length);
+        }
     }
-    return v / static_cast<T>(len);
+    T scale{};
+    for (int i = 0; i < L; ++i) {
+        if (!std::isfinite(v[i])) {
+            return v / length(v);
+        }
+        scale = std::max(scale, std::abs(v[i]));
+    }
+    if (scale == T{0}) {
+        return Vec<L, T, Q>{T{0}};
+    }
+    // Scaling first also handles finite vectors whose unscaled norm cannot fit in T.
+    const auto scaled = v / scale;
+    return scaled / std::sqrt(dot(scaled, scaled));
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>

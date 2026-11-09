@@ -25,7 +25,7 @@ struct Mul {
 };
 struct Div {
     template <typename T>
-    constexpr T operator()(T a, T b) const noexcept pre(b != T{0}) {
+    constexpr T operator()(T a, T b) const noexcept /* pre(b != T{0}) */ {
 
         if (b == T{0}) [[unlikely]] {
             std::abort();

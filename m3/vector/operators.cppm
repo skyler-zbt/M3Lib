@@ -6,6 +6,32 @@ import m3.vector.vec;
 
 export namespace m3 {
 
+// Output forms avoid materializing a returned vector and copying its padding.
+// out may exactly alias either input; vector layout and default initialization are unchanged.
+template <int L, detail::Arithmetic T, detail::Qualifier Q>
+constexpr Vec<L, T, Q>& add_into(Vec<L, T, Q>& out, const Vec<L, T, Q>& a,
+                                const Vec<L, T, Q>& b) noexcept {
+    return detail::apply_binary_into<detail::Add>(out, a, b);
+}
+
+template <int L, detail::Arithmetic T, detail::Qualifier Q>
+constexpr Vec<L, T, Q>& subtract_into(Vec<L, T, Q>& out, const Vec<L, T, Q>& a,
+                                     const Vec<L, T, Q>& b) noexcept {
+    return detail::apply_binary_into<detail::Sub>(out, a, b);
+}
+
+template <int L, detail::Arithmetic T, detail::Qualifier Q>
+constexpr Vec<L, T, Q>& multiply_into(Vec<L, T, Q>& out, const Vec<L, T, Q>& a,
+                                     const Vec<L, T, Q>& b) noexcept {
+    return detail::apply_binary_into<detail::Mul>(out, a, b);
+}
+
+template <int L, detail::Arithmetic T, detail::Qualifier Q>
+constexpr Vec<L, T, Q>& divide_into(Vec<L, T, Q>& out, const Vec<L, T, Q>& a,
+                                   const Vec<L, T, Q>& b) noexcept {
+    return detail::apply_binary_into<detail::Div>(out, a, b);
+}
+
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]] constexpr Vec<L, T, Q> operator+(const Vec<L, T, Q>& a,
                                                const Vec<L, T, Q>& b) noexcept {
@@ -72,42 +98,42 @@ template <int L, detail::Arithmetic T, detail::Qualifier Q>
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator+=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) noexcept {
-    return a = a + b;
+    return add_into(a, a, b);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator-=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) noexcept {
-    return a = a - b;
+    return subtract_into(a, a, b);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator*=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) noexcept {
-    return a = a * b;
+    return multiply_into(a, a, b);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator/=(Vec<L, T, Q>& a, const Vec<L, T, Q>& b) noexcept {
-    return a = a / b;
+    return divide_into(a, a, b);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator*=(Vec<L, T, Q>& a, T scalar) noexcept {
-    return a = a * scalar;
+    return detail::apply_scalar_binary_right_into<detail::Mul>(a, a, scalar);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator/=(Vec<L, T, Q>& a, T scalar) noexcept {
-    return a = a / scalar;
+    return detail::apply_scalar_binary_right_into<detail::Div>(a, a, scalar);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator+=(Vec<L, T, Q>& a, T scalar) noexcept {
-    return a = a + scalar;
+    return detail::apply_scalar_binary_right_into<detail::Add>(a, a, scalar);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Vec<L, T, Q>& operator-=(Vec<L, T, Q>& a, T scalar) noexcept {
-    return a = a - scalar;
+    return detail::apply_scalar_binary_right_into<detail::Sub>(a, a, scalar);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>

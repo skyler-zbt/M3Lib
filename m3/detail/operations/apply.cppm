@@ -4,8 +4,45 @@ export module m3.detail.operations.apply;
 import std;
 
 import m3.detail.concepts;
+import m3.detail.operations.ops;
 
 export namespace m3::detail {
+
+// out may be the same vector as either input. Only logical components are written.
+template <typename Op, VectorLike V>
+requires BinaryOp<Op, typename V::value_type>
+constexpr V& apply_binary_into(V& out, const V& a, const V& b) {
+    using T = typename V::value_type;
+    if constexpr (std::is_same_v<Op, Div>) {
+        bool has_zero = false;
+        for (int i = 0; i < V::dimension; ++i)
+            has_zero |= (b[i] == T{0});
+        if (has_zero) [[unlikely]]
+            std::abort();
+        for (int i = 0; i < V::dimension; ++i)
+            out[i] = a[i] / b[i];
+    } else {
+        for (int i = 0; i < V::dimension; ++i)
+            out[i] = Op{}(a[i], b[i]);
+    }
+    return out;
+}
+
+template <typename Op, VectorLike V>
+requires BinaryOp<Op, typename V::value_type>
+constexpr V& apply_scalar_binary_right_into(V& out, const V& v, typename V::value_type s) {
+    using T = typename V::value_type;
+    if constexpr (std::is_same_v<Op, Div>) {
+        if (s == T{0}) [[unlikely]]
+            std::abort();
+        for (int i = 0; i < V::dimension; ++i)
+            out[i] = v[i] / s;
+    } else {
+        for (int i = 0; i < V::dimension; ++i)
+            out[i] = Op{}(v[i], s);
+    }
+    return out;
+}
 
 template <typename Op, VectorLike V>
 requires BinaryOp<Op, typename V::value_type>
@@ -13,7 +50,9 @@ requires BinaryOp<Op, typename V::value_type>
 constexpr V apply_binary(const V& a, const V& b) {
     V result;
     constexpr int L = V::dimension;
-    if constexpr (L == 1) {
+    if constexpr (std::is_same_v<Op, Div>) {
+        apply_binary_into<Op>(result, a, b);
+    } else if constexpr (L == 1) {
         result[0] = Op{}(a[0], b[0]);
     } else if constexpr (L == 2) {
         result[0] = Op{}(a[0], b[0]);
@@ -97,7 +136,9 @@ requires BinaryOp<Op, typename V::value_type>
 constexpr V apply_scalar_binary_right(const V& v, typename V::value_type s) {
     V result;
     constexpr int L = V::dimension;
-    if constexpr (L == 1) {
+    if constexpr (std::is_same_v<Op, Div>) {
+        apply_scalar_binary_right_into<Op>(result, v, s);
+    } else if constexpr (L == 1) {
         result[0] = Op{}(v[0], s);
     } else if constexpr (L == 2) {
         result[0] = Op{}(v[0], s);

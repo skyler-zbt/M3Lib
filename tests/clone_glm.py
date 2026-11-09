@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Clone icaven/glm into tests/third_party/glm for reference testing.
+"""Clone g-truc/glm into tests/third_party/glm for reference testing.
 
 Run from any working directory with:
     python tests/clone_glm.py
@@ -15,7 +15,7 @@ import subprocess
 from pathlib import Path
 
 
-GLM_REPOSITORY = "https://github.com/icaven/glm.git"
+GLM_REPOSITORY = "https://github.com/g-truc/glm.git"
 DEFAULT_REF = "master"
 
 

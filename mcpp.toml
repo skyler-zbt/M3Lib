@@ -1,45 +1,40 @@
 # M3Lib: Modern · Module · Math
-# mcpp build config — https://github.com/mcpp-community/mcpp/blob/main/docs/05-mcpp-toml.md
+# mcpp build config — https://github.com/mcpp-community/mcpp/blob/main/docs/04-mcpp-toml.md
 
 [package]
 name        = "M3Lib"
 version     = "0.1.0"
 standard    = "c++26"
+mcpp        = ">=2026.10.31.3"
 description = "A modern C++ graphics math library"
 license     = "Apache-2.0"
-authors     = "Skyler"
+authors     = ["Skyler"]
 repo        = "https://github.com/skyler-zbt/M3Lib"
 
 [targets.M3Lib]
 kind = "lib"
 
-[targets.test_vec]
+[targets.benchmark_glm]
 kind = "bin"
-main = "tests/test_vec.cpp"
-
-[targets.test_math]
-kind = "bin"
-main = "tests/test_math.cpp"
-
-[targets.test_cxx26]
-kind = "bin"
-main = "tests/test_cxx26.cpp"
-
-[targets.test_mat]
-kind = "bin"
-main = "tests/test_mat.cpp"
-
-[targets.test_contracts]
-kind = "bin"
-main = "tests/test_contracts.cpp"
+main = "tests/benchmark_glm.cpp"
+required_features = ["benchmark"]
 
 [lib]
 path = "m3/m3.cppm"
 
 [build]
-sources = ["m3/**/*.cppm", "tests/test_common.cppm"]
-cxxflags = ["-fcontracts", "-fcontract-evaluation-semantic=observe", "-march=native"]
-ldflags = ["-lstdc++exp", "-lstdc++"]
+sources = ["m3/**/*.cppm"]
+include_dirs = ["tests/third_party/glm"]
+private_include_dirs = ["tests/third_party/glm"]
+# Contracts are paused pending the final ISO specification.
+# cxxflags = ["-fcontracts", "-fcontract-evaluation-semantic=observe"]
+
+[test]
+discover = ["tests/test_*.cpp"]
+
+[features]
+default = []
+benchmark = { sources = ["tests/support/benchmark_platform.cpp"] }
 
 [toolchain]
 default = "gcc@16.1.0"

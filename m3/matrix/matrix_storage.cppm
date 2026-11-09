@@ -11,7 +11,7 @@ export namespace m3::detail {
 
 template <int C, int R, typename T, Qualifier Q>
 struct alignas(AlignmentTraits<Q, T>::value) MatrixStorage {
-    std::array<Vec<R, T, Q>, C> columns_{};
+    std::array<Vec<R, T, Q>, C> m_columns{};
     MatrixStorage() = default;
 };
 

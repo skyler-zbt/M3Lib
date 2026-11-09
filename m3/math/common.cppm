@@ -51,7 +51,26 @@ struct Mod {
 
     template <typename T>
     constexpr T operator()(T x, T y) const noexcept {
-        return x - y * std::floor(x / y);
+        const auto reduce = [x, y] {
+            // fmod reduces the arguments without needing a representable quotient.
+            T remainder = std::fmod(x, y);
+            if (remainder != T{0} && ((remainder < T{0}) != (y < T{0}))) {
+                remainder += y;
+            }
+            return remainder;
+        };
+        const T divisor_magnitude = std::abs(y);
+        const T limit = std::numeric_limits<T>::max();
+        // Preflight the same overflow cases at compile time and at run time.
+        if (divisor_magnitude < T{1} && std::abs(x) >= limit * divisor_magnitude) {
+            return reduce();
+        }
+        const T quotient = std::floor(x / y);
+        const T quotient_magnitude = std::abs(quotient);
+        if (quotient_magnitude > T{1} && divisor_magnitude >= limit / quotient_magnitude) {
+            return reduce();
+        }
+        return x - y * quotient;
     }
 };
 
@@ -95,35 +114,35 @@ constexpr Vec<L, T, Q> mix(const Vec<L, T, Q>& x, const Vec<L, T, Q>& y, T a) no
 
 template <detail::Arithmetic T>
 [[nodiscard("pure function: discarding a clamp result is likely a bug")]] constexpr T
-clamp(T x, T minVal, T maxVal) noexcept pre(minVal <= maxVal) {
-    return x < minVal ? minVal : (x > maxVal ? maxVal : x);
+clamp(T x, T min_value, T max_value) noexcept /* pre(min_value <= max_value) */ {
+    return x < min_value ? min_value : (x > max_value ? max_value : x);
 }
 
 template <int L, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard("pure function: discarding a clamp result is likely a bug")]] constexpr Vec<L, T, Q>
-clamp(const Vec<L, T, Q>& x, T minVal, T maxVal) noexcept pre(minVal <= maxVal) {
+clamp(const Vec<L, T, Q>& x, T min_value, T max_value) noexcept /* pre(min_value <= max_value) */ {
 
-    if (minVal > maxVal) [[unlikely]] {
+    if (min_value > max_value) [[unlikely]] {
         std::abort();
     }
     Vec<L, T, Q> result;
     if constexpr (L == 1) {
-        result[0] = clamp(x[0], minVal, maxVal);
+        result[0] = clamp(x[0], min_value, max_value);
     } else if constexpr (L == 2) {
-        result[0] = clamp(x[0], minVal, maxVal);
-        result[1] = clamp(x[1], minVal, maxVal);
+        result[0] = clamp(x[0], min_value, max_value);
+        result[1] = clamp(x[1], min_value, max_value);
     } else if constexpr (L == 3) {
-        result[0] = clamp(x[0], minVal, maxVal);
-        result[1] = clamp(x[1], minVal, maxVal);
-        result[2] = clamp(x[2], minVal, maxVal);
+        result[0] = clamp(x[0], min_value, max_value);
+        result[1] = clamp(x[1], min_value, max_value);
+        result[2] = clamp(x[2], min_value, max_value);
     } else if constexpr (L == 4) {
-        result[0] = clamp(x[0], minVal, maxVal);
-        result[1] = clamp(x[1], minVal, maxVal);
-        result[2] = clamp(x[2], minVal, maxVal);
-        result[3] = clamp(x[3], minVal, maxVal);
+        result[0] = clamp(x[0], min_value, max_value);
+        result[1] = clamp(x[1], min_value, max_value);
+        result[2] = clamp(x[2], min_value, max_value);
+        result[3] = clamp(x[3], min_value, max_value);
     } else {
         for (int i = 0; i < L; ++i)
-            result[i] = clamp(x[i], minVal, maxVal);
+            result[i] = clamp(x[i], min_value, max_value);
     }
     return result;
 }
@@ -196,7 +215,7 @@ template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 
 template <detail::FloatingPoint T>
 [[nodiscard]] constexpr T mod(T x, T y) noexcept {
-    return x - y * std::floor(x / y);
+    return detail::Mod{}(x, y);
 }
 
 template <int L, detail::FloatingPoint T, detail::Qualifier Q>
@@ -250,14 +269,25 @@ template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 }
 
 template <detail::FloatingPoint T>
-[[nodiscard]] constexpr T smoothstep(T edge0, T edge1, T x) noexcept pre(edge0 < edge1) {
-    T t = clamp((x - edge0) / (edge1 - edge0), static_cast<T>(0), static_cast<T>(1));
+[[nodiscard]] constexpr T smoothstep(T edge0, T edge1, T x) noexcept /* pre(edge0 < edge1) */ {
+    if (x <= edge0)
+        return T{0};
+    if (x >= edge1)
+        return T{1};
+    T t;
+    if (edge0 < T{0} && edge1 >= std::numeric_limits<T>::max() + edge0) {
+        // Halve before subtracting when the finite interval is wider than T can hold.
+        t = (x / T{2} - edge0 / T{2}) / (edge1 / T{2} - edge0 / T{2});
+    } else {
+        t = (x - edge0) / (edge1 - edge0);
+    }
+    t = clamp(t, T{0}, T{1});
     return t * t * (static_cast<T>(3) - static_cast<T>(2) * t);
 }
 
 template <int L, detail::FloatingPoint T, detail::Qualifier Q>
 [[nodiscard]] constexpr Vec<L, T, Q> smoothstep(T edge0, T edge1, const Vec<L, T, Q>& x) noexcept
-    pre(edge0 < edge1) {
+    /* pre(edge0 < edge1) */ {
     Vec<L, T, Q> result;
     if constexpr (L == 1) {
         result[0] = smoothstep(edge0, edge1, x[0]);

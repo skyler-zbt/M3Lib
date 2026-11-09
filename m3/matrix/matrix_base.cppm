@@ -20,21 +20,21 @@ public:
 
     explicit MatrixBase(const T* ptr) noexcept;
 
-    constexpr Vec<R, T, Q>& operator[](std::size_t i) noexcept pre(i < static_cast<std::size_t>(C));
+    constexpr Vec<R, T, Q>& operator[](std::size_t i) noexcept /* pre(i < static_cast<std::size_t>(C)) */;
     constexpr const Vec<R, T, Q>& operator[](std::size_t i) const noexcept
-        pre(i < static_cast<std::size_t>(C));
+        /* pre(i < static_cast<std::size_t>(C)) */;
 
     constexpr T& operator()(std::size_t c, std::size_t r) noexcept
-        pre(c < static_cast<std::size_t>(C) && r < static_cast<std::size_t>(R));
+        /* pre(c < static_cast<std::size_t>(C) && r < static_cast<std::size_t>(R)) */;
     constexpr const T& operator()(std::size_t c, std::size_t r) const noexcept
-        pre(c < static_cast<std::size_t>(C) && r < static_cast<std::size_t>(R));
+        /* pre(c < static_cast<std::size_t>(C) && r < static_cast<std::size_t>(R)) */;
 
     [[nodiscard("raw pointer to underlying data; intended for C API / SIMD interop")]]
     constexpr T* value_ptr() noexcept;
     [[nodiscard("raw pointer to underlying data; intended for C API / SIMD interop")]]
     constexpr const T* value_ptr() const noexcept;
 protected:
-    detail::MatrixStorage<C, R, T, Q> storage_;
+    detail::MatrixStorage<C, R, T, Q> m_storage;
 };
 
 template <int C, int R, typename T, Qualifier Q>
@@ -42,7 +42,7 @@ requires detail::ValidMatrixSize<C, R>
 constexpr MatrixBase<C, R, T, Q>::MatrixBase(T scalar) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
-            storage_.columns_[c][r] = (c == r) ? scalar : T{0};
+            m_storage.m_columns[c][r] = (c == r) ? scalar : T{0};
         }
     }
 }
@@ -53,7 +53,7 @@ MatrixBase<C, R, T, Q>::MatrixBase(const T* ptr) noexcept {
 
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
-            storage_.columns_[c][r] = ptr[c * static_cast<std::size_t>(R) + r];
+            m_storage.m_columns[c][r] = ptr[c * static_cast<std::size_t>(R) + r];
         }
     }
 }
@@ -74,7 +74,7 @@ constexpr Vec<R, T, Q>& MatrixBase<C, R, T, Q>::operator[](std::size_t i) noexce
         }
     }
     [[assume(i < static_cast<std::size_t>(C))]];
-    return storage_.columns_[i];
+    return m_storage.m_columns[i];
 }
 
 template <int C, int R, typename T, Qualifier Q>
@@ -91,20 +91,20 @@ constexpr const Vec<R, T, Q>& MatrixBase<C, R, T, Q>::operator[](std::size_t i) 
         }
     }
     [[assume(i < static_cast<std::size_t>(C))]];
-    return storage_.columns_[i];
+    return m_storage.m_columns[i];
 }
 
 template <int C, int R, typename T, Qualifier Q>
 requires detail::ValidMatrixSize<C, R>
 constexpr T* MatrixBase<C, R, T, Q>::value_ptr() noexcept {
 
-    return storage_.columns_[0].value_ptr();
+    return m_storage.m_columns[0].value_ptr();
 }
 
 template <int C, int R, typename T, Qualifier Q>
 requires detail::ValidMatrixSize<C, R>
 constexpr const T* MatrixBase<C, R, T, Q>::value_ptr() const noexcept {
-    return storage_.columns_[0].value_ptr();
+    return m_storage.m_columns[0].value_ptr();
 }
 
 template <int C, int R, typename T, Qualifier Q>
@@ -121,7 +121,7 @@ constexpr T& MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t r) no
         }
     }
     [[assume(c < static_cast<std::size_t>(C) && r < static_cast<std::size_t>(R))]];
-    return storage_.columns_[c][r];
+    return m_storage.m_columns[c][r];
 }
 
 template <int C, int R, typename T, Qualifier Q>
@@ -138,7 +138,7 @@ constexpr const T& MatrixBase<C, R, T, Q>::operator()(std::size_t c, std::size_t
         }
     }
     [[assume(c < static_cast<std::size_t>(C) && r < static_cast<std::size_t>(R))]];
-    return storage_.columns_[c][r];
+    return m_storage.m_columns[c][r];
 }
 
 }

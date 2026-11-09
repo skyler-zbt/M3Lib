@@ -1,79 +1,68 @@
 # M3Lib
 
-> **M3Lib**（Modern · Module · Math）—— 模块化的 C++ 图形数学库。
-
 [English](./README.md)
 
----
+M3Lib（Modern · Module · Math）是一个模块化的 C++ 图形数学库，面向 CPU 侧的图形编程、游戏引擎与实时渲染。
 
-## 是什么
+- 向量和方阵类型，提供 GLSL 风格的向量别名
+- 矩阵逐分量运算和浮点方阵显式求逆
+- 通用、几何、三角和指数函数，以及基础变换函数
 
-M3Lib 提供面向 GLSL 的向量、矩阵类型与数学辅助，用于图形编程、游戏引擎与实时渲染。库以 **C++ Modules** 构建，目标是成为现代化、模块化的 [GLM](https://github.com/icaven/glm) 替代方案。
+M3Lib 处于早期开发阶段，API、模块和行为可能变化。
 
-使用方式：
+## 平台与编译器
 
-```cpp
-import m3;
-```
-
----
-
-## 为什么
-
-- **Modules 优先：** 围绕 C++ Modules 设计，而不是仅头文件堆叠。
-- **对齐 GLSL 语义：** 在可行范围内遵循 [GLSL 4.60](./docs/GLSLangSpec.4.60.pdf) 的命名与行为，让 CPU 数学贴近着色器数学。
-- **现代 C++26：** 用契约做边界检查，并为后续语言特性留出空间。
-- **布局叙事清晰：** 显式对齐 qualifier，以及通向 GPU 布局类型的规划（见路线图）。
-
----
-
-## 当前进度
-
-> [!CAUTION]
-> 早期开发。API、模块与行为仍可能变动。不是稳定发行版。
-
-| 问题 | 回答 |
-|------|------|
-| **能不能编译、能不能用？** | **能**，按实验库使用：在受支持工具链上构建 `M3` 并 `import m3;`。 |
-| **能不能上生产？** | **不能。** 仍有正确性工作。在修好之前请谨慎采信计算结果。 |
-| **测试可靠吗？** | `tests/` 计划整目录重写；请勿把当前测试当作完整或正确性保证。 |
-| **当前能力范围** | `Vec` / 方阵 `Mat`、GLSL 风格别名与核心三角 / 指数 / 通用 / 几何辅助，以及基础变换辅助。 |
-
-### 平台与编译器
-
-需要 **GCC 16+**（C++26 contracts / P2900）及 C++ Modules 支持。
-
-|          | GCC 16+ | Clang | MSVC |
-|----------|---------|-------|------|
-| Linux    | ✅ 已测（如 Fedora） | 🚧 | ❌ |
-| Windows  | ✅ 已测（MSYS2 UCRT64） | 🚧 | 🚧 |
-| macOS    | ❌ | ❌ | ❌ |
-
-✅ 今天可用 &nbsp;|&nbsp; 🚧 待工具链跟上后规划 &nbsp;|&nbsp; ❌ 暂未计划（macOS 无维护者硬件）
-
----
+| 平台 | GCC | Clang | MSVC |
+| --- | --- | --- | --- |
+| Linux x64 | 曾在 Fedora 上测试（GCC 16） | 待验证 | — |
+| Windows x64 | 构建已验证（MSYS2 UCRT64，GCC 16.2.0） | 待验证 | 待验证 |
+| macOS | 待验证 | 待验证 | — |
 
 ## 构建
 
-主构建：**xmake**。可选：[mcpp](https://github.com/mcpp-community/mcpp)（尽力支持）。
+默认构建使用支持 C++26、C++ Modules 和 `import std` 的 GCC。
 
-```bash
-xmake f -m debug          # 或：xmake f -m release
-xmake build M3            # 构建库
+### xmake
+
+仓库为 Linux x64 配置 GCC，为 Windows x64 配置 MinGW UCRT64。
+
+```sh
+xmake f -m debug
+xmake build M3Lib
 ```
 
----
+如果 xmake 在 Windows 上无法自动找到 MinGW，使用 `xmake f -m debug --mingw=<path-to-ucrt64>` 指定 SDK 路径。
+
+### mcpp
+
+使用 mcpp 2026.10.31.3 或更新版本，在仓库根目录构建库。 [mcpp 配置](./mcpp.toml)
+
+```sh
+mcpp build
+```
+
+使用已有的 GCC 安装时，传入 `--toolchain path:<gcc-install-dir>`，并确保 `PATH` 中可以找到 Ninja。
+
+## 最小示例
+
+在依赖 `M3Lib` 的目标中构建此程序。
+
+```cpp
+import m3;
+
+int main() {
+    const m3::vec3 v{1.0f, 2.0f, 3.0f};
+    return m3::dot(v, v) == 14.0f ? 0 : 1;
+}
+```
+
+## 文档
+
+- [接口说明](./docs/API.md)
+- [测试与性能基准](./tests/README.md)
+- [开发总记录](./docs/DEV_HISTORY.md)
+- [GLSL 4.60 规范](./docs/GLSLangSpec.4.60.pdf)
 
 ## 许可证
 
 [Apache License 2.0](./LICENSE)
-
----
-
-## 相关链接
-
-| GLSL 4.60 规范 | [docs/GLSLangSpec.4.60.pdf](./docs/GLSLangSpec.4.60.pdf) |
-|--|--|
-| GLM | https://github.com/icaven/glm |
-| xmake | https://github.com/xmake-io/xmake |
-| mcpp | https://github.com/mcpp-community/mcpp |

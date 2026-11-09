@@ -6,3 +6,4 @@ export import :common;
 export import :trig;
 export import :exp;
 export import :transform;
+export import :matrix;

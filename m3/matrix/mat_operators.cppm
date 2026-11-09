@@ -49,12 +49,45 @@ constexpr Mat<C, R, T, Q> mat_scalar_right(const Mat<C, R, T, Q>& a, T s) {
 }
 
 template <int C, int R, typename T, Qualifier Q>
+constexpr void mat_divide_into(Mat<C, R, T, Q>& result, const Mat<C, R, T, Q>& a,
+                               const Mat<C, R, T, Q>& b) noexcept {
+    bool has_zero = false;
+    for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
+        for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
+            has_zero |= b(c, r) == T{0};
+        }
+    }
+    if (has_zero) [[unlikely]] {
+        std::abort();
+    }
+    // Each element only needs its own inputs, so exact in-place aliasing is safe.
+    for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
+        for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
+            result(c, r) = a(c, r) / b(c, r);
+        }
+    }
+}
+
+template <int C, int R, typename T, Qualifier Q>
+constexpr void mat_divide_into(Mat<C, R, T, Q>& result, const Mat<C, R, T, Q>& a,
+                               T divisor) noexcept {
+    if (divisor == T{0}) [[unlikely]] {
+        std::abort();
+    }
+    for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
+        for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
+            result(c, r) = a(c, r) / divisor;
+        }
+    }
+}
+
+template <int C, int R, typename T, Qualifier Q>
 [[nodiscard]]
 constexpr Mat<C, R, T, Q> mat_neg(const Mat<C, R, T, Q>& a) {
     Mat<C, R, T, Q> result;
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
-            result(c, r) = -a(c, r);
+            result(c, r) = Neg{}(a(c, r));
         }
     }
     return result;
@@ -76,8 +109,18 @@ constexpr Mat<C, R, T, Q> operator-(const Mat<C, R, T, Q>& a, const Mat<C, R, T,
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Mat<C, R, T, Q> operator/(const Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
-    return detail::mat_hadamard<detail::Div>(a, b);
+constexpr Mat<C, R, T, Q> component_multiply(const Mat<C, R, T, Q>& a,
+                                           const Mat<C, R, T, Q>& b) noexcept {
+    return detail::mat_hadamard<detail::Mul>(a, b);
+}
+
+template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
+[[nodiscard]]
+constexpr Mat<C, R, T, Q> component_divide(const Mat<C, R, T, Q>& a,
+                                         const Mat<C, R, T, Q>& b) noexcept {
+    Mat<C, R, T, Q> result;
+    detail::mat_divide_into(result, a, b);
+    return result;
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
@@ -101,7 +144,9 @@ constexpr Mat<C, R, T, Q> operator*(T s, const Mat<C, R, T, Q>& a) noexcept {
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
 constexpr Mat<C, R, T, Q> operator/(const Mat<C, R, T, Q>& a, T s) noexcept {
-    return detail::mat_scalar_right<detail::Div>(a, s);
+    Mat<C, R, T, Q> result;
+    detail::mat_divide_into(result, a, s);
+    return result;
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
@@ -139,14 +184,6 @@ constexpr Mat<C, R, T, Q>& operator-=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>&
 }
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
-constexpr Mat<C, R, T, Q>& operator/=(Mat<C, R, T, Q>& a, const Mat<C, R, T, Q>& b) noexcept {
-    for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
-        for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
-            a(c, r) /= b(c, r);
-    return a;
-}
-
-template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Mat<C, R, T, Q>& operator*=(Mat<C, R, T, Q>& a, T s) noexcept {
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
@@ -172,9 +209,7 @@ constexpr Mat<C, R, T, Q>& operator-=(Mat<C, R, T, Q>& a, T s) noexcept {
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 constexpr Mat<C, R, T, Q>& operator/=(Mat<C, R, T, Q>& a, T s) noexcept {
-    for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c)
-        for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r)
-            a(c, r) /= s;
+    detail::mat_divide_into(a, a, s);
     return a;
 }
 
@@ -205,7 +240,8 @@ constexpr Mat<C, R, T, Q> mat_matmul(const Mat<C, R, T, Q>& a, const Mat<C, R, T
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {
             T sum = T{0};
             for (std::size_t k = 0; k < static_cast<std::size_t>(C); ++k) {
-                sum += a(c, k) * b(k, r);
+                // operator()(column, row): row r of a dotted with column c of b.
+                sum += a(k, r) * b(c, k);
             }
             result(c, r) = sum;
         }
@@ -259,7 +295,7 @@ constexpr Vec<R, T, Q> operator*(const Mat<C, R, T, Q>& m, const Vec<C, T, Q>& v
 
 template <int C, int R, detail::Arithmetic T, detail::Qualifier Q>
 [[nodiscard]]
-constexpr Vec<R, T, Q> operator*(const Vec<R, T, Q>& v, const Mat<C, R, T, Q>& m) noexcept {
+constexpr Vec<C, T, Q> operator*(const Vec<R, T, Q>& v, const Mat<C, R, T, Q>& m) noexcept {
     return detail::vec_mat_mul(v, m);
 }
 
