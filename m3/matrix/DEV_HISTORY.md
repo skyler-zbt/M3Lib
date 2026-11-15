@@ -17,3 +17,9 @@ Retained matrix products `*` and `*=`, as well as matrix division by a scalar. T
 A review of other math libraries and graphics APIs led to keeping the linear algebra multiplication semantics commonly used in graphics. Matrix products compose graphics transformations, and inverse matrices undo invertible transformations. `component_multiply()` and `component_divide()` provide the separate element-wise operations.
 
 For square matrices, GLM evaluates `A / B` as `A * inverse(B)`, which hides the cost of inversion at the call site. Following DirectXMath, M3Lib exposes inversion as a separate function. Callers choose when to compute the inverse and whether to use `A * inverse(B)` or `inverse(B) * A`. [Inversion implementation history](../math/DEV_HISTORY.md#2026-11-09--floating-point-square-matrix-inversion) · [GLM square matrix division](https://github.com/g-truc/glm/blob/6f14f4792a0cde5d0cf2c910506724d61cb95834/glm/detail/type_mat4x4.inl#L247-L252) · [DirectXMath `XMMatrixInverse`](https://learn.microsoft.com/en-us/windows/win32/api/directxmath/nf-directxmath-xmmatrixinverse)
+
+### 2026-11-15 · Enable constant evaluation of pointer construction
+
+Added `constexpr` to both the declaration and definition of the `MatrixBase` pointer constructor. This completes the constant-evaluation path through `Mat`, allowing a matrix to be constructed from a constant array at compile time while retaining the existing column-major copy order. See the [base constructor](matrix_base.cppm), [public constructor](mat.cppm), and [constructor regression tests](../../tests/test_arithmetic.cpp).
+
+Constrained pointer constructors in both `MatrixBase` and `Mat` to pointer types convertible to `const T*`. This removes the ambiguity between scalar and pointer overloads for expressions such as `Mat3<float>{0}`. Arrays, `T*`, and `const T*` remain accepted; objects that only provide a user-defined conversion to a pointer no longer match.

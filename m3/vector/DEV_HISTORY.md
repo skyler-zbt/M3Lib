@@ -20,3 +20,9 @@ Moved `VectorStorage` to `vector` so the vector types and their storage are main
 Added `*_into` operations that write directly to the output object's active components to reduce the cost of returning a temporary vector. Compound assignment with two vectors reuses the corresponding output operation. Compound assignment with a scalar on the right reuses the shared scalar helper. See the [arithmetic implementation](operators.cppm) and [direct output helpers](../detail/DEV_HISTORY.md#2026-11-09--direct-output-helpers-and-division-checks).
 
 The maintainer recalls that M3Lib took about 20 times as long as GLM in an early vector operation comparison. The test case and configuration have yet to be recorded. A separate local performance analysis on 2026-10-28 using GCC 16.2 in Release mode found stack temporaries, padding handling, and whole-object copies in the assembly for batched addition of aligned `float` vec3 values. For the same aligned type, writing components directly reduced the time per object in that test. The original analysis report is absent from the current checkout.
+
+### 2026-11-15 · Resolve scalar and pointer constructor ambiguity
+
+Constrained vector pointer constructors to pointer types convertible to `const T*`. Integer zero now selects the scalar constructor, so expressions such as `Vec<3, float>{0}` are unambiguous. Arrays, `T*`, and `const T*` remain accepted; objects that only provide a user-defined conversion to a pointer no longer match. See the [vector constructors](vec.cppm) and [constructor regression tests](../../tests/test_arithmetic.cpp).
+
+Corrected the generic `Vec` base class alias to refer directly to `VectorBase<L, T, Q>`, resolving the MSVC compilation error. Construction across dimensions remains deleted; the deletion message is retained as a comment alongside the ordinary `= delete` declaration. See the [base class](vector_base.cppm).
