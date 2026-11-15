@@ -5,7 +5,50 @@ test::Runner runner;
 using test::Q;
 
 template <int L, typename T, Q Qualifier>
+constexpr bool vector_constructors() {
+    using V = m3::Vec<L, T, Qualifier>;
+    constexpr V zero{0};
+    constexpr T source[]{T{1}, T{2}, T{3}, T{4}};
+    constexpr V from_const_array{source};
+    T values[L]{};
+    for (int i = 0; i < L; ++i) values[i] = source[i];
+    T* mutable_ptr = values;
+    const T* const_ptr = values;
+    const V from_array{values}, from_mutable_ptr{mutable_ptr}, from_const_ptr{const_ptr};
+    for (int i = 0; i < L; ++i) {
+        if (zero[i] != T{0} || from_const_array[i] != source[i] ||
+            from_array[i] != source[i] || from_mutable_ptr[i] != source[i] ||
+            from_const_ptr[i] != source[i]) return false;
+    }
+    return true;
+}
+
+template <int N, typename T, Q Qualifier>
+constexpr bool matrix_constructors() {
+    using M = m3::Mat<N, N, T, Qualifier>;
+    constexpr M zero{0};
+    constexpr T source[]{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8},
+                         T{9}, T{10}, T{11}, T{12}, T{13}, T{14}, T{15}, T{16}};
+    constexpr M from_const_array{source};
+    T values[N * N]{};
+    for (int i = 0; i < N * N; ++i) values[i] = source[i];
+    T* mutable_ptr = values;
+    const T* const_ptr = values;
+    const M from_array{values}, from_mutable_ptr{mutable_ptr}, from_const_ptr{const_ptr};
+    for (int c = 0; c < N; ++c) {
+        for (int r = 0; r < N; ++r) {
+            const T expected = source[c * N + r];
+            if (zero(c, r) != T{0} || from_const_array(c, r) != expected ||
+                from_array(c, r) != expected || from_mutable_ptr(c, r) != expected ||
+                from_const_ptr(c, r) != expected) return false;
+        }
+    }
+    return true;
+}
+
+template <int L, typename T, Q Qualifier>
 void vectors() {
+    static_assert(vector_constructors<L, T, Qualifier>());
     using V = m3::Vec<L, T, Qualifier>;
     using G = test::GVec<L, T>;
     const T scalar{3};
@@ -74,6 +117,7 @@ void vectors() {
 
 template <int N, typename T, Q Qualifier>
 void matrices() {
+    static_assert(matrix_constructors<N, T, Qualifier>());
     using M = m3::Mat<N, N, T, Qualifier>;
     using G = test::GMat<N, T>;
     const T scalar{3};

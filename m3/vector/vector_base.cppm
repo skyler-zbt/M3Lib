@@ -16,9 +16,9 @@ export namespace m3::detail {
 
         template <int M>
         requires(M != L)
-        explicit VectorBase(const VectorBase<M, T, Q>&) =
-            delete ("cannot construct Vec from a vector of different dimension; "
-                    "use explicit element-wise conversion instead");
+        explicit VectorBase(const VectorBase<M, T, Q>&) =delete;
+            // ("cannot construct Vec from a vector of different dimension; "
+            //  "use explicit element-wise conversion instead");
 
         constexpr explicit VectorBase(T scalar) noexcept;
 

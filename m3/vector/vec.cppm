@@ -10,7 +10,7 @@ export namespace m3 {
     template <int L, detail::Arithmetic T, detail::Qualifier Q = detail::Qualifier::aligned_none>
     requires detail::ValidVecDimension<L>
     class Vec : public m3::detail::VectorBase<L, T, Q> {
-        using base_type = m3::detail::VectorBase<L, T, Q>::VectorBase;
+        using base_type = m3::detail::VectorBase<L, T, Q>;
         using base_type::base_type;
     public:
         static constexpr int dimension = L;
@@ -19,7 +19,9 @@ export namespace m3 {
 
         Vec() = default;
 
-        explicit constexpr Vec(const T* arr) noexcept : m3::detail::VectorBase<L, T, Q>() {
+        template <typename P>
+        requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+        explicit constexpr Vec(P arr) noexcept : m3::detail::VectorBase<L, T, Q>() {
             for (int i = 0; i < L; ++i)
                 (*this)[i] = arr[i];
         }
@@ -36,7 +38,9 @@ export namespace m3 {
 
         explicit constexpr Vec(const T& v) noexcept : m3::detail::VectorBase<1, T, Q>(v) {}
 
-        explicit constexpr Vec(const T* arr) noexcept : m3::detail::VectorBase<1, T, Q>() {
+        template <typename P>
+        requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+        explicit constexpr Vec(P arr) noexcept : m3::detail::VectorBase<1, T, Q>() {
             (*this)[0] = arr[0];
         }
 
@@ -76,7 +80,9 @@ export namespace m3 {
             (*this)[1] = y;
         }
 
-        explicit constexpr Vec(const T* arr) noexcept : m3::detail::VectorBase<2, T, Q>() {
+        template <typename P>
+        requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+        explicit constexpr Vec(P arr) noexcept : m3::detail::VectorBase<2, T, Q>() {
             (*this)[0] = arr[0];
             (*this)[1] = arr[1];
         }
@@ -138,7 +144,9 @@ export namespace m3 {
             (*this)[2] = z;
         }
 
-        explicit constexpr Vec(const T* arr) noexcept : m3::detail::VectorBase<3, T, Q>() {
+        template <typename P>
+        requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+        explicit constexpr Vec(P arr) noexcept : m3::detail::VectorBase<3, T, Q>() {
             (*this)[0] = arr[0];
             (*this)[1] = arr[1];
             (*this)[2] = arr[2];
@@ -221,7 +229,9 @@ export namespace m3 {
             (*this)[3] = w;
         }
 
-        explicit constexpr Vec(const T* arr) noexcept : m3::detail::VectorBase<4, T, Q>() {
+        template <typename P>
+        requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+        explicit constexpr Vec(P arr) noexcept : m3::detail::VectorBase<4, T, Q>() {
             (*this)[0] = arr[0];
             (*this)[1] = arr[1];
             (*this)[2] = arr[2];

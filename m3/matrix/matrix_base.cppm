@@ -18,7 +18,9 @@ public:
 
     constexpr explicit MatrixBase(T scalar) noexcept;
 
-    explicit MatrixBase(const T* ptr) noexcept;
+    template <typename P>
+    requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+    explicit constexpr MatrixBase(P ptr) noexcept;
 
     constexpr Vec<R, T, Q>& operator[](std::size_t i) noexcept /* pre(i < static_cast<std::size_t>(C)) */;
     constexpr const Vec<R, T, Q>& operator[](std::size_t i) const noexcept
@@ -49,7 +51,9 @@ constexpr MatrixBase<C, R, T, Q>::MatrixBase(T scalar) noexcept {
 
 template <int C, int R, typename T, Qualifier Q>
 requires detail::ValidMatrixSize<C, R>
-MatrixBase<C, R, T, Q>::MatrixBase(const T* ptr) noexcept {
+template <typename P>
+requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+constexpr MatrixBase<C, R, T, Q>::MatrixBase(P ptr) noexcept {
 
     for (std::size_t c = 0; c < static_cast<std::size_t>(C); ++c) {
         for (std::size_t r = 0; r < static_cast<std::size_t>(R); ++r) {

@@ -15,8 +15,10 @@ M3Lib 处于早期开发阶段，API、模块和行为可能变化。
 | 平台 | GCC | Clang | MSVC |
 | --- | --- | --- | --- |
 | Linux x64 | 曾在 Fedora 上测试（GCC 16） | 待验证 | — |
-| Windows x64 | 构建已验证（MSYS2 UCRT64，GCC 16.2.0） | 待验证 | 待验证 |
+| Windows x64 | 构建及测试已验证（MSYS2 UCRT64，GCC 16.2.0，Debug/Release） | 构建及测试已验证（MSYS2 CLANG64，Clang 23.1.5 + libc++，Debug） | 构建及测试已验证（MSVC 19.51，Release） |
 | macOS | 待验证 | 待验证 | — |
+
+Windows x64 的 clang-cl 22.1.3 + MSVC STL（Debug）也已通过构建及测试。上述 Clang/MSVC 工具链的部分 `<cmath>` 调用仍不支持编译期求值。
 
 ## 构建
 
@@ -24,7 +26,7 @@ M3Lib 处于早期开发阶段，API、模块和行为可能变化。
 
 ### xmake
 
-仓库为 Linux x64 配置 GCC，为 Windows x64 配置 MinGW UCRT64。
+未指定工具链时，仓库为 Linux x64 配置 GCC，为 Windows x64 配置 MinGW UCRT64。使用 xmake 内置的 `--toolchain` 参数切换编译器。
 
 ```sh
 xmake f -m debug
@@ -32,6 +34,23 @@ xmake build M3Lib
 ```
 
 如果 xmake 在 Windows 上无法自动找到 MinGW，使用 `xmake f -m debug --mingw=<path-to-ucrt64>` 指定 SDK 路径。
+
+切换工具链时重新配置，然后运行 `xmake build M3Lib`：
+
+```sh
+# Windows GCC（MSYS2 UCRT64）
+xmake f -c -m debug --toolchain=mingw
+# Linux GCC
+xmake f -c -m debug --toolchain=gcc
+# Clang，GNU 风格驱动
+xmake f -c -m debug --toolchain=clang
+# Windows Clang，使用 MSVC ABI 和参数风格
+xmake f -c -m debug --toolchain=clang-cl
+# Windows MSVC
+xmake f -c -m debug --toolchain=msvc
+```
+
+编译器专用参数在 [库目标配置](./m3/xmake.lua) 的 `on_config` 分支中维护。GCC 添加 `stdc++exp` 链接库，Clang 添加 libc++（链接库名为 `c++`），clang-cl 和 MSVC 分支预留。Linux 的 `-B/usr/bin` 也仅应用于 GCC。临时附加参数可通过 `xmake f --cxxflags=... --cxflags=... --ldflags=...` 传入。
 
 ### mcpp
 

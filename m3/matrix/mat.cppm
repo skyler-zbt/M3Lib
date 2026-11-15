@@ -26,7 +26,9 @@ public:
 
     Mat() = default;
 
-    explicit constexpr Mat(const T* arr) noexcept : base_type(arr) {}
+    template <typename P>
+    requires(std::is_pointer_v<P> && std::convertible_to<P, const T*>)
+    explicit constexpr Mat(P arr) noexcept : base_type(arr) {}
 };
 
 template <detail::Arithmetic T, detail::Qualifier Q = detail::Qualifier::aligned_none>

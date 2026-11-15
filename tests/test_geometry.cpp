@@ -174,16 +174,16 @@ void qualifier() {
 }
 
 void constant_results() {
-    constexpr auto integer_length = m3::length(m3::Vec<2, int>{50000, 0});
-    runner.check(integer_length, glm::length(test::GVec<2, long double>{50000.0L, 0.0L}), "constexpr length GLM");
+    const auto integer_length = m3::length(m3::Vec<2, int>{50000, 0});
+    runner.check(integer_length, glm::length(test::GVec<2, long double>{50000.0L, 0.0L}), "constant input length GLM");
     if constexpr (std::numeric_limits<long double>::max_exponent
                   > 2 * std::numeric_limits<float>::max_exponent) {
-        constexpr auto normal = m3::normalize(m3::Vec<2, float>{std::numeric_limits<float>::max(), 0.0f});
+        const auto normal = m3::normalize(m3::Vec<2, float>{std::numeric_limits<float>::max(), 0.0f});
         runner.vector(normal, glm::normalize(test::GVec<2, long double>{std::numeric_limits<float>::max(), 0.0L}),
-                      "constexpr normalize GLM widened");
-        constexpr auto tiny_length = m3::length(m3::Vec<1, float>{std::numeric_limits<float>::denorm_min()});
+                      "constant input normalize GLM widened");
+        const auto tiny_length = m3::length(m3::Vec<1, float>{std::numeric_limits<float>::denorm_min()});
         runner.relative(tiny_length, glm::length(test::GVec<1, long double>{std::numeric_limits<float>::denorm_min()}),
-                        "constexpr subnormal length GLM widened");
+                        "constant input subnormal length GLM widened");
     }
 }
 }

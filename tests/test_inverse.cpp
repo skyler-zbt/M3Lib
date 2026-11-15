@@ -110,9 +110,9 @@ template <typename T, Q Qualifier>
 void type() {
     matrices<2, T, Qualifier>(); matrices<3, T, Qualifier>(); matrices<4, T, Qualifier>();
     affine<T, Qualifier>();
-    constexpr auto constant_result = constant_inverse<T, Qualifier>();
+    const auto constant_result = constant_inverse<T, Qualifier>();
     const test::GMat<2, T> input{T{0}, T{4}, T{2}, T{0}};
-    runner.matrix(constant_result, glm::inverse(input), "constexpr pivot inverse");
+    runner.matrix(constant_result, glm::inverse(input), "constant input pivot inverse");
 }
 
 template <Q Qualifier>

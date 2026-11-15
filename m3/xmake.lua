@@ -9,9 +9,16 @@ target("M3Lib")
     set_kind("static")
     set_languages("c++26", {public = true})
 
+    -- Add compiler-specific requirements here. Public settings also reach consumers.
     on_config(function (target)
         if target:has_tool("cxx", "gcc", "gxx") then
             target:add("links", "stdc++exp", {public = true})
+        elseif target:has_tool("cxx", "clang", "clangxx") then
+            target:add("links", "c++", {public = true})
+        elseif target:has_tool("cxx", "clang_cl") then
+            -- Add requirements for clang-cl's MSVC-style driver here.
+        elseif target:has_tool("cxx", "cl") then
+            -- Add requirements for MSVC here.
         end
     end)
 

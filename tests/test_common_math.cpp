@@ -57,9 +57,9 @@ void floating() {
             }
         }
     }
-    constexpr T constant_mod = m3::mod(T{1}, static_cast<T>(0.1));
+    const T constant_mod = m3::mod(T{1}, static_cast<T>(0.1));
     volatile T runtime_one = T{1}, runtime_tenth = static_cast<T>(0.1);
-    runner.check(constant_mod, glm::mod(T{1}, static_cast<T>(0.1)), "constexpr mod GLM");
+    runner.check(constant_mod, glm::mod(T{1}, static_cast<T>(0.1)), "constant input mod GLM");
     runner.check(m3::mod(static_cast<T>(runtime_one), static_cast<T>(runtime_tenth)),
                  glm::mod(T{1}, static_cast<T>(0.1)), "runtime mod GLM");
 
@@ -103,11 +103,11 @@ void floating() {
                      glm::smoothstep(static_cast<long double>(edge0),
                                      static_cast<long double>(edge1), static_cast<long double>(input)),
                      "smoothstep threshold tie GLM long double");
-        constexpr T constant_wide = m3::smoothstep(-std::numeric_limits<T>::max(),
-                                                   std::numeric_limits<T>::max(), T{0});
-        constexpr T constant_remainder = m3::mod(std::numeric_limits<T>::max(), T{0.25});
-        runner.check(constant_wide, glm::smoothstep(-wide, wide, 0.0L), "constexpr wide smoothstep GLM");
-        runner.check(constant_remainder, glm::mod(wide, 0.25L), "constexpr wide mod GLM");
+        const T constant_wide = m3::smoothstep(-std::numeric_limits<T>::max(),
+                                               std::numeric_limits<T>::max(), T{0});
+        const T constant_remainder = m3::mod(std::numeric_limits<T>::max(), T{0.25});
+        runner.check(constant_wide, glm::smoothstep(-wide, wide, 0.0L), "constant input wide smoothstep GLM");
+        runner.check(constant_remainder, glm::mod(wide, 0.25L), "constant input wide mod GLM");
     } else if constexpr (L == 1 && Qualifier == Q::aligned_none) {
         std::cout << "SKIP wide common functions: long double exponent range is insufficient\n";
     }
